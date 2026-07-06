@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membrane Transport — Passive vs Active (Interactive Dashboard)</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<style>
+  :root{
+    --bg:#0f172a; --bg2:#1e293b; --panel:#1e293b; --panel2:#273449;
+    --line:#334155; --line2:#475569;
+    --txt:#e2e8f0; --muted:#94a3b8; --dim:#64748b;
+    --blue:#3b82f6; --blue2:#60a5fa; --blueDeep:#1d4ed8;
+    --ecf:#0ea5e9; --icf:#8b5cf6;
+    --na:#f5c518; --k:#a855f7; --glu:#22c55e; --o2:#7dd3fc; --co2:#94a3b8; --water:#22d3ee;
+    --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+    --radius:14px;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font); color:var(--txt);
+    background:radial-gradient(1200px 700px at 70% -10%,#1e293b 0%,#0f172a 55%,#0b1220 100%);
+    min-height:100vh; padding:18px; font-size:14px; line-height:1.45;
+  }
+  h1,h2,h3{margin:0; font-weight:650;}
+  .app{max-width:1320px; margin:0 auto;}
+
+  header.top{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    padding:4px 6px 16px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+  }
+  .logo{
+    width:46px;height:46px;border-radius:12px;
+    background:linear-gradient(135deg,var(--blue),var(--icf));
+    display:grid;place-items:center; box-shadow:var(--shadow);
+    flex:0 0 auto;
+  }
+  .logo svg{width:28px;height:28px;}
+  .brand h1{font-size:19px; letter-spacing:.2px;}
+  .brand p{margin:2px 0 0; color:var(--muted); font-size:12.5px;}
+  .top-spacer{flex:1;}
+  .eli5-toggle{
+    display:flex; align-items:center; gap:9px; cursor:pointer;
+    background:var(--panel); border:1px solid var(--line); padding:9px 13px;
+    border-radius:999px; user-select:none; box-shadow:var(--shadow);
+    transition:.2s;
+  }
+  .eli5-toggle:hover{border-color:var(--line2);}
+  .eli5-toggle .sw{
+    width:38px;height:22px;border-radius:999px;background:var(--line);
+    position:relative; transition:.2s; flex:0 0 auto;
+  }
+  .eli5-toggle .sw::after{
+    content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;
+    border-radius:50%;background:#fff;transition:.2s;
+  }
+  .eli5-toggle.on .sw{background:var(--warn);}
+  .eli5-toggle.on .sw::after{transform:translateX(16px);}
+  .eli5-toggle span{font-size:12.5px;font-weight:600;}
+  .eli5-toggle small{color:var(--muted);font-weight:400;}
+
+  /* mode buttons */
+  .modes{display:flex; gap:10px; flex-wrap:wrap; margin:2px 6px 16px;}
+  .mode-btn{
+    flex:1 1 180px; min-width:150px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:11px 13px; cursor:pointer; text-align:left;
+    color:var(--txt); transition:.18s; position:relative; overflow:hidden;
+  }
+  .mode-btn:hover{border-color:var(--blue2); transform:translateY(-1px);}
+  .mode-btn .mtitle{font-weight:650; font-size:13.5px; display:flex; align-items:center; gap:8px;}
+  .mode-btn .mtag{font-size:11px; color:var(--muted); margin-top:3px;}
+  .mode-btn .dot{width:10px;height:10px;border-radius:50%; flex:0 0 auto;}
+  .mode-btn.active{
+    border-color:var(--blue2);
+    background:linear-gradient(180deg,rgba(59,130,246,.20),rgba(59,130,246,.05));
+    box-shadow:0 0 0 1px var(--blue2) inset, var(--shadow);
+  }
+  .mode-btn .badge{
+    position:absolute; top:8px; right:9px; font-size:9.5px; font-weight:700;
+    padding:2px 6px; border-radius:6px; letter-spacing:.4px;
+  }
+  .b-passive{background:rgba(34,197,94,.16); color:#4ade80;}
+  .b-active{background:rgba(239,68,68,.16); color:#f87171;}
+
+  /* layout */
+  .grid{display:grid; grid-template-columns:1.55fr 1fr; gap:16px; align-items:start;}
+  @media(max-width:940px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+  }
+  .card .hd{
+    padding:12px 16px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .card .hd h2{font-size:14px;}
+  .card .bd{padding:14px 16px;}
+
+  /* scene */
+  .scene-wrap{position:relative;}
+  #scene{width:100%; height:auto; display:block; border-radius:0 0 var(--radius) var(--radius);}
+  .sim-clock{
+    font-variant-numeric:tabular-nums; font-size:12px; color:var(--muted);
+    background:var(--panel2); padding:4px 10px; border-radius:999px; border:1px solid var(--line);
+  }
+  .lipid-head{filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));}
+
+  /* controls */
+  .controls{margin-top:16px;}
+  .ctrl-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px 22px;}
+  @media(max-width:520px){ .ctrl-grid{grid-template-columns:1fr;} }
+  .slider{}
+  .slider label{display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;}
+  .slider label b{font-variant-numeric:tabular-nums; color:var(--blue2);}
+  input[type=range]{
+    -webkit-appearance:none; width:100%; height:6px; border-radius:999px;
+    background:var(--line); outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:18px;height:18px;border-radius:50%;
+    background:var(--blue2); cursor:pointer; border:3px solid #0b1220;
+    box-shadow:0 2px 6px rgba(0,0,0,.4);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:18px;height:18px;border-radius:50%;background:var(--blue2);
+    cursor:pointer;border:3px solid #0b1220;
+  }
+  input[type=range].ecf::-webkit-slider-thumb{background:var(--ecf);}
+  input[type=range].icf::-webkit-slider-thumb{background:var(--icf);}
+  input[type=range].temp::-webkit-slider-thumb{background:var(--warn);}
+
+  .btn-row{display:flex; gap:9px; flex-wrap:wrap; margin-top:16px;}
+  button.act{
+    background:var(--panel2); color:var(--txt); border:1px solid var(--line2);
+    border-radius:10px; padding:9px 15px; font-size:13px; font-weight:600;
+    cursor:pointer; transition:.15s; display:flex; align-items:center; gap:7px;
+  }
+  button.act:hover{border-color:var(--blue2); background:#2f3e57;}
+  button.play{background:linear-gradient(135deg,var(--blue),var(--blueDeep)); border-color:var(--blueDeep); color:#fff;}
+  button.play:hover{filter:brightness(1.1);}
+  .atp-toggle{margin-top:16px; display:flex; align-items:center; gap:12px;
+    padding:11px 13px; border:1px dashed var(--line2); border-radius:11px; background:rgba(245,197,24,.05);}
+  .atp-toggle .pill{
+    padding:4px 10px; border-radius:999px; font-weight:700; font-size:12px; letter-spacing:.4px;
+  }
+  .atp-on{background:rgba(34,197,94,.18); color:#4ade80;}
+  .atp-off{background:rgba(239,68,68,.18); color:#f87171;}
+  .atp-toggle button{margin-left:auto;}
+  .atp-toggle .lbl{font-size:12.5px;}
+  .atp-toggle .lbl small{color:var(--muted); display:block;}
+
+  /* sidebar data panel */
+  .readouts{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .ro{
+    background:var(--panel2); border:1px solid var(--line); border-radius:11px; padding:10px 12px;
+  }
+  .ro .k{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .ro .v{font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; margin-top:2px;}
+  .ro .v small{font-size:11px; color:var(--muted); font-weight:500;}
+  .ro.wide{grid-column:1/-1;}
+
+  /* gradient bars */
+  .gbar-wrap{display:flex; gap:16px; align-items:flex-end; justify-content:center; padding:6px 0 2px;}
+  .gcol{display:flex; flex-direction:column; align-items:center; gap:7px; width:74px;}
+  .gtrack{
+    width:44px; height:150px; background:var(--panel2); border:1px solid var(--line);
+    border-radius:9px; position:relative; overflow:hidden;
+  }
+  .gfill{position:absolute; left:0; right:0; bottom:0; border-radius:0 0 8px 8px; transition:height .12s linear;}
+  .gfill.ecf{background:linear-gradient(180deg,var(--ecf),#0369a1);}
+  .gfill.icf{background:linear-gradient(180deg,var(--icf),#6d28d9);}
+  .gcol .gv{font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .gcol .gk{font-size:11px; color:var(--muted);}
+  .garrow{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding-bottom:26px;}
+  .garrow .arw{font-size:26px; line-height:1;}
+  .garrow .txt{font-size:10.5px; color:var(--muted); text-align:center; max-width:70px;}
+
+  .grad-badge{
+    margin-top:12px; text-align:center; font-size:12.5px; font-weight:650;
+    padding:8px; border-radius:10px;
+  }
+  .grad-badge.down{background:rgba(34,197,94,.12); color:#4ade80; border:1px solid rgba(34,197,94,.3);}
+  .grad-badge.up{background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.3);}
+
+  .desc{
+    font-size:13px; color:#cbd5e1; line-height:1.55;
+  }
+  .desc .fick{
+    margin-top:10px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px;
+    background:#0b1220; border:1px solid var(--line); border-radius:8px; padding:8px 10px; color:var(--blue2);
+  }
+  .eli5-box{
+    display:none; margin-top:12px; padding:12px 13px; border-radius:11px;
+    background:linear-gradient(180deg,rgba(245,158,11,.12),rgba(245,158,11,.04));
+    border:1px solid rgba(245,158,11,.3); font-size:13px; color:#fde68a; line-height:1.5;
+  }
+  body.eli5 .eli5-box{display:block;}
+  .eli5-box b{color:#fef3c7;}
+
+  /* legend */
+  .legend{display:flex; flex-wrap:wrap; gap:10px 16px; padding:10px 16px 14px;}
+  .legend .li{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted);}
+  .legend .li .d{width:12px;height:12px;border-radius:50%;}
+
+  /* cell tonicity mini */
+  .tonicity{display:none; align-items:center; gap:14px; margin-top:12px;
+    background:var(--panel2); border:1px solid var(--line); border-radius:11px; padding:10px 12px;}
+  body.osmosis-mode .tonicity{display:flex;}
+  .cellmini{width:70px;height:70px;flex:0 0 auto;position:relative;display:grid;place-items:center;}
+  .cellmini .rbc{
+    background:radial-gradient(circle at 40% 35%,#fca5a5,#dc2626 70%);
+    border-radius:50%; transition:transform .2s ease;
+    box-shadow:0 3px 8px rgba(0,0,0,.4), inset -3px -4px 8px rgba(0,0,0,.3);
+  }
+  .tonicity .tinfo .tt{font-weight:700; font-size:14px;}
+  .tonicity .tinfo small{color:var(--muted); font-size:12px;}
+  .footer-note{color:var(--dim); font-size:11.5px; text-align:center; margin:22px 6px 4px; line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8">
+          <circle cx="6" cy="7" r="2.4"/><circle cx="12" cy="7" r="2.4"/><circle cx="18" cy="7" r="2.4"/>
+          <line x1="6" y1="9.4" x2="6" y2="15"/><line x1="12" y1="9.4" x2="12" y2="15"/><line x1="18" y1="9.4" x2="18" y2="15"/>
+          <circle cx="6" cy="17.4" r="2.4"/><circle cx="12" cy="17.4" r="2.4"/><circle cx="18" cy="17.4" r="2.4"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Membrane Transport Simulator</h1>
+        <p>Passive vs Active transport across the phospholipid bilayer · BIOL 2401 · Ch. 3</p>
+      </div>
+    </div>
+    <div class="top-spacer"></div>
+    <div class="eli5-toggle" id="eli5Toggle" role="switch" aria-checked="false">
+      <div class="sw"></div>
+      <span>Explain Like I'm 5<br><small>simple analogies</small></span>
+    </div>
+  </header>
+
+  <!-- MODE SELECTOR -->
+  <div class="modes" id="modes"></div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+
+    <!-- LEFT: visualization + controls -->
+    <div>
+      <div class="card">
+        <div class="hd">
+          <h2 id="sceneTitle">Simple Diffusion</h2>
+          <span class="sim-clock" id="clock">t = 0.0 s</span>
+        </div>
+        <div class="scene-wrap">
+          <svg id="scene" viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg" aria-label="Membrane transport visualization">
+            <defs>
+              <linearGradient id="ecfGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#0b2740"/><stop offset="1" stop-color="#0a1c30"/>
+              </linearGradient>
+              <linearGradient id="icfGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1b1533"/><stop offset="1" stop-color="#140f28"/>
+              </linearGradient>
+              <linearGradient id="memGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f8b95a"/><stop offset="1" stop-color="#e79a34"/>
+              </linearGradient>
+              <radialGradient id="headGrad" cx="35%" cy="30%" r="75%">
+                <stop offset="0" stop-color="#ffd894"/><stop offset="1" stop-color="#e08e2a"/>
+              </radialGradient>
+            </defs>
+            <rect x="0" y="0" width="600" height="235" fill="url(#ecfGrad)"/>
+            <rect x="0" y="235" width="600" height="235" fill="url(#icfGrad)"/>
+            <text x="16" y="28" fill="#38bdf8" font-size="14" font-weight="700" font-family="var(--font)">EXTRACELLULAR FLUID (ECF)</text>
+            <text x="16" y="458" fill="#a78bfa" font-size="14" font-weight="700" font-family="var(--font)">INTRACELLULAR FLUID (ICF · cytoplasm)</text>
+            <g id="lipids"></g>
+            <g id="proteins"></g>
+            <g id="ambient"></g>
+            <g id="crossings"></g>
+          </svg>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="card controls">
+        <div class="hd"><h2>Controls</h2></div>
+        <div class="bd">
+          <div class="ctrl-grid">
+            <div class="slider">
+              <label>ECF concentration <b><span id="ecfVal">150</span> mM</b></label>
+              <input type="range" class="ecf" id="ecfSlider" min="0" max="200" value="150" step="1">
+            </div>
+            <div class="slider">
+              <label>ICF concentration <b><span id="icfVal">30</span> mM</b></label>
+              <input type="range" class="icf" id="icfSlider" min="0" max="200" value="30" step="1">
+            </div>
+            <div class="slider" style="grid-column:1/-1;">
+              <label>Temperature (kinetic energy) <b><span id="tempVal">37</span> °C</b></label>
+              <input type="range" class="temp" id="tempSlider" min="0" max="50" value="37" step="1">
+            </div>
+          </div>
+
+          <div class="atp-toggle" id="atpToggle">
+            <span class="pill atp-on" id="atpPill">ATP ON</span>
+            <div class="lbl"><b>ATP availability</b><small id="atpNote">Fuel available for active pumps</small></div>
+            <button class="act" id="atpBtn">Toggle</button>
+          </div>
+
+          <div class="btn-row">
+            <button class="act play" id="playBtn">▶ Play</button>
+            <button class="act" id="stepBtn">⏭ Step (+1 s)</button>
+            <button class="act" id="resetBtn">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: data panel -->
+    <div>
+      <div class="card">
+        <div class="hd"><h2>Live Data Panel</h2><span class="sim-clock" id="modeTag">Passive</span></div>
+        <div class="bd">
+          <div class="readouts">
+            <div class="ro wide">
+              <div class="k">Transport mode</div>
+              <div class="v" id="roMode">Simple diffusion</div>
+            </div>
+            <div class="ro">
+              <div class="k">ECF conc.</div>
+              <div class="v"><span id="roEcf">150</span> <small>mM</small></div>
+            </div>
+            <div class="ro">
+              <div class="k">ICF conc.</div>
+              <div class="v"><span id="roIcf">30</span> <small>mM</small></div>
+            </div>
+            <div class="ro">
+              <div class="k">Flux rate</div>
+              <div class="v"><span id="roFlux">0</span> <small>mol/s</small></div>
+            </div>
+            <div class="ro">
+              <div class="k">ATP consumed</div>
+              <div class="v"><span id="roAtp">0</span> <small>×10³</small></div>
+            </div>
+            <div class="ro">
+              <div class="k">Temperature</div>
+              <div class="v"><span id="roTemp">37</span> <small>°C</small></div>
+            </div>
+            <div class="ro">
+              <div class="k">Direction</div>
+              <div class="v" id="roDir" style="font-size:15px;">— </div>
+            </div>
+          </div>
+
+          <div class="grad-badge down" id="gradBadge">Down the gradient · passive</div>
+
+          <div class="tonicity" id="tonicity">
+            <div class="cellmini"><div class="rbc" id="rbc" style="width:46px;height:46px;"></div></div>
+            <div class="tinfo">
+              <div class="tt" id="tonTitle">Isotonic</div>
+              <small id="tonNote">Cell volume stable</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="hd"><h2>Concentration Gradient</h2></div>
+        <div class="bd">
+          <div class="gbar-wrap">
+            <div class="gcol">
+              <div class="gv" id="gEcfVal">150</div>
+              <div class="gtrack"><div class="gfill ecf" id="gEcf" style="height:75%"></div></div>
+              <div class="gk">ECF (outside)</div>
+            </div>
+            <div class="garrow">
+              <div class="arw" id="gArrow">↓</div>
+              <div class="txt" id="gArrowTxt">high → low</div>
+            </div>
+            <div class="gcol">
+              <div class="gv" id="gIcfVal">30</div>
+              <div class="gtrack"><div class="gfill icf" id="gIcf" style="height:15%"></div></div>
+              <div class="gk">ICF (inside)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="hd"><h2>Mechanism</h2></div>
+        <div class="bd">
+          <div class="desc" id="descText"></div>
+          <div class="desc"><div class="fick" id="fickText"></div></div>
+          <div class="eli5-box" id="eli5Text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Educational model — flux values are illustrative (Fick's law for passive transport; pump-cycle counting for active transport).
+    Concentrations in millimolar (mM). Built for Lone Star College BIOL 2401, Chapter 3: <i>Movements Into and Out of the Cell</i>.
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ------------------- palette ------------------- */
+const COL = {
+  na:'#f5c518', k:'#a855f7', glu:'#22c55e', o2:'#7dd3fc', co2:'#94a3b8', water:'#22d3ee'
+};
+
+/* ------------------- mode configuration ------------------- */
+const MODES = {
+  simple:{
+    name:'Simple diffusion', tag:'O₂ · CO₂ · lipids', active:false,
+    ecfColor:COL.o2, icfColor:COL.co2,
+    legend:[['O₂ (in)',COL.o2],['CO₂ (out)',COL.co2]],
+    protein:'none',
+    fick:'J = P · A · ΔC   (ΔC = C_ECF − C_ICF)',
+    desc:'Non-polar O₂ and CO₂ dissolve straight through the lipid bilayer, moving <b>down</b> their concentration gradient. No carrier protein and no ATP. Flux obeys <b>Fick\'s Law</b> and speeds up as temperature (kinetic energy) rises.',
+    eli5:'Kids spilling out of a <b>crowded bus</b> into an empty playground — they spread out on their own until both sides are even. Nobody has to push them.'
+  },
+  osmosis:{
+    name:'Osmosis', tag:'water · aquaporins', active:false,
+    ecfColor:COL.water, icfColor:COL.water,
+    legend:[['Water',COL.water]],
+    protein:'aquaporin',
+    fick:'J_w ∝ (Π_ICF − Π_ECF)   water → higher solute',
+    desc:'<b>Water</b> diffuses through the bilayer and through <b>aquaporin</b> channels toward the side with <b>more solute</b> (lower water potential). No ATP. This swells the cell in a hypotonic ECF or shrinks it in a hypertonic ECF; body fluids stay near 0.9% (isotonic).',
+    eli5:'Water <b>sneaking through a straw</b> to water down juice that\'s too thick — it moves so both sides end up equally sweet.'
+  },
+  facilitated:{
+    name:'Facilitated diffusion', tag:'glucose · GLUT carrier', active:false,
+    ecfColor:COL.glu, icfColor:COL.glu,
+    legend:[['Glucose',COL.glu]],
+    protein:'carrier',
+    fick:'J = Vmax · ΔC / (Km + |ΔC|)   (saturable)',
+    desc:'<b>Glucose</b> is too polar to cross alone, so it binds a <b>GLUT carrier</b> that shuttles it <b>down</b> its gradient. Still passive (no ATP) — but the rate <b>saturates</b> at Vmax once every carrier is busy.',
+    eli5:'Glucose is too shy to climb the fence alone, so it rides a <b>friendly shuttle bus</b> (the carrier) across. Still downhill, still free.'
+  },
+  primary:{
+    name:'Primary active transport', tag:'Na⁺/K⁺-ATPase', active:true,
+    ecfColor:COL.na, icfColor:COL.k,
+    legend:[['Na⁺ (pumped out)',COL.na],['K⁺ (pumped in)',COL.k],['ATP',COL.glu]],
+    protein:'pump',
+    fick:'3 Na⁺ out + 2 K⁺ in  per  1 ATP hydrolyzed',
+    desc:'The <b>Na⁺/K⁺-ATPase</b> hydrolyzes <b>ATP</b> to pump <b>3 Na⁺ out</b> and <b>2 K⁺ in</b> — <b>against</b> their gradients. This builds the ion gradients that set the <b>resting membrane potential</b>. Switch ATP off and the pump stalls, letting ions leak back.',
+    eli5:'Carrying groceries <b>UP the stairs</b> — that\'s hard work, so you need <b>energy snacks (ATP)</b> to force things the wrong way.'
+  },
+  secondary:{
+    name:'Secondary active transport', tag:'Na⁺/glucose symporter', active:true,
+    ecfColor:COL.na, icfColor:COL.glu,
+    legend:[['Na⁺ (down gradient)',COL.na],['Glucose (up gradient)',COL.glu]],
+    protein:'symporter',
+    fick:'J_glu ∝ (Na⁺ gradient) — no direct ATP',
+    desc:'The <b>Na⁺/glucose symporter (SGLT)</b> lets Na⁺ slide <b>down</b> its gradient and uses that energy to drag <b>glucose in against</b> its gradient. No ATP is burned <b>here</b> — but it depends entirely on the Na⁺/K⁺ pump (ATP) to keep the Na⁺ gradient. Turn ATP off and it fades.',
+    eli5:'One kid <b>slides down a hill</b> (Na⁺) and uses that energy to pull a <b>wagon uphill</b> (glucose). The hill only exists because someone climbed up earlier using energy snacks (the ATP pump).'
+  }
+};
+const MODE_ORDER = ['simple','osmosis','facilitated','primary','secondary'];
+
+/* ------------------- state ------------------- */
+const state = {
+  mode:'simple',
+  ecf:150, icf:30, temp:37,
+  atp:true, atpConsumed:0,
+  time:0, playing:false,
+  volume:100, naGradient:130,
+  fluxRate:0, netDir:'none', lastNet:0
+};
+const FLUX_SCALE = 540;
+const NS = 'http://www.w3.org/2000/svg';
+const PROTEIN_X = [130, 300, 470];
+
+/* ------------------- helpers ------------------- */
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
+function el(tag, attrs){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+/* ------------------- build bilayer ------------------- */
+function buildLipids(){
+  const g = $('lipids'); g.innerHTML='';
+  const upY=192, loY=278, tailTop=228, tailBot=242;
+  for(let x=18; x<=582; x+=19){
+    // leave gaps where proteins sit
+    let nearProt = PROTEIN_X.some(px=>Math.abs(px-x)<20);
+    if(nearProt) continue;
+    // upper leaflet (heads face ECF/up, tails point down)
+    g.appendChild(el('circle',{cx:x,cy:upY,r:6.4,fill:'url(#headGrad)',class:'lipid-head'}));
+    g.appendChild(el('path',{d:`M${x-2.4} ${upY+5} Q${x-4} ${tailTop-6} ${x-2.4} ${tailTop}`,stroke:'#c9861f',fill:'none','stroke-width':1.6,'stroke-linecap':'round'}));
+    g.appendChild(el('path',{d:`M${x+2.4} ${upY+5} Q${x+4} ${tailTop-6} ${x+2.4} ${tailTop}`,stroke:'#c9861f',fill:'none','stroke-width':1.6,'stroke-linecap':'round'}));
+    // lower leaflet (heads face ICF/down, tails point up)
+    g.appendChild(el('circle',{cx:x,cy:loY,r:6.4,fill:'url(#headGrad)',class:'lipid-head'}));
+    g.appendChild(el('path',{d:`M${x-2.4} ${loY-5} Q${x-4} ${tailBot+6} ${x-2.4} ${tailBot}`,stroke:'#c9861f',fill:'none','stroke-width':1.6,'stroke-linecap':'round'}));
+    g.appendChild(el('path',{d:`M${x+2.4} ${loY-5} Q${x+4} ${tailBot+6} ${x+2.4} ${tailBot}`,stroke:'#c9861f',fill:'none','stroke-width':1.6,'stroke-linecap':'round'}));
+  }
+}
+
+/* ------------------- membrane proteins per mode ------------------- */
+function buildProteins(){
+  const g=$('proteins'); g.innerHTML='';
+  const cfg=MODES[state.mode];
+  if(cfg.protein==='none') return;
+  PROTEIN_X.forEach((px,i)=>{
+    if(cfg.protein==='aquaporin'){
+      g.appendChild(el('rect',{x:px-11,y:186,width:22,height:98,rx:9,fill:'#0e7490',stroke:'#22d3ee','stroke-width':1.5,opacity:.92}));
+      g.appendChild(el('rect',{x:px-3.5,y:190,width:7,height:90,rx:3.5,fill:'#082f36'}));
+    } else if(cfg.protein==='carrier'){
+      g.appendChild(el('rect',{x:px-14,y:184,width:28,height:102,rx:11,fill:'#0f766e',stroke:'#2dd4bf','stroke-width':1.5,opacity:.94}));
+      const notch=el('path',{d:`M${px-6} 214 q6 8 12 0 v14 q-6 8 -12 0 z`,fill:'#0b3d38'});
+      notch.appendChild(el('animateTransform',{attributeName:'transform',type:'rotate',from:`0 ${px} 235`,to:`0 ${px} 235`,dur:'3s',repeatCount:'indefinite'}));
+      g.appendChild(notch);
+    } else if(cfg.protein==='pump'){
+      g.appendChild(el('rect',{x:px-15,y:182,width:30,height:106,rx:12,fill:'#1e40af',stroke:'#60a5fa','stroke-width':1.6,opacity:.95}));
+      g.appendChild(el('rect',{x:px-4,y:206,width:8,height:56,rx:4,fill:'#0b1220'}));
+      // little ATP tag
+      const atpG=el('g',{id:'atpTag'+i});
+      atpG.appendChild(el('circle',{cx:px,cy:300,r:8,fill:state.atp?COL.glu:'#475569',stroke:'#0b1220','stroke-width':1.5}));
+      const t=el('text',{x:px,y:303,'text-anchor':'middle','font-size':7.5,fill:'#04210f','font-weight':'700'}); t.textContent='ATP';
+      atpG.appendChild(t);
+      g.appendChild(atpG);
+    } else if(cfg.protein==='symporter'){
+      g.appendChild(el('rect',{x:px-15,y:184,width:30,height:104,rx:12,fill:'#6d28d9',stroke:'#c4b5fd','stroke-width':1.6,opacity:.94}));
+      g.appendChild(el('rect',{x:px-9,y:206,width:6,height:56,rx:3,fill:'#0b1220'}));
+      g.appendChild(el('rect',{x:px+3,y:206,width:6,height:56,rx:3,fill:'#0b1220'}));
+    }
+  });
+}
+
+/* ------------------- ambient particle pool ------------------- */
+const POOL = 30; // per side
+const amb = {ecf:[], icf:[]};
+function buildAmbient(){
+  const g=$('ambient'); g.innerHTML=''; amb.ecf=[]; amb.icf=[];
+  const make=(side)=>{
+    const arr=[];
+    for(let i=0;i<POOL;i++){
+      const bx = 22 + Math.random()*556;
+      const by = side==='ecf' ? (40+Math.random()*118) : (326+Math.random()*112);
+      const c = el('circle',{cx:bx,cy:by,r:5,opacity:0});
+      g.appendChild(c);
+      arr.push({el:c, bx, by, ax:7+Math.random()*8, ay:6+Math.random()*7,
+                f1:.6+Math.random()*1.1, f2:.6+Math.random()*1.1, ph:Math.random()*6.28});
+    }
+    return arr;
+  };
+  amb.ecf=make('ecf'); amb.icf=make('icf');
+  recolorAmbient();
+}
+function recolorAmbient(){
+  const cfg=MODES[state.mode];
+  amb.ecf.forEach(p=>p.el.setAttribute('fill',cfg.ecfColor));
+  amb.icf.forEach(p=>p.el.setAttribute('fill',cfg.icfColor));
+}
+function animateAmbient(now){
+  const t=now/1000;
+  const tf=Math.max(.15, state.temp/37);
+  const ecfN=Math.round(state.ecf/200*POOL);
+  const icfN=Math.round(state.icf/200*POOL);
+  amb.ecf.forEach((p,i)=>{
+    if(i<ecfN){
+      p.el.setAttribute('opacity',.9);
+      p.el.setAttribute('cx', p.bx + Math.sin(t*p.f1*tf+p.ph)*p.ax);
+      p.el.setAttribute('cy', clamp(p.by + Math.cos(t*p.f2*tf+p.ph)*p.ay,34,156));
+    } else p.el.setAttribute('opacity',0);
+  });
+  amb.icf.forEach((p,i)=>{
+    if(i<icfN){
+      p.el.setAttribute('opacity',.9);
+      p.el.setAttribute('cx', p.bx + Math.sin(t*p.f1*tf+p.ph)*p.ax);
+      p.el.setAttribute('cy', clamp(p.by + Math.cos(t*p.f2*tf+p.ph)*p.ay,324,446));
+    } else p.el.setAttribute('opacity',0);
+  });
+}
+
+/* ------------------- crossing (transport) particles ------------------- */
+let crossings=[];
+let crossAccum=0;
+function spawnOne(dir, color, r){
+  // dir: 'in' = ECF->ICF (top->bottom), 'out' = ICF->ECF
+  const px = PROTEIN_X[Math.floor(Math.random()*PROTEIN_X.length)] + (Math.random()*16-8);
+  const y0 = dir==='in' ? 150 : 320;
+  const y1 = dir==='in' ? 322 : 148;
+  const tf=Math.max(.2, state.temp/37);
+  const c=el('circle',{cx:px,cy:y0,r:r||5.5,fill:color,stroke:'#0b1220','stroke-width':1});
+  $('crossings').appendChild(c);
+  crossings.push({el:c, x:px, y0, y1, t:0, dur:(1.5/(0.5+tf))});
+}
+function spawnCrossings(signedAmount){
+  crossAccum += Math.abs(signedAmount);
+  const cfg=MODES[state.mode];
+  const dir = signedAmount>=0 ? 'in':'out';
+  while(crossAccum>0.55){
+    crossAccum-=0.55;
+    if(state.mode==='primary'){
+      // Na out (yellow) & K in (purple) — pump direction fixed
+      spawnOne('out', COL.na, 5.5);
+      if(Math.random()<0.7) spawnOne('in', COL.k, 5.5);
+    } else if(state.mode==='secondary'){
+      spawnOne('in', COL.na, 5);
+      spawnOne('in', COL.glu, 6);
+    } else if(state.mode==='osmosis'){
+      spawnOne(dir, COL.water, 4.5);
+    } else if(state.mode==='facilitated'){
+      spawnOne(dir, COL.glu, 6);
+    } else { // simple
+      spawnOne(dir, dir==='in'?COL.o2:COL.co2, 5.5);
+    }
+  }
+}
+function updateCrossings(realDt){
+  for(let i=crossings.length-1;i>=0;i--){
+    const c=crossings[i];
+    c.t += realDt;
+    const p=Math.min(1,c.t/c.dur);
+    const ease=p; // linear through channel
+    const y=c.y0+(c.y1-c.y0)*ease;
+    // little horizontal wobble as it passes membrane
+    const wob=Math.sin(p*Math.PI)*3;
+    c.el.setAttribute('cy',y);
+    c.el.setAttribute('cx',c.x+wob);
+    c.el.setAttribute('opacity', p<0.9?1:(1-(p-0.9)/0.1));
+    if(p>=1){ c.el.remove(); crossings.splice(i,1); }
+  }
+}
+
+/* ------------------- simulation step ------------------- */
+function simulateStep(dt){
+  const s=state;
+  const tf=Math.max(0.02, s.temp/37);
+  let net=0, atpUse=0, waterNet=0;
+
+  if(s.mode==='simple'){
+    net = (0.020*tf)*(s.ecf - s.icf);
+  } else if(s.mode==='facilitated'){
+    const Vmax=2.2*tf, drive=s.ecf-s.icf;
+    net = Vmax*drive/(25+Math.abs(drive));
+  } else if(s.mode==='osmosis'){
+    waterNet = (0.030*tf)*(s.icf - s.ecf); // + = water INTO cell
+  } else if(s.mode==='primary'){
+    if(s.atp){
+      const cap = 1.6*tf*(s.icf/(s.icf+6));   // slows as ICF Na⁺ depletes
+      net = -cap;                              // Na⁺ leaves cell (against gradient)
+      atpUse = cap/3;                          // 3 Na⁺ per ATP
+    } else {
+      net = 0.015*(s.ecf - s.icf);             // passive leak toward equilibrium
+    }
+  } else if(s.mode==='secondary'){
+    if(s.atp) s.naGradient=Math.min(130, s.naGradient+9*dt);
+    else      s.naGradient=Math.max(0,   s.naGradient-7*dt);
+    const drive=s.naGradient/130;
+    const backpressure=Math.max(0, 1 - s.icf/205);
+    net = 2.0*tf*drive*backpressure;           // glucose INTO cell (up its gradient)
+  }
+
+  if(s.mode==='osmosis'){
+    s.volume = clamp(s.volume + waterNet*dt*7, 45, 190);
+    s.icf = clamp(s.icf - waterNet*dt*4.0, 0, 200);   // dilutes as water enters
+    s.ecf = clamp(s.ecf + waterNet*dt*1.4, 0, 200);
+    s.fluxRate=Math.abs(waterNet)*FLUX_SCALE;
+    s.netDir = waterNet>0?'in':(waterNet<0?'out':'none');
+    s.lastNet=waterNet;
+  } else {
+    s.icf = clamp(s.icf + net*dt, 0, 205);
+    s.ecf = clamp(s.ecf - net*dt, 0, 205);
+    s.fluxRate=Math.abs(net)*FLUX_SCALE;
+    s.atpConsumed += atpUse*dt*1000;
+    s.netDir = net>0?'in':(net<0?'out':'none');
+    s.lastNet=net;
+  }
+  s.time += dt;
+  spawnCrossings(s.lastNet*dt);
+}
+
+/* ------------------- rendering / readouts ------------------- */
+function render(){
+  const s=state, cfg=MODES[s.mode];
+  $('clock').textContent = 't = '+s.time.toFixed(1)+' s';
+  $('roMode').textContent = cfg.name;
+  $('roEcf').textContent = Math.round(s.ecf);
+  $('roIcf').textContent = Math.round(s.icf);
+  $('roFlux').textContent = Math.round(s.fluxRate);
+  $('roAtp').textContent = (s.atpConsumed/1000).toFixed(1);
+  $('roTemp').textContent = s.temp;
+  $('modeTag').textContent = cfg.active?'Active · needs ATP':'Passive · no ATP';
+  $('modeTag').style.color = cfg.active?'#f87171':'#4ade80';
+
+  const dirTxt = s.netDir==='in'?'ECF → ICF (in)':(s.netDir==='out'?'ICF → ECF (out)':'equilibrium');
+  $('roDir').textContent = dirTxt;
+
+  // gradient bars
+  $('gEcf').style.height=(s.ecf/200*100)+'%';
+  $('gIcf').style.height=(s.icf/200*100)+'%';
+  $('gEcfVal').textContent=Math.round(s.ecf);
+  $('gIcfVal').textContent=Math.round(s.icf);
+  const favored = s.ecf>s.icf?'in':(s.ecf<s.icf?'out':'none');
+  const arrowEl=$('gArrow'), txtEl=$('gArrowTxt');
+  if(favored==='in'){ arrowEl.textContent='↓'; txtEl.textContent='high → low'; }
+  else if(favored==='out'){ arrowEl.textContent='↑'; txtEl.textContent='low ← high'; }
+  else { arrowEl.textContent='='; txtEl.textContent='equilibrium'; }
+
+  // against-gradient badge
+  const badge=$('gradBadge');
+  const against = (s.netDir!=='none' && favored!=='none' && s.netDir!==favored);
+  if(s.mode==='osmosis'){
+    badge.className='grad-badge down';
+    badge.textContent='Water moves down its own potential · passive';
+  } else if(against){
+    badge.className='grad-badge up';
+    badge.textContent='⬆ Moving AGAINST the gradient · requires energy';
+  } else if(cfg.active && s.netDir==='none'){
+    badge.className='grad-badge up';
+    badge.textContent=(s.mode==='primary'&&!s.atp)?'Pump stalled — no ATP' : 'Active transport idle';
+  } else {
+    badge.className='grad-badge down';
+    badge.textContent='⬇ Moving DOWN the gradient · passive';
+  }
+
+  // ATP pill/note
+  $('atpPill').textContent = s.atp?'ATP ON':'ATP OFF';
+  $('atpPill').className = 'pill '+(s.atp?'atp-on':'atp-off');
+  $('atpNote').textContent = s.atp?'Fuel available for active pumps':'No fuel — pumps & Na⁺ gradient run down';
+
+  // osmosis tonicity mini
+  if(s.mode==='osmosis'){
+    const rbc=$('rbc');
+    const sz = 30 + s.volume/190*32; // px
+    rbc.style.width=sz+'px'; rbc.style.height=sz+'px';
+    let tt,note;
+    if(s.ecf < s.icf-4){ tt='Hypotonic ECF'; note='Water enters → cell swells (may lyse)'; }
+    else if(s.ecf > s.icf+4){ tt='Hypertonic ECF'; note='Water leaves → cell shrinks (crenation)'; }
+    else { tt='Isotonic'; note='Water balanced → volume stable'; }
+    $('tonTitle').textContent=tt; $('tonNote').textContent=note;
+  }
+}
+
+/* ------------------- mode switching ------------------- */
+function setMode(m){
+  state.mode=m;
+  const cfg=MODES[m];
+  $('sceneTitle').textContent=cfg.name;
+  $('descText').innerHTML=cfg.desc;
+  $('fickText').textContent=cfg.fick;
+  $('eli5Text').innerHTML='<b>'+cfg.name+':</b> '+cfg.eli5;
+  document.body.classList.toggle('osmosis-mode', m==='osmosis');
+  // legend
+  const lg=$('legend'); lg.innerHTML='';
+  cfg.legend.forEach(([label,color])=>{
+    const d=document.createElement('div'); d.className='li';
+    d.innerHTML=`<span class="d" style="background:${color}"></span>${label}`;
+    lg.appendChild(d);
+  });
+  // mode buttons active state
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===m));
+  buildProteins();
+  recolorAmbient();
+  crossings.forEach(c=>c.el.remove()); crossings=[]; crossAccum=0;
+  render();
+}
+
+/* ------------------- build mode buttons ------------------- */
+function buildModeButtons(){
+  const wrap=$('modes');
+  MODE_ORDER.forEach(m=>{
+    const cfg=MODES[m];
+    const btn=document.createElement('button');
+    btn.className='mode-btn'; btn.dataset.mode=m;
+    btn.innerHTML=`
+      <span class="badge ${cfg.active?'b-active':'b-passive'}">${cfg.active?'ACTIVE':'PASSIVE'}</span>
+      <div class="mtitle"><span class="dot" style="background:${cfg.ecfColor}"></span>${cfg.name}</div>
+      <div class="mtag">${cfg.tag}</div>`;
+    btn.addEventListener('click',()=>setMode(m));
+    wrap.appendChild(btn);
+  });
+}
+
+/* ------------------- controls wiring ------------------- */
+function wireControls(){
+  $('ecfSlider').addEventListener('input',e=>{ state.ecf=+e.target.value; $('ecfVal').textContent=state.ecf; render(); });
+  $('icfSlider').addEventListener('input',e=>{ state.icf=+e.target.value; $('icfVal').textContent=state.icf; render(); });
+  $('tempSlider').addEventListener('input',e=>{ state.temp=+e.target.value; $('tempVal').textContent=state.temp; render(); });
+
+  $('atpBtn').addEventListener('click',()=>{ state.atp=!state.atp; buildProteins(); render(); });
+
+  $('playBtn').addEventListener('click',()=>{
+    state.playing=!state.playing;
+    $('playBtn').textContent = state.playing?'⏸ Pause':'▶ Play';
+    $('playBtn').classList.toggle('play', true);
+  });
+  $('stepBtn').addEventListener('click',()=>{
+    state.playing=false; $('playBtn').textContent='▶ Play';
+    simulateStep(1); syncSliders(); render();
+  });
+  $('resetBtn').addEventListener('click',()=>{
+    state.ecf=100; state.icf=100; state.time=0; state.atpConsumed=0;
+    state.volume=100; state.naGradient=state.atp?130:0; state.fluxRate=0; state.netDir='none';
+    state.playing=false; $('playBtn').textContent='▶ Play';
+    syncSliders();
+    crossings.forEach(c=>c.el.remove()); crossings=[]; crossAccum=0;
+    render();
+  });
+
+  const et=$('eli5Toggle');
+  et.addEventListener('click',()=>{
+    document.body.classList.toggle('eli5');
+    const on=document.body.classList.contains('eli5');
+    et.classList.toggle('on',on); et.setAttribute('aria-checked',on);
+  });
+}
+function syncSliders(){
+  $('ecfSlider').value=Math.round(state.ecf); $('ecfVal').textContent=Math.round(state.ecf);
+  $('icfSlider').value=Math.round(state.icf); $('icfVal').textContent=Math.round(state.icf);
+}
+
+/* ------------------- main loop ------------------- */
+let last=performance.now();
+function loop(now){
+  const real=Math.min(0.05,(now-last)/1000); last=now;
+  if(state.playing){
+    simulateStep(real);   // ~1 simulated second per real second
+    syncSliders();
+  }
+  animateAmbient(now);
+  updateCrossings(real);
+  render();
+  requestAnimationFrame(loop);
+}
+
+/* ------------------- init ------------------- */
+function init(){
+  buildLipids();
+  buildAmbient();
+  buildModeButtons();
+  wireControls();
+  setMode('simple');
+  render();
+  requestAnimationFrame(loop);
+}
+init();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Membrane Transport</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"membrane-transport", title:"Membrane Transport", unit:"Unit 3" });
+  APTools.mountHUD("#apHud","membrane-transport");
+  var BANK=[
+    { id:"m1", bloom:"Understand", outcome:"Passive vs active",
+      q:"Which process does NOT require the cell to spend ATP?",
+      choices:["Simple diffusion","Primary active transport","The Na⁺/K⁺ pump","Endocytosis"],
+      answer:0, why:"Simple diffusion is passive — molecules move down their gradient with no energy input. The others all require ATP." },
+    { id:"m2", bloom:"Remember", outcome:"Define diffusion",
+      q:"Substances moving by diffusion travel:",
+      choices:["From high to low concentration","From low to high concentration","Only through ATP pumps","Against the gradient"],
+      answer:0, why:"Diffusion moves substances DOWN their concentration gradient, from high to low, until equilibrium." },
+    { id:"m3", bloom:"Understand", outcome:"Active transport",
+      q:"Primary active transport is characterized by:",
+      choices:["Moving solutes AGAINST the gradient using ATP","Moving water only","Requiring no protein","Always moving down the gradient"],
+      answer:0, why:"Active transport pumps solutes against (up) their gradient, and that uphill work requires ATP." },
+    { id:"m4", bloom:"Remember", outcome:"Na/K pump",
+      q:"For each cycle, the Na⁺/K⁺ pump moves:",
+      choices:["3 Na⁺ out and 2 K⁺ in","2 Na⁺ out and 3 K⁺ in","3 K⁺ out and 2 Na⁺ in","Equal Na⁺ and K⁺"],
+      answer:0, why:"The pump exports 3 Na⁺ and imports 2 K⁺ per ATP, maintaining the gradients used for the resting potential." },
+    { id:"m5", bloom:"Understand", outcome:"Facilitated diffusion",
+      q:"Facilitated diffusion differs from simple diffusion because it:",
+      choices:["Uses a membrane protein (channel/carrier) but no ATP","Requires ATP","Moves against the gradient","Only moves water"],
+      answer:0, why:"Facilitated diffusion is still passive (down the gradient, no ATP) but needs a transport protein for polar/large solutes." },
+    { id:"m6", bloom:"Apply", outcome:"Match molecules to routes",
+      q:"Small nonpolar gases like O₂ and CO₂ cross the membrane by:",
+      choices:["Simple diffusion through the lipid bilayer","Active transport","Endocytosis","The Na⁺/K⁺ pump"],
+      answer:0, why:"Small, nonpolar molecules dissolve in and diffuse directly through the phospholipid bilayer." },
+    { id:"m7", bloom:"Understand", outcome:"Bulk transport",
+      q:"A cell engulfing a large particle by wrapping membrane around it performs:",
+      choices:["Endocytosis","Exocytosis","Osmosis","Facilitated diffusion"],
+      answer:0, why:"Endocytosis brings large material INTO the cell in a vesicle; exocytosis secretes material OUT." },
+    { id:"m8", bloom:"Analyze", outcome:"Gradients",
+      q:"If the Na⁺/K⁺ pump were blocked, over time the cell's ion gradients would:",
+      choices:["Run down toward equilibrium","Become steeper","Be unaffected","Reverse instantly"],
+      answer:0, why:"The pump continuously restores gradients; without it, leak channels dissipate the gradients toward equilibrium." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"membrane-transport", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

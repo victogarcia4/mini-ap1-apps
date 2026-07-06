@@ -1,0 +1,27 @@
+# ── Internal / non-web files ──────────────────────────────────────────────────
+
+# Raw course lecture content (not web assets)
+BIOL2401 TXT MATERIAL/
+public/content/
+
+# Internal design-system documentation
+public/Styles/
+
+# Old / draft app versions — not linked from the live dashboard
+archive/
+
+# AI editor configuration (never publish)
+.claude/
+
+# Binary presentation files
+*.pptx
+
+# Internal image-generation prompt notes
+IMAGE-PROMPTS-CH7.md
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo

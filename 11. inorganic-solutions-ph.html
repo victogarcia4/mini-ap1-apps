@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Solutions, Acids & Bases — mixtures (solution/colloid/suspension/emulsion), the pH scale, salts and buffers. Single-file, no dependencies." />
+<title>Solutions, Acids &amp; Bases — Mixtures, pH &amp; Buffers</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1" />
+<style>
+:root{
+  --primary:#1B2A4A; --accent:#2563b6; --accent-soft:#e7f0fb;
+  --bg:#eef3f9; --panel:#ffffff; --ink:#1B2A4A; --muted:#5b6b86; --line:#c9d7ea; --line-2:#e2ebf6;
+  --acid:#e4572e; --neutral:#1B7D46; --base:#7b3ff2;
+  --radius:14px; --shadow:0 6px 20px rgba(27,42,74,.10);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:linear-gradient(160deg,#eef3f9,#e2ebf6);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+header.topbar{background:var(--primary);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand .logo{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#e4572e,#7b3ff2);}
+.brand h1{font-size:1.16rem;font-weight:700;}
+.brand p{font-size:.78rem;color:#c9d7ea;margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.switch{display:flex;align-items:center;gap:9px;font-size:.82rem;color:#c9d7ea;cursor:pointer;user-select:none;}
+.switch input{display:none;}
+.track{width:44px;height:24px;border-radius:20px;background:#3a4d73;position:relative;transition:.25s;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.25s;}
+.switch input:checked + .track{background:#4a9d6b;}
+.switch input:checked + .track::after{transform:translateX(20px);}
+.btn-link{text-decoration:none;color:#c9d7ea;font-weight:600;font-size:.82rem;border:1px solid #3a4d73;border-radius:9px;padding:8px 13px;}
+.btn-link:hover{color:#fff;border-color:#fff;}
+
+.wrap{max-width:1200px;margin:0 auto;padding:20px 24px 30px;}
+.tabbar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tabbar button{font:inherit;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--muted);padding:11px 20px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow);}
+.tabbar button[aria-selected="true"]{background:var(--primary);color:#fff;border-color:var(--primary);}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;}
+.card h2{font-size:.74rem;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);font-weight:700;padding:15px 18px 0;}
+.card .body{padding:14px 18px 18px;}
+.grid2{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;}
+@media (max-width:820px){.grid2{grid-template-columns:1fr;}}
+
+.chip-btn{font:inherit;font-weight:650;font-size:.8rem;border:1px solid var(--line);background:#fff;color:var(--primary);border-radius:999px;padding:8px 12px;cursor:pointer;margin:0 6px 7px 0;}
+.chip-btn:hover{border-color:var(--accent);color:var(--accent);}
+.chip-btn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.toggle-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;}
+.beaker-stage svg,.tab-stage svg{display:block;width:100%;height:auto;background:#f7fbff;border-radius:10px;border:1px solid var(--line-2);}
+
+.ro{background:var(--accent-soft);border:1px solid var(--line-2);border-radius:11px;padding:10px 13px;margin-bottom:8px;}
+.ro .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;}
+.ro .v{font-size:1rem;font-weight:800;color:var(--primary);margin-top:2px;}
+.type-badge{display:inline-block;padding:3px 11px;border-radius:999px;background:var(--accent);color:#fff;font-weight:800;font-size:.85rem;}
+
+/* pH scale */
+.ph-slider{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:8px;cursor:pointer;
+  background:linear-gradient(90deg,#d7263d 0%,#f46036 21%,#f7b32b 36%,#a3c644 50%,#2a9d8f 57%,#2f7ec4 72%,#5a2a9e 100%);}
+.ph-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--primary);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+.ph-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--primary);cursor:pointer;}
+.ph-scale-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);font-weight:700;margin-top:5px;}
+.ph-readout{display:flex;align-items:center;gap:16px;margin:14px 0;flex-wrap:wrap;}
+.ph-big{font-size:2.6rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
+.ph-class{font-size:1.1rem;font-weight:800;padding:6px 16px;border-radius:999px;color:#fff;}
+.ph-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.btn{font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;border:none;border-radius:9px;padding:11px 16px;}
+.btn.acid{background:var(--acid);color:#fff;} .btn.base{background:var(--base);color:#fff;} .btn.neutral{background:var(--neutral);color:#fff;} .btn.ghost{background:var(--accent-soft);color:var(--primary);}
+
+.markers{margin-top:10px;font-size:.82rem;}
+.markers .m{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line-2);}
+.markers .m b{font-variant-numeric:tabular-nums;}
+
+.buffer-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+@media (max-width:560px){.buffer-grid{grid-template-columns:1fr;}}
+.buffer-beaker{text-align:center;background:#f7fbff;border:1px solid var(--line-2);border-radius:12px;padding:14px;}
+.buffer-beaker .bph{font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;}
+.buffer-beaker .bname{font-size:.82rem;font-weight:700;color:var(--muted);}
+
+.cc{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:6px;}
+.cc th,.cc td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-2);vertical-align:top;}
+.cc th{background:var(--primary);color:#fff;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;}
+.cc td:first-child{font-weight:800;color:var(--accent);white-space:nowrap;}
+.cc tr:nth-child(even) td{background:#f6f9fd;}
+.eli5-note{margin-top:12px;padding:11px 14px;background:var(--accent-soft);border-radius:10px;font-size:.86rem;line-height:1.5;border-left:4px solid var(--accent);}
+.hidden{display:none;}
+footer.note{max-width:1200px;margin:0 auto;padding:4px 24px 30px;color:var(--muted);font-size:.78rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg>
+    </div>
+    <div>
+      <h1>Solutions, Acids &amp; Bases</h1>
+      <p>Mixtures, the pH scale, salts &amp; buffers (Chemistry, Ch. 2)</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><span id="modeLabel">Professional</span><input type="checkbox" id="eli5Toggle"><span class="track"></span><span>ELI5</span></label>
+    <a href="index.html" class="btn-link">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabbar" role="tablist">
+    <button id="tabMix" role="tab" aria-selected="true">🧪 Mixtures</button>
+    <button id="tabPh" role="tab" aria-selected="false">💧 Acids, Bases &amp; pH</button>
+  </div>
+
+  <!-- ============ TAB A: MIXTURES ============ -->
+  <div id="mixPane">
+    <div class="grid2">
+      <section class="card">
+        <h2>Choose a Mixture</h2>
+        <div class="body">
+          <div id="mixChips"></div>
+          <div class="toggle-row">
+            <label class="switch" style="color:var(--muted)"><span>Shine a light (Tyndall)</span><input type="checkbox" id="lightToggle"><span class="track" style="background:#c9d7ea"></span></label>
+          </div>
+          <div class="toggle-row">
+            <label class="switch" style="color:var(--muted)"><span>Let it settle</span><input type="checkbox" id="settleToggle"><span class="track" style="background:#c9d7ea"></span></label>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <h2>What Happens in the Beaker</h2>
+        <div class="body">
+          <div class="beaker-stage"><svg id="beakerSvg" viewBox="0 0 300 240" preserveAspectRatio="xMidYMid meet" aria-label="Beaker of the selected mixture"></svg></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+            <div class="ro"><div class="k">Mixture type</div><div class="v"><span class="type-badge" id="mixType">Solution</span></div></div>
+            <div class="ro"><div class="k">Particle size</div><div class="v" id="mixSize" style="font-size:.9rem">&lt; 1 nm</div></div>
+            <div class="ro"><div class="k">Solute (dissolved)</div><div class="v" id="mixSolute" style="font-size:.9rem">NaCl</div></div>
+            <div class="ro"><div class="k">Solvent (dissolver)</div><div class="v" id="mixSolvent" style="font-size:.9rem">Water</div></div>
+            <div class="ro"><div class="k">Settles out?</div><div class="v" id="mixSettle" style="font-size:.9rem">No</div></div>
+            <div class="ro"><div class="k">Scatters light?</div><div class="v" id="mixTyndall" style="font-size:.9rem">No</div></div>
+          </div>
+          <div class="eli5-note" id="mixNote"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Compare &amp; Contrast — Mixtures</h2>
+      <div class="body">
+        <table class="cc">
+          <thead><tr><th>Type</th><th>Particle size</th><th>Settles?</th><th>Tyndall (light)</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Solution</td><td>&lt; 1 nm (dissolved)</td><td>No</td><td>No — clear</td><td>Salt water, IV saline</td></tr>
+            <tr><td>Colloid</td><td>1–1000 nm</td><td>No</td><td>Yes — scatters</td><td>Blood plasma, milk, cytosol</td></tr>
+            <tr><td>Suspension</td><td>&gt; 1000 nm</td><td>Yes — settles</td><td>Yes — cloudy</td><td>Muddy water, blood cells</td></tr>
+            <tr><td>Emulsion</td><td>Liquid droplets in liquid</td><td>Separates into layers</td><td>Yes</td><td>Oil &amp; vinegar, milk fat</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:10px"><b>Solute</b> = the substance being dissolved · <b>Solvent</b> = what does the dissolving (water is the "universal biological solvent") · together they form a <b>solution</b>.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ TAB B: pH ============ -->
+  <div id="phPane" class="hidden">
+    <section class="card">
+      <h2>The pH Scale (0–14)</h2>
+      <div class="body">
+        <input type="range" id="phSlider" class="ph-slider" min="0" max="14" step="0.1" value="7">
+        <div class="ph-scale-labels"><span>0 acidic</span><span>7 neutral</span><span>14 basic</span></div>
+        <div class="ph-readout">
+          <span class="ph-big" id="phBig">7.0</span>
+          <span class="ph-class" id="phClass" style="background:var(--neutral)">Neutral</span>
+          <span style="font-size:.85rem;color:var(--muted)" id="phRel">Equal H⁺ and OH⁻</span>
+        </div>
+        <div class="ph-btns">
+          <button class="btn acid" id="addAcid">＋ Add acid (H⁺)</button>
+          <button class="btn base" id="addBase">＋ Add base (OH⁻)</button>
+          <button class="btn neutral" id="neutralize">Neutralize → salt + water</button>
+          <button class="btn ghost" id="phReset">↺ Reset to 7</button>
+        </div>
+        <div class="markers" id="phMarkers"></div>
+        <div class="eli5-note" id="phNote" style="display:none"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Why Buffers Matter</h2>
+      <div class="body">
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:8px">A <b>buffer</b> resists changes in pH. Add the same acid to both beakers and watch the difference — this is how blood holds pH near 7.4.</p>
+        <div class="buffer-grid">
+          <div class="buffer-beaker"><div class="bname">Plain water (no buffer)</div><div class="bph" id="bufUn" style="color:var(--acid)">7.0</div></div>
+          <div class="buffer-beaker"><div class="bname">Buffered solution</div><div class="bph" id="bufBu" style="color:var(--neutral)">7.0</div></div>
+        </div>
+        <div class="ph-btns" style="margin-top:12px">
+          <button class="btn acid" id="bufAcid">Add a drop of acid to both</button>
+          <button class="btn ghost" id="bufReset">↺ Reset beakers</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Key Definitions</h2>
+      <div class="body">
+        <table class="cc">
+          <thead><tr><th>Term</th><th>Definition</th><th>pH / example</th></tr></thead>
+          <tbody>
+            <tr><td>Acid</td><td>Releases H⁺ (proton donor)</td><td>pH &lt; 7 — gastric acid ~1.5–2</td></tr>
+            <tr><td>Base (alkaline)</td><td>Accepts H⁺ / releases OH⁻</td><td>pH &gt; 7 — pancreatic juice ~8</td></tr>
+            <tr><td>Neutral</td><td>Equal H⁺ and OH⁻</td><td>pH = 7 — pure water</td></tr>
+            <tr><td>Salt</td><td>Ionic compound from acid + base neutralization</td><td>HCl + NaOH → NaCl + H₂O</td></tr>
+            <tr><td>Buffer</td><td>Resists pH change when acid/base is added</td><td>Blood bicarbonate holds pH ~7.4</td></tr>
+            <tr><td>pH</td><td>Measure of H⁺ concentration (each unit = 10×)</td><td>0 (most acidic) → 14 (most basic)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<footer class="note">
+  Educational model. Particle-size cutoffs and biological pH values are standard teaching approximations. Blood pH is tightly held at 7.35–7.45 by buffers, respiration and the kidneys.
+</footer>
+
+<script>
+"use strict";
+/* ============================================================================
+   TAB A — MIXTURES
+   Classified by particle size: solution (< 1 nm) < colloid (1–1000 nm)
+   < suspension (> 1000 nm). Emulsion = liquid droplets dispersed in a liquid.
+   Bigger particles => scatter light (Tyndall) and/or settle/separate.
+   ========================================================================== */
+const MIXTURES = [
+  { name:"Salt water", type:"Solution", solute:"NaCl (ions)", solvent:"Water", size:"< 1 nm", settle:"No — stays dissolved", tyndall:false, cat:"solution",
+    note:"Particles are individual ions — too small to scatter light or settle. The mixture is transparent." },
+  { name:"Blood plasma", type:"Colloid", solute:"Proteins (albumin)", solvent:"Water", size:"1–1000 nm", settle:"No — stays dispersed", tyndall:true, cat:"colloid",
+    note:"Protein particles are big enough to scatter a light beam (Tyndall effect) but too small to settle out." },
+  { name:"Milk", type:"Emulsion / Colloid", solute:"Fat droplets + proteins", solvent:"Water", size:"~1000 nm droplets", settle:"No (homogenized)", tyndall:true, cat:"emulsion",
+    note:"Fat droplets dispersed in water — an emulsion that also scatters light like a colloid (that's why milk is opaque white)." },
+  { name:"Muddy water", type:"Suspension", solute:"Sand & silt", solvent:"Water", size:"> 1000 nm (visible)", settle:"Yes — settles out", tyndall:true, cat:"suspension",
+    note:"Large particles scatter light AND sink under gravity — leave it standing and the mud collects at the bottom." },
+  { name:"Oil & vinegar", type:"Emulsion", solute:"Oil droplets", solvent:"Vinegar (water)", size:"large droplets", settle:"Separates into layers", tyndall:true, cat:"emulsion",
+    note:"Two liquids that don't mix. Without an emulsifier they separate into an oil layer over a water layer." },
+  { name:"Cytosol", type:"Colloid", solute:"Proteins & organelle bits", solvent:"Water", size:"1–1000 nm", settle:"No", tyndall:true, cat:"colloid",
+    note:"The gel-like fluid inside every cell is a biological colloid — proteins suspended in water." }
+];
+let mixState = { idx:0, light:false, settle:false };
+
+const beaker = document.getElementById("beakerSvg");
+function renderBeaker(){
+  const m = MIXTURES[mixState.idx];
+  const settled = mixState.settle;
+  let out = "";
+  // beaker outline + liquid
+  out += `<path d="M60 40 L60 210 Q60 220 70 220 L230 220 Q240 220 240 210 L240 40" fill="none" stroke="#8595ad" stroke-width="3"/>`;
+  const liquidTop = 60;
+  out += `<rect x="62" y="${liquidTop}" width="176" height="158" fill="#eaf4fb" opacity="0.7"/>`;
+
+  // emulsion separated: draw two layers when settled
+  if(m.cat==="emulsion" && settled){
+    out += `<rect x="62" y="60" width="176" height="70" fill="#f7e59b" opacity="0.8"/>`; // oil on top
+    out += `<text x="150" y="100" text-anchor="middle" font-size="11" fill="#8a6d1a" font-weight="700">oil layer</text>`;
+    out += `<text x="150" y="180" text-anchor="middle" font-size="11" fill="#3a6ea5" font-weight="700">water layer</text>`;
+  } else {
+    // particles: size + count by category
+    const spec = { solution:{r:2,n:80}, colloid:{r:4,n:44}, suspension:{r:8,n:20}, emulsion:{r:6,n:30} }[m.cat];
+    let seed = 7;
+    const rng = ()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
+    for(let i=0;i<spec.n;i++){
+      let x = 72 + rng()*156;
+      let y;
+      if((m.cat==="suspension") && settled){ y = 175 + rng()*38; }   // sinks to bottom
+      else { y = 70 + rng()*140; }
+      const col = m.cat==="suspension" ? "#8a6f4a" : m.cat==="emulsion" ? "#f2c14e" : m.cat==="colloid" ? "#c98fd6" : "#7fb2e0";
+      out += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${spec.r}" fill="${col}" opacity="0.85"/>`;
+    }
+  }
+  // Tyndall light beam
+  if(mixState.light){
+    out += `<rect x="0" y="128" width="62" height="10" fill="#ffe08a"/>`;                 // beam entering
+    if(m.tyndall){
+      out += `<rect x="62" y="128" width="176" height="10" fill="#fff2c2" opacity="0.9"/>`; // visible scattered beam
+      // scatter sparkles
+      for(let i=0;i<10;i++){ out += `<circle cx="${75+i*16}" cy="${133}" r="2.5" fill="#ffd24d"/>`; }
+      out += `<text x="150" y="120" text-anchor="middle" font-size="10" fill="#b5651d" font-weight="700">beam visible — light scatters (Tyndall +)</text>`;
+    } else {
+      out += `<rect x="238" y="128" width="60" height="10" fill="#ffe08a"/>`;               // passes straight through
+      out += `<text x="150" y="120" text-anchor="middle" font-size="10" fill="#1B7D46" font-weight="700">beam passes through — no scatter (Tyndall −)</text>`;
+    }
+  }
+  beaker.innerHTML = out;
+
+  // readouts
+  document.getElementById("mixType").textContent = m.type;
+  document.getElementById("mixSize").textContent = m.size;
+  document.getElementById("mixSolute").textContent = m.solute;
+  document.getElementById("mixSolvent").textContent = m.solvent;
+  document.getElementById("mixSettle").textContent = m.settle;
+  document.getElementById("mixTyndall").textContent = m.tyndall ? "Yes" : "No";
+  document.getElementById("mixNote").textContent = (eli5 ? eli5Mix(m) : m.note);
+  document.querySelectorAll("#mixChips .chip-btn").forEach((c,i)=>c.classList.toggle("on", i===mixState.idx));
+}
+function eli5Mix(m){
+  if(m.cat==="solution") return "🧂 Solution: the bits are SO tiny they vanish into the water — you can't see them, they never sink, and light zips straight through.";
+  if(m.cat==="colloid") return "🥛 Colloid: medium bits float forever without sinking, but they're big enough to bounce a flashlight beam (that's why milk looks white).";
+  if(m.cat==="suspension") return "🌊 Suspension: big chunks — leave it alone and they sink to the bottom like sand in a jar.";
+  return "🥗 Emulsion: two liquids that hate mixing (like oil and water) — shake them and they blend, but they slowly split back into layers.";
+}
+
+/* ============================================================================
+   TAB B — pH, ACIDS, BASES, BUFFERS
+   pH measures H⁺ concentration. Each pH unit = a 10× change in H⁺.
+   ========================================================================== */
+let ph = 7.0;
+const PH_MARKERS = [
+  {v:1.5,n:"Stomach (gastric) acid"}, {v:2.0,n:"Lemon juice"}, {v:5.0,n:"Coffee"},
+  {v:6.0,n:"Urine (variable)"}, {v:7.0,n:"Pure water (neutral)"}, {v:7.4,n:"Blood"},
+  {v:8.0,n:"Pancreatic juice"}, {v:12.0,n:"Bleach"}
+];
+function phClass(p){ if(p < 6.95) return ["Acidic","var(--acid)"]; if(p > 7.05) return ["Basic (alkaline)","var(--base)"]; return ["Neutral","var(--neutral)"]; }
+function renderPh(){
+  document.getElementById("phBig").textContent = ph.toFixed(1);
+  const [cls,col] = phClass(ph);
+  const badge = document.getElementById("phClass"); badge.textContent = cls; badge.style.background = col;
+  // relative H+ vs neutral (each unit = 10x)
+  const factor = Math.pow(10, 7 - ph);
+  let rel;
+  if(Math.abs(ph-7) < 0.05) rel = "Equal H⁺ and OH⁻";
+  else if(ph < 7) rel = factor>=1 ? `~${Math.round(factor).toLocaleString()}× more H⁺ than neutral` : "";
+  else rel = `~${Math.round(1/factor).toLocaleString()}× fewer H⁺ than neutral`;
+  document.getElementById("phRel").textContent = rel;
+  document.getElementById("phSlider").value = ph;
+  // markers
+  document.getElementById("phMarkers").innerHTML = PH_MARKERS.map(mk=>{
+    const [c] = phClass(mk.v);
+    return `<div class="m"><span>${mk.n}</span><b style="color:${c==='Acidic'?'var(--acid)':c==='Basic (alkaline)'?'var(--base)':'var(--neutral)'}">pH ${mk.v.toFixed(1)}</b></div>`;
+  }).join("");
+  const note = document.getElementById("phNote");
+  note.style.display = eli5 ? "" : "none";
+  if(eli5) note.textContent = ph<6.95 ? "🍋 Acidic = sour and full of H⁺ (like lemon or stomach acid). Lower number = more sour/strong."
+    : ph>7.05 ? "🧼 Basic/alkaline = slippery, low in H⁺ (like soap or bleach). Higher number = stronger base."
+    : "💧 Neutral = perfectly balanced, like pure water.";
+}
+function setPh(p){ ph = Math.max(0, Math.min(14, +p.toFixed(1))); renderPh(); }
+
+/* buffer demo */
+let bufUn = 7.0, bufBu = 7.0;
+function renderBuffer(){
+  document.getElementById("bufUn").textContent = bufUn.toFixed(1);
+  document.getElementById("bufBu").textContent = bufBu.toFixed(1);
+}
+
+/* ============================================================================
+   CONTROLS + TABS
+   ========================================================================== */
+let eli5 = false;
+// build mixture chips
+const chipWrap = document.getElementById("mixChips");
+MIXTURES.forEach((m,i)=>{
+  const b = document.createElement("button"); b.className="chip-btn"+(i===0?" on":""); b.textContent=m.name;
+  b.addEventListener("click", ()=>{ mixState.idx=i; renderBeaker(); });
+  chipWrap.appendChild(b);
+});
+document.getElementById("lightToggle").addEventListener("change", e=>{ mixState.light=e.target.checked; renderBeaker(); });
+document.getElementById("settleToggle").addEventListener("change", e=>{ mixState.settle=e.target.checked; renderBeaker(); });
+
+document.getElementById("phSlider").addEventListener("input", e=> setPh(+e.target.value));
+document.getElementById("addAcid").addEventListener("click", ()=> setPh(ph-1));
+document.getElementById("addBase").addEventListener("click", ()=> setPh(ph+1));
+document.getElementById("neutralize").addEventListener("click", ()=> setPh(7));
+document.getElementById("phReset").addEventListener("click", ()=> setPh(7));
+document.getElementById("bufAcid").addEventListener("click", ()=>{ bufUn=Math.max(0,bufUn-1.3); bufBu=Math.max(0,bufBu-0.15); renderBuffer(); });
+document.getElementById("bufReset").addEventListener("click", ()=>{ bufUn=7; bufBu=7; renderBuffer(); });
+
+document.getElementById("eli5Toggle").addEventListener("change", e=>{
+  eli5 = e.target.checked; document.getElementById("modeLabel").textContent = e.target.checked?"ELI5":"Professional";
+  renderBeaker(); renderPh();
+});
+
+// tabs
+const tabMix = document.getElementById("tabMix"), tabPh = document.getElementById("tabPh");
+const mixPane = document.getElementById("mixPane"), phPane = document.getElementById("phPane");
+function selectTab(which){
+  const mix = which==="mix";
+  tabMix.setAttribute("aria-selected", mix); tabPh.setAttribute("aria-selected", !mix);
+  mixPane.classList.toggle("hidden", !mix); phPane.classList.toggle("hidden", mix);
+}
+tabMix.addEventListener("click", ()=>selectTab("mix"));
+tabPh.addEventListener("click", ()=>selectTab("ph"));
+
+/* init */
+renderBeaker(); renderPh(); renderBuffer();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1200px;margin:8px auto 40px;padding:0 24px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Solutions, Acids &amp; Bases</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"inorganic-solutions", title:"Solutions, Acids & Bases", unit:"Ch 2 · Chemistry" });
+  APTools.mountHUD("#apHud","inorganic-solutions");
+  var BANK=[
+    { id:"so1", bloom:"Remember", outcome:"Solute vs solvent",
+      q:"In a salt-water solution, the SOLVENT is:",
+      choices:["Water (the substance doing the dissolving)","Salt (the dissolved substance)","The beaker","The salt crystals that settle"],
+      answer:0, why:"The solvent dissolves the solute. Water dissolves the salt, so water is the solvent (the solute is the salt)." },
+    { id:"so2", bloom:"Understand", outcome:"Define solution",
+      q:"A true SOLUTION is characterized by particles that:",
+      choices:["Are so small they never settle and don't scatter light","Settle out over time","Are large and cloudy","Separate into layers"],
+      answer:0, why:"Solute particles in a solution are < 1 nm — too small to settle or scatter light, so the mixture is clear." },
+    { id:"so3", bloom:"Understand", outcome:"Colloid vs suspension",
+      q:"How does a COLLOID differ from a SUSPENSION?",
+      choices:["Colloid particles stay dispersed; suspension particles settle out","Colloids always settle; suspensions never do","They are identical","Colloids contain no water"],
+      answer:0, why:"Colloid particles (1–1000 nm) stay suspended and scatter light; suspension particles (>1000 nm) are large enough to settle." },
+    { id:"so4", bloom:"Apply", outcome:"Identify mixture type",
+      q:"Oil and vinegar that separate into layers when left standing form a(n):",
+      choices:["Emulsion","Solution","True solution of ions","Crystal"],
+      answer:0, why:"An emulsion is a mixture of two immiscible liquids; without an emulsifier the droplets coalesce and separate." },
+    { id:"so5", bloom:"Apply", outcome:"Tyndall / colloid example",
+      q:"Blood plasma and milk look cloudy and scatter light because they are:",
+      choices:["Colloids","True solutions","Pure water","Acids"],
+      answer:0, why:"Their particles are colloid-sized (1–1000 nm), large enough to scatter light (Tyndall effect) but not to settle." },
+    { id:"so6", bloom:"Remember", outcome:"State pH values",
+      q:"On the pH scale, a NEUTRAL solution has a pH of:",
+      choices:["7","0","14","1"],
+      answer:0, why:"pH 7 is neutral (pure water); below 7 is acidic, above 7 is basic/alkaline." },
+    { id:"so7", bloom:"Understand", outcome:"Define acid",
+      q:"An ACID is a substance that:",
+      choices:["Releases H⁺ (has a pH below 7)","Releases OH⁻ (pH above 7)","Always equals pH 7","Cannot dissolve in water"],
+      answer:0, why:"Acids are proton (H⁺) donors and have pH < 7; stronger acids have lower pH (more H⁺)." },
+    { id:"so8", bloom:"Understand", outcome:"Define base",
+      q:"A BASE (alkaline substance) has a pH that is:",
+      choices:["Above 7","Exactly 7","Below 7","Always 0"],
+      answer:0, why:"Bases accept H⁺ (or release OH⁻) and have pH > 7 — e.g., pancreatic juice ~8, bleach ~12." },
+    { id:"so9", bloom:"Understand", outcome:"Define buffer",
+      q:"A BUFFER is important in the body because it:",
+      choices:["Resists changes in pH when acid or base is added","Makes solutions more acidic","Removes all water","Turns solutions into suspensions"],
+      answer:0, why:"Buffers absorb added H⁺ or OH⁻, keeping pH stable — blood buffers hold pH near 7.4." },
+    { id:"so10", bloom:"Understand", outcome:"Define salt",
+      q:"When an acid and a base react (HCl + NaOH → NaCl + H₂O), the NaCl produced is a:",
+      choices:["Salt","Buffer","Colloid","Free radical"],
+      answer:0, why:"Neutralization of an acid by a base yields a salt (an ionic compound) plus water." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"inorganic-solutions", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

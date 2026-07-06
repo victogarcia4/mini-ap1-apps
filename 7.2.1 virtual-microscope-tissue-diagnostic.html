@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Diagnostic Dashboard — a virtual microscope simulator for identifying epithelial tissues. Single-file build." />
+  <title>The Diagnostic Dashboard — Epithelial Tissue Simulator</title>
+  <link rel="stylesheet" href="assets/aptools.css?v=1" />
+  <style>
+/* dark-theme overrides for the shared APTools HUD */
+.ap-hud { gap: 14px; }
+.ap-hud-item { color: #9fb1d4; }
+.ap-hud-item b { color: #e8eefc; }
+  </style>
+  <style>
+/* ============================================================
+   The Diagnostic Dashboard — styles.css
+   High-contrast accessible scientific UI
+   ============================================================ */
+
+/* ---------- Design Tokens ---------- */
+:root {
+  /* Palette — dark "lab" background, H&E-stained tissue look */
+  --bg:        #0b1220;
+  --bg-2:      #111a2e;
+  --surface:   #16223b;
+  --surface-2: #1d2c4a;
+  --border:    #2a3a5c;
+  --border-2:  #3b4f7a;
+
+  --text:      #e8eefc;
+  --text-dim:  #9fb1d4;
+  --text-mute: #6e80a3;
+
+  --accent:    #38d9f7;   /* cyan — microscope */
+  --accent-2:  #5e8bff;   /* blue */
+  --warn:      #f7b738;
+  --ok:        #2bd47a;
+  --err:       #ff5a6a;
+
+  /* Tissue colors (H&E staining) */
+  --cytoplasm:    #f1b8b8;   /* pink eosinophilic */
+  --cytoplasm-2:  #e8a3a3;
+  --cytoplasm-3:  #d98c8c;
+  --nucleus:      #5b3a8a;   /* purple hematoxylin */
+  --nucleus-2:    #4b2c75;
+  --membrane:     #c98d4d;   /* basement membrane */
+  --lumen:        #fef3c7;
+  --goblet:       #b8d4e8;
+
+  /* Layout */
+  --radius:   14px;
+  --radius-s: 8px;
+  --shadow:   0 8px 24px rgba(0,0,0,.35);
+  --shadow-2: 0 2px 8px rgba(0,0,0,.25);
+  --mono:     "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+  --sans:     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(56,217,247,.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(94,139,255,.07), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+kbd {
+  font-family: var(--mono);
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: var(--text);
+}
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--accent);
+  color: #001018;
+  padding: 8px 12px;
+  border-radius: 0 0 8px 0;
+  z-index: 100;
+  font-weight: 600;
+}
+.skip-link:focus { left: 0; }
+
+/* ---------- Top Bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 22px;
+  background: linear-gradient(180deg, var(--surface), var(--bg-2));
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand__logo {
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, rgba(56,217,247,.18), rgba(94,139,255,.18));
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  color: var(--accent);
+}
+.brand h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  color: var(--text);
+}
+.tagline {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.hud__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 14px;
+  min-width: 64px;
+}
+.hud__label {
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.hud__value {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.hud__value.flash { animation: pop .4s ease; }
+@keyframes pop {
+  0% { transform: scale(1); color: var(--accent); }
+  50% { transform: scale(1.4); color: var(--ok); }
+  100% { transform: scale(1); color: var(--accent); }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--border-2);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform .12s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.btn:hover { background: var(--surface); border-color: var(--accent); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-dim);
+}
+.btn--ghost:hover { color: var(--text); border-color: var(--accent); }
+
+/* ---------- Layout ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(360px, 1fr);
+  gap: 18px;
+  padding: 18px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   MICROSCOPE VIEWPORT
+   ============================================================ */
+.scope {
+  background: linear-gradient(180deg, var(--surface), var(--bg-2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow);
+}
+.scope__eyepiece {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(56,217,247,.08), transparent 50%),
+    #050a14;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 24px;
+  min-height: 440px;
+  overflow: hidden;
+}
+.scope__eyepiece::before {
+  /* subtle grid */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+.scope__lens {
+  position: relative;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #0c1830 0%, #050a14 70%);
+  border: 10px solid #0e1830;
+  box-shadow:
+    inset 0 0 0 4px #1c2c4d,
+    inset 0 0 80px rgba(0,0,0,.8),
+    0 0 0 2px var(--accent),
+    0 0 60px rgba(56,217,247,.25);
+  overflow: hidden;
+  z-index: 1;
+}
+.scope__stage {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  /* blur is applied via JS using --blur var */
+  filter: blur(var(--blur, 18px));
+  transition: filter .15s ease;
+  background: #0a1326;
+}
+.scope__reticle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    /* crosshair */
+    linear-gradient(0deg, transparent calc(50% - .5px), rgba(56,217,247,.18) calc(50% - .5px), rgba(56,217,247,.18) calc(50% + .5px), transparent calc(50% + .5px)),
+    linear-gradient(90deg, transparent calc(50% - .5px), rgba(56,217,247,.18) calc(50% - .5px), rgba(56,217,247,.18) calc(50% + .5px), transparent calc(50% + .5px));
+  z-index: 2;
+  mix-blend-mode: screen;
+}
+.scope__glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255,255,255,.22), transparent 22%),
+    radial-gradient(circle at 75% 80%, rgba(56,217,247,.12), transparent 30%);
+  z-index: 3;
+}
+.scope__ring {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-mute);
+  z-index: 4;
+}
+.scope__ring span {
+  background: rgba(0,0,0,.5);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ---------- Tissue rendering (CSS-drawn cells) ---------- */
+.tissue {
+  position: absolute;
+  inset: -10%;
+  background:
+    /* stroma / underlying connective tissue */
+    linear-gradient(180deg, transparent 0%, transparent 70%, rgba(201,141,77,.25) 71%, rgba(201,141,77,.4) 100%);
+}
+.tissue__lumen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: linear-gradient(180deg, var(--lumen), rgba(254,243,199,.4));
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+.tissue__membrane {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 22%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--membrane), rgba(201,141,77,.5));
+  z-index: 4;
+}
+.tissue__layer {
+  position: absolute;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1px;
+}
+.cell {
+  position: relative;
+  background: linear-gradient(160deg, var(--cytoplasm), var(--cytoplasm-2));
+  border: 1px solid rgba(91,58,138,.35);
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 0 6px rgba(91,58,138,.2);
+}
+.cell__nucleus {
+  display: block;
+  background: radial-gradient(circle at 35% 30%, var(--nucleus), var(--nucleus-2));
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0,0,0,.4), inset 0 0 2px rgba(255,255,255,.15);
+}
+
+/* Shape variants — sizes set per-tissue by JS, but base classes set aspect hints */
+.cell--squamous {
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--cytoplasm), var(--cytoplasm-3));
+}
+.cell--squamous .cell__nucleus { width: 6px; height: 6px; }
+
+.cell--cuboidal {
+  aspect-ratio: 1;
+  border-radius: 4px;
+}
+.cell--cuboidal .cell__nucleus { width: 9px; height: 9px; }
+
+.cell--columnar {
+  aspect-ratio: 1 / 2.4;
+  border-radius: 6px 6px 4px 4px;
+}
+.cell--columnar .cell__nucleus { width: 9px; height: 13px; border-radius: 6px; }
+
+/* Pseudostratified — nuclei scattered at varying heights */
+.cell--pseudo .cell__nucleus {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Stratified squamous — top cells flat */
+.cell--flat-top {
+  height: 8px !important;
+  border-radius: 50% 50% 3px 3px / 60% 60% 30% 30%;
+  background: linear-gradient(180deg, var(--cytoplasm-3), var(--cytoplasm-2));
+}
+.cell--flat-top .cell__nucleus { width: 5px; height: 4px; }
+
+/* Stratified cuboidal — short cuboidal (basal layer) */
+.cell--basal {
+  aspect-ratio: 1.4 / 1;
+  background: linear-gradient(160deg, var(--cytoplasm-3), var(--cytoplasm-2));
+}
+.cell--basal .cell__nucleus { width: 7px; height: 7px; }
+
+/* Stratified columnar — only top layer is columnar */
+/* (handled by .cell--columnar on top, .cell--basal below) */
+
+/* Transitional — dome-shaped apical cells */
+.cell--dome {
+  aspect-ratio: 1.6 / 1;
+  border-radius: 50% 50% 6px 6px;
+  background: linear-gradient(180deg, var(--cytoplasm), var(--cytoplasm-2));
+}
+.cell--dome .cell__nucleus { width: 8px; height: 8px; }
+
+/* Goblet cells (mucus-secreting) */
+.cell--goblet {
+  background: linear-gradient(180deg, var(--goblet) 0%, var(--goblet) 35%, var(--cytoplasm) 50%, var(--cytoplasm-2) 100%);
+  border-radius: 30% 30% 6px 6px;
+}
+.cell--goblet .cell__nucleus { width: 7px; height: 9px; border-radius: 4px; }
+
+/* Cilia (apical surface) */
+.tissue__cilia {
+  position: absolute;
+  left: 0; right: 0;
+  height: 6px;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0,
+      transparent 2px,
+      rgba(94,139,255,.7) 2px,
+      rgba(94,139,255,.7) 3px,
+      transparent 3px,
+      transparent 6px
+    );
+  z-index: 5;
+  animation: ciliaSway 1.6s ease-in-out infinite;
+}
+@keyframes ciliaSway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+}
+
+/* Microvilli (brush border) */
+.tissue__microvilli {
+  position: absolute;
+  left: 0; right: 0;
+  height: 4px;
+  background:
+    repeating-linear-gradient(90deg,
+      transparent 0,
+      transparent 1px,
+      rgba(241,184,184,.85) 1px,
+      rgba(241,184,184,.85) 2px,
+      transparent 2px,
+      transparent 3px
+    );
+  z-index: 5;
+}
+
+/* Keratinized layer (skin) */
+.tissue__keratin {
+  position: absolute;
+  left: 0; right: 0;
+  height: 10%;
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(254,243,199,.5) 0,
+      rgba(254,243,199,.5) 4px,
+      rgba(254,243,199,.3) 4px,
+      rgba(254,243,199,.3) 8px
+    );
+  border-bottom: 1px solid rgba(201,141,77,.4);
+  z-index: 4;
+}
+
+/* ---------- Diagnostic Notes ---------- */
+.notes {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 14px 16px;
+}
+.notes__title {
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.notes__list {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.notes__list li {
+  font-size: 13px;
+  color: var(--text);
+  padding: 8px 10px 8px 30px;
+  background: var(--bg-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  position: relative;
+}
+.notes__list li::before {
+  content: "▸";
+  position: absolute;
+  left: 10px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.notes__list li.dim { opacity: .55; border-left-color: var(--text-mute); }
+.notes__list li.dim::before { color: var(--text-mute); }
+.notes__placeholder {
+  color: var(--text-mute);
+  font-style: italic;
+  border-left-color: var(--text-mute) !important;
+}
+.notes__placeholder::before { content: "○"; color: var(--text-mute); }
+.notes__hint {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(247,183,56,.08);
+  border: 1px solid rgba(247,183,56,.25);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.notes__hint strong { color: var(--warn); }
+
+/* ============================================================
+   CONTROL PANEL
+   ============================================================ */
+.panel {
+  background: linear-gradient(180deg, var(--surface), var(--bg-2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: var(--shadow);
+}
+.control { display: flex; flex-direction: column; gap: 10px; }
+.control__label {
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.control__help {
+  font-size: 12px;
+  color: var(--text-mute);
+  line-height: 1.4;
+}
+
+/* ---------- Focus slider ---------- */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) var(--p, 0%), var(--surface-2) var(--p, 0%));
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px; height: 22px;
+  background: var(--text);
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,.5);
+  cursor: grab;
+}
+input[type="range"]::-webkit-slider-thumb:active { cursor: grabbing; }
+input[type="range"]::-moz-range-thumb {
+  width: 22px; height: 22px;
+  background: var(--text);
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  cursor: grab;
+}
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+#focusValue {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ---------- ID Grid ---------- */
+.id-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.id-btn {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all .14s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.id-btn small {
+  font-size: 10px;
+  color: var(--text-mute);
+  font-weight: 500;
+  letter-spacing: .3px;
+}
+.id-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.id-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.id-btn:disabled { opacity: .4; cursor: not-allowed; }
+.id-btn--locked {
+  background: var(--surface-2);
+  border-color: var(--accent-2);
+  cursor: default;
+}
+.id-btn--correct {
+  background: rgba(43,212,122,.15);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.id-btn--wrong {
+  background: rgba(255,90,106,.15);
+  border-color: var(--err);
+  color: var(--err);
+  animation: shake .4s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ---------- Body Map ---------- */
+.bodymap {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 600px) {
+  .bodymap { grid-template-columns: 1fr; }
+  .bodymap svg { max-width: 220px; margin: 0 auto; }
+}
+#bodySvg {
+  width: 100%;
+  height: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.body-outline {
+  stroke: var(--border-2);
+  stroke-width: 1.5;
+  fill: rgba(94,139,255,.05);
+}
+.hotspot {
+  fill: rgba(56,217,247,.15);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: fill .15s ease, transform .15s ease;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+.hotspot:hover { fill: rgba(56,217,247,.45); transform: scale(1.15); }
+.hotspot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hotspot--correct {
+  fill: rgba(43,212,122,.5) !important;
+  stroke: var(--ok);
+  animation: pop2 .4s ease;
+}
+.hotspot--wrong {
+  fill: rgba(255,90,106,.5) !important;
+  stroke: var(--err);
+  animation: shake .4s ease;
+}
+.hotspot--dim { opacity: .25; cursor: not-allowed; pointer-events: none; }
+@keyframes pop2 {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.hotspot__label {
+  fill: var(--text);
+  font-size: 8px;
+  font-family: var(--sans);
+  font-weight: 700;
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+.bodymap__legend {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  min-height: 100px;
+  font-size: 12px;
+}
+.bodymap__legend h3 {
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin-bottom: 6px;
+}
+.bodymap__legend p { color: var(--text-dim); margin-top: 4px; }
+
+/* ---------- Feedback ---------- */
+.feedback {
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  transition: all .2s ease;
+}
+.feedback::before {
+  content: "⌬";
+  color: var(--text-mute);
+  font-size: 16px;
+}
+.feedback.is-ok {
+  background: rgba(43,212,122,.1);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.feedback.is-ok::before { content: "✓"; color: var(--ok); }
+.feedback.is-err {
+  background: rgba(255,90,106,.1);
+  border-color: var(--err);
+  color: var(--err);
+}
+.feedback.is-err::before { content: "✕"; color: var(--err); }
+.feedback.is-warn {
+  background: rgba(247,183,56,.1);
+  border-color: var(--warn);
+  color: var(--warn);
+}
+.feedback.is-warn::before { content: "!"; color: var(--warn); }
+
+/* ---------- Footer ---------- */
+.footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--text-mute);
+  border-top: 1px solid var(--border);
+  margin-top: 18px;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to microscope</a>
+
+  <header class="topbar" role="banner">
+    <div class="brand">
+      <span class="brand__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"></circle>
+          <circle cx="12" cy="12" r="3.5"></circle>
+          <line x1="12" y1="3" x2="12" y2="6"></line>
+          <line x1="12" y1="18" x2="12" y2="21"></line>
+          <line x1="3" y1="12" x2="6" y2="12"></line>
+          <line x1="18" y1="12" x2="21" y2="12"></line>
+        </svg>
+      </span>
+      <div>
+        <h1>The Diagnostic Dashboard</h1>
+        <p class="tagline">Virtual Microscope · Epithelial Tissue Identification Lab</p>
+      </div>
+    </div>
+
+    <div class="hud" aria-live="polite">
+      <div class="hud__stat">
+        <span class="hud__label">Score</span>
+        <span class="hud__value" id="score">0</span>
+      </div>
+      <div class="hud__stat">
+        <span class="hud__label">Streak</span>
+        <span class="hud__value" id="streak">0</span>
+      </div>
+      <div class="hud__stat">
+        <span class="hud__label">Case #</span>
+        <span class="hud__value" id="caseNum">1</span>
+      </div>
+      <button id="newCaseBtn" class="btn btn--ghost" type="button">New Specimen</button>
+      <div id="apHud" style="margin-left:4px;"></div>
+      <button id="apExportBtn" class="btn btn--ghost" type="button" title="Download a results card">⤓ Results</button>
+      <a href="index.html" class="btn btn--ghost" style="text-decoration:none;">⌂ Hub</a>
+    </div>
+  </header>
+
+  <main id="main" class="layout">
+
+    <!-- ============== MICROSCOPE VIEWPORT ============== -->
+    <section class="scope" aria-label="Microscope viewport">
+      <div class="scope__eyepiece">
+        <div class="scope__lens">
+          <div class="scope__stage" id="stage" aria-label="Tissue specimen viewport">
+            <!-- Tissue is dynamically rendered here -->
+          </div>
+          <div class="scope__reticle" aria-hidden="true"></div>
+          <div class="scope__glare" aria-hidden="true"></div>
+        </div>
+        <div class="scope__ring" aria-hidden="true">
+          <span>10×</span><span>40×</span><span>100×</span>
+        </div>
+      </div>
+
+      <!-- Diagnostic notes panel -->
+      <aside class="notes" aria-label="Diagnostic observations">
+        <h2 class="notes__title">Diagnostic Observations</h2>
+        <ul id="notesList" class="notes__list">
+          <li class="notes__placeholder">Move the focus dial to bring the specimen into view…</li>
+        </ul>
+        <div class="notes__hint" id="hintBox">
+          <strong>Hint:</strong> Examine cell layers (1 vs many), cell shape (flat / cube / tall), and nuclei position.
+        </div>
+      </aside>
+    </section>
+
+    <!-- ============== CONTROL PANEL ============== -->
+    <section class="panel" aria-label="Control panel">
+
+      <!-- Focus / Magnification -->
+      <div class="control">
+        <label for="focusSlider" class="control__label">
+          <span>Focus &amp; Magnification</span>
+          <output id="focusValue" for="focusSlider">0%</output>
+        </label>
+        <input
+          type="range"
+          id="focusSlider"
+          min="0"
+          max="100"
+          value="0"
+          step="1"
+          aria-describedby="focusHelp"
+        />
+        <p id="focusHelp" class="control__help">
+          Slide right to bring the tissue into sharp focus. Below 40% the specimen is too blurry to diagnose.
+        </p>
+      </div>
+
+      <!-- Identification -->
+      <div class="control" id="idSection" aria-live="polite">
+        <h2 class="control__label">Step 1 · Identify Tissue Type</h2>
+        <div class="id-grid" id="idGrid" role="group" aria-label="Tissue type identification">
+          <!-- Buttons injected by JS -->
+        </div>
+      </div>
+
+      <!-- Body Map -->
+      <div class="control" id="bodySection">
+        <h2 class="control__label">Step 2 · Click the matching body location</h2>
+        <p class="control__help" id="bodyHelp">Identify the tissue first, then click the organ where it is found.</p>
+
+        <div class="bodymap">
+          <svg
+            id="bodySvg"
+            viewBox="0 0 220 460"
+            role="img"
+            aria-label="Clickable human body map. Click the organ matching the identified tissue."
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Body silhouette -->
+            <path
+              class="body-outline"
+              d="M110 18
+                 C 128 18 138 32 138 50
+                 C 138 64 132 74 128 80
+                 C 145 86 165 100 175 130
+                 L 180 200
+                 C 181 215 175 222 168 222
+                 L 162 224
+                 L 165 320
+                 L 168 410
+                 C 168 425 158 432 150 432
+                 L 138 432
+                 L 132 360
+                 L 120 360
+                 L 118 432
+                 L 102 432
+                 L 100 360
+                 L 88 360
+                 L 82 432
+                 L 70 432
+                 C 62 432 52 425 52 410
+                 L 55 320
+                 L 58 224
+                 L 52 222
+                 C 45 222 39 215 40 200
+                 L 45 130
+                 C 55 100 75 86 92 80
+                 C 88 74 82 64 82 50
+                 C 82 32 92 18 110 18 Z"
+              fill="none"
+            />
+
+            <!-- Head -->
+            <circle class="body-outline" cx="110" cy="44" r="22" fill="none" />
+
+            <!-- Hotspots will be injected by JS -->
+            <g id="hotspots"></g>
+          </svg>
+
+          <div class="bodymap__legend" id="bodyLegend" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built for CH05 — Epithelial Tissues. Press <kbd>N</kbd> for new specimen, <kbd>F</kbd> to toggle focus.</p>
+  </footer>
+
+  <script src="assets/aptools.js?v=1"></script>
+  <script>
+    APTools.init({ id: "tissue-microscope", title: "Virtual Microscope — Tissue Diagnostic", unit: "Unit 5" });
+    APTools.mountHUD("#apHud", "tissue-microscope");
+    document.getElementById("apExportBtn").addEventListener("click", function () {
+      APTools.exportSummary("tissue-microscope");
+    });
+  </script>
+
+  <script>
+/* ============================================================
+   The Diagnostic Dashboard — app.js
+   Virtual Microscope Simulator for Epithelial Tissue ID
+   Source: CH05.txt — Epithelial Tissues
+   ============================================================ */
+
+(() => {
+  'use strict';
+
+  /* ------------------------------------------------------------
+     1. TISSUE DATABASE (from CH05.txt)
+     ------------------------------------------------------------
+     Each tissue type carries:
+       - identification metadata (name, characteristics)
+       - body locations where it is found
+       - a generate() function that returns randomized HTML
+         for CSS-drawn cells (replayable each round)
+  ------------------------------------------------------------- */
+
+  const rand = (min, max) => Math.random() * (max - min) + min;
+  const randInt = (min, max) => Math.floor(rand(min, max + 1));
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // Build a single cell with optional nucleus + custom classes
+  function makeCell({ shape = 'cuboidal', width = 30, height = null, nucleus = true, extraClass = '', nucleusStyle = '' } = {}) {
+    const h = height ? `height:${height}px;` : '';
+    const nuc = nucleus ? `<span class="cell__nucleus" style="${nucleusStyle}"></span>` : '';
+    return `<div class="cell cell--${shape} ${extraClass}" style="width:${width}px;${h}">${nuc}</div>`;
+  }
+
+  // Build a row of cells
+  function makeRow({ shape, count, width, height, extraClass = '', nucleusStyle = '', varyWidth = 0 }) {
+    let cells = '';
+    for (let i = 0; i < count; i++) {
+      const w = varyWidth ? width + rand(-varyWidth, varyWidth) : width;
+      cells += makeCell({ shape, width: Math.max(8, w), height, extraClass, nucleusStyle });
+    }
+    return `<div class="tissue__layer">${cells}</div>`;
+  }
+
+  const TISSUE_TYPES = [
+
+    /* ---------- SIMPLE SQUAMOUS ---------- */
+    {
+      id: 'simple_squamous',
+      name: 'Simple Squamous',
+      fullName: 'Simple Squamous Epithelium',
+      tag: 'Diffusion / Filtration',
+      characteristics: {
+        layers: 'Single layer (simple)',
+        shape: 'Flattened (squamous)',
+        nuclei: 'Small, flattened, central',
+        modifications: 'None',
+        function: 'Diffusion, filtration, reduces friction'
+      },
+      locations: ['lung_alveoli', 'capillaries'],
+      generate() {
+        const count = randInt(7, 10);
+        const width = randInt(34, 42);
+        let cells = '';
+        for (let i = 0; i < count; i++) {
+          const w = width + rand(-4, 4);
+          const op = (0.85 + Math.random() * 0.15).toFixed(2);
+          cells += `<div class="cell cell--squamous" style="width:${w}px;opacity:${op}"><span class="cell__nucleus"></span></div>`;
+        }
+        return `
+          <div class="tissue" data-tissue="simple_squamous">
+            <div class="tissue__lumen"></div>
+            <div class="tissue__layer" style="top:22%;">${cells}</div>
+            <div class="tissue__membrane" style="bottom:72%;"></div>
+          </div>`;
+      }
+    },
+
+    /* ---------- SIMPLE CUBOIDAL ---------- */
+    {
+      id: 'simple_cuboidal',
+      name: 'Simple Cuboidal',
+      fullName: 'Simple Cuboidal Epithelium',
+      tag: 'Secretion / Absorption',
+      characteristics: {
+        layers: 'Single layer (simple)',
+        shape: 'Square (cuboidal)',
+        nuclei: 'Large, centrally located',
+        modifications: 'None',
+        function: 'Secretion and absorption'
+      },
+      locations: ['kidney', 'thyroid', 'ovary'],
+      generate() {
+        const count = randInt(6, 8);
+        const size = randInt(34, 42);
+        let cells = '';
+        for (let i = 0; i < count; i++) {
+          const s = size + rand(-3, 3);
+          cells += `<div class="cell cell--cuboidal" style="width:${s}px;height:${s}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        return `
+          <div class="tissue" data-tissue="simple_cuboidal">
+            <div class="tissue__lumen"></div>
+            <div class="tissue__layer" style="top:30%;">${cells}</div>
+            <div class="tissue__membrane" style="bottom:52%;"></div>
+          </div>`;
+      }
+    },
+
+    /* ---------- SIMPLE COLUMNAR ---------- */
+    {
+      id: 'simple_columnar',
+      name: 'Simple Columnar',
+      fullName: 'Simple Columnar Epithelium',
+      tag: 'Absorption / Secretion',
+      characteristics: {
+        layers: 'Single layer (simple)',
+        shape: 'Elongated (columnar)',
+        nuclei: 'Basally located (near basement membrane)',
+        modifications: 'Microvilli (brush border), goblet cells',
+        function: 'Absorption and secretion'
+      },
+      locations: ['small_intestine', 'uterus'],
+      generate() {
+        const count = randInt(6, 8);
+        const width = randInt(26, 32);
+        let cells = '';
+        for (let i = 0; i < count; i++) {
+          const w = width + rand(-2, 2);
+          const isGoblet = Math.random() < 0.18;
+          const cls = isGoblet ? 'cell--goblet' : 'cell--columnar';
+          cells += `<div class="cell ${cls}" style="width:${w}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        return `
+          <div class="tissue" data-tissue="simple_columnar">
+            <div class="tissue__lumen"></div>
+            <div class="tissue__microvilli" style="top:24%;"></div>
+            <div class="tissue__layer" style="top:26%;">${cells}</div>
+            <div class="tissue__membrane" style="bottom:24%;"></div>
+          </div>`;
+      }
+    },
+
+    /* ---------- PSEUDOSTRATIFIED COLUMNAR ---------- */
+    {
+      id: 'pseudostratified_columnar',
+      name: 'Pseudostratified Columnar',
+      fullName: 'Pseudostratified Columnar Epithelium',
+      tag: 'Protection / Secretion',
+      characteristics: {
+        layers: 'Single layer (looks stratified but is not)',
+        shape: 'Elongated (columnar)',
+        nuclei: 'Scattered at different heights — all cells touch basement membrane',
+        modifications: 'Cilia, goblet cells',
+        function: 'Secretion; cilia move mucus'
+      },
+      locations: ['trachea'],
+      generate() {
+        const count = randInt(7, 9);
+        const width = randInt(24, 30);
+        let cells = '';
+        for (let i = 0; i < count; i++) {
+          const w = width + rand(-2, 2);
+          // Scattered nuclei at different vertical positions
+          const nucTop = pick([8, 18, 32, 48, 62, 75]);
+          const isGoblet = Math.random() < 0.15;
+          const cls = isGoblet ? 'cell--goblet cell--pseudo' : 'cell--columnar cell--pseudo';
+          const nucStyle = `top:${nucTop}%;`;
+          cells += `<div class="cell ${cls}" style="width:${w}px;"><span class="cell__nucleus" style="${nucStyle}"></span></div>`;
+        }
+        return `
+          <div class="tissue" data-tissue="pseudostratified_columnar">
+            <div class="tissue__lumen"></div>
+            <div class="tissue__cilia" style="top:24%;"></div>
+            <div class="tissue__layer" style="top:26%;">${cells}</div>
+            <div class="tissue__membrane" style="bottom:14%;"></div>
+          </div>`;
+      }
+    },
+
+    /* ---------- STRATIFIED SQUAMOUS ---------- */
+    {
+      id: 'stratified_squamous',
+      name: 'Stratified Squamous',
+      fullName: 'Stratified Squamous Epithelium',
+      tag: 'Protection',
+      characteristics: {
+        layers: 'Many layers (stratified)',
+        shape: 'Flattened (squamous) at apical surface',
+        nuclei: 'Varied — flat at top, round at basal layers',
+        modifications: 'May be keratinized (skin) or non-keratinized (mouth, throat)',
+        function: 'Protection against abrasion'
+      },
+      locations: ['skin', 'mouth'],
+      generate() {
+        const count = randInt(7, 9);
+        const isKeratinized = Math.random() < 0.5;
+        // basal layer (cuboidal-like)
+        let basalRow = '';
+        for (let i = 0; i < count; i++) {
+          basalRow += `<div class="cell cell--basal" style="width:${randInt(26,32)}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        // middle layers (polygonal — use cuboidal)
+        let midRow1 = '', midRow2 = '';
+        for (let i = 0; i < count - 1; i++) {
+          midRow1 += `<div class="cell cell--cuboidal" style="width:${randInt(28,34)}px;height:${randInt(20,26)}px;"><span class="cell__nucleus"></span></div>`;
+          midRow2 += `<div class="cell cell--cuboidal" style="width:${randInt(28,34)}px;height:${randInt(16,22)}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        // apical layer (flat)
+        let topRow = '';
+        for (let i = 0; i < count; i++) {
+          topRow += `<div class="cell cell--flat-top" style="width:${randInt(30,38)}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        const keratin = isKeratinized ? `<div class="tissue__keratin" style="top:18%;"></div>` : '';
+        return `
+          <div class="tissue" data-tissue="stratified_squamous">
+            ${keratin}
+            <div class="tissue__layer" style="top:${isKeratinized ? 30 : 24}%;">${topRow}</div>
+            <div class="tissue__layer" style="top:46%;">${midRow2}</div>
+            <div class="tissue__layer" style="top:60%;">${midRow1}</div>
+            <div class="tissue__layer" style="top:74%;">${basalRow}</div>
+            <div class="tissue__membrane" style="bottom:10%;"></div>
+          </div>`;
+      }
+    },
+
+    /* ---------- STRATIFIED CUBOIDAL ---------- */
+    {
+      id: 'stratified_cuboidal',
+      name: 'Stratified Cuboidal',
+      fullName: 'Stratified Cuboidal Epithelium',
+      tag: 'Protection / Secretion',
+      characteristics: {
+        layers: '2–3 layers (stratified)',
+        shape: 'Cube-shaped (cuboidal)',
+        nuclei: 'Central, in each layer',
+        modifications: 'None',
+        function: 'Protection; secretion (ducts of glands)'
+      },
+      locations: ['sweat_gland', 'salivary', 'mammary', 'pancreas'],
+      generate() {
+        const count = randInt(6, 8);
+        const size = randInt(28, 34);
+        const layers = randInt(2, 3);
+        let layerHtml = '';
+        const positions = layers === 2 ? [38, 56] : [32, 50, 68];
+        positions.forEach(top => {
+          let row = '';
+          for (let i = 0; i < count; i++) {
+            const s = size + rand(-2, 2);
+            row += `<div class="cell cell--cuboidal" style="width:${s}px;height:${s}px;"><span class="cell__nucleus"></span></div>`;
+          }
+          layerHtml += `<div class="tissue__layer" style="top:${top}%;">${row}</div>`;
+        });
+        return `
+          <div class="tissue" data-tissue="stratified_cuboidal">
+            <div class="tissue__lumen"></div>
+            ${layerHtml}
+            <div class="tissue__membrane" style="bottom:18%;"></div>
+          </div>`;
+      }
+    },
+
+    /* ---------- STRATIFIED COLUMNAR ---------- */
+    {
+      id: 'stratified_columnar',
+      name: 'Stratified Columnar',
+      fullName: 'Stratified Columnar Epithelium',
+      tag: 'Protection / Secretion',
+      characteristics: {
+        layers: '2–3 layers (stratified)',
+        shape: 'Elongated (columnar) at apical surface',
+        nuclei: 'Basal in top layer; varied below',
+        modifications: 'Rarely goblet cells',
+        function: 'Protection and secretion'
+      },
+      locations: ['pharynx', 'urethra', 'vas_deferens'],
+      generate() {
+        const count = randInt(6, 8);
+        const width = randInt(24, 30);
+        // top — columnar
+        let topRow = '';
+        for (let i = 0; i < count; i++) {
+          const w = width + rand(-2, 2);
+          topRow += `<div class="cell cell--columnar" style="width:${w}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        // bottom — cuboidal basal
+        let basalRow = '';
+        for (let i = 0; i < count; i++) {
+          basalRow += `<div class="cell cell--basal" style="width:${randInt(28,34)}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        return `
+          <div class="tissue" data-tissue="stratified_columnar">
+            <div class="tissue__lumen"></div>
+            <div class="tissue__layer" style="top:30%;">${topRow}</div>
+            <div class="tissue__layer" style="top:62%;">${basalRow}</div>
+            <div class="tissue__membrane" style="bottom:16%;"></div>
+          </div>`;
+      }
+    },
+
+    /* ---------- TRANSITIONAL ---------- */
+    {
+      id: 'transitional',
+      name: 'Transitional',
+      fullName: 'Transitional Epithelium',
+      tag: 'Distensibility',
+      characteristics: {
+        layers: 'Multiple layers (stratified)',
+        shape: 'Dome-shaped (rounded) apical cells',
+        nuclei: 'Round; apical cells binucleate',
+        modifications: 'Cells change shape in response to tension',
+        function: 'Stretching — allows organ to distend'
+      },
+      locations: ['bladder', 'ureter'],
+      generate() {
+        const count = randInt(7, 9);
+        // apical — dome cells (rounded)
+        let topRow = '';
+        for (let i = 0; i < count; i++) {
+          const w = randInt(32, 40);
+          // Some apical cells are binucleate
+          const binuc = Math.random() < 0.3;
+          const nuc = binuc
+            ? `<span class="cell__nucleus" style="width:7px;height:7px;position:absolute;left:25%;top:30%;"></span><span class="cell__nucleus" style="width:7px;height:7px;position:absolute;left:60%;top:30%;"></span>`
+            : `<span class="cell__nucleus"></span>`;
+          topRow += `<div class="cell cell--dome" style="width:${w}px;">${nuc}</div>`;
+        }
+        // middle layers
+        let midRow = '';
+        for (let i = 0; i < count - 1; i++) {
+          midRow += `<div class="cell cell--cuboidal" style="width:${randInt(28,34)}px;height:${randInt(20,26)}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        // basal
+        let basalRow = '';
+        for (let i = 0; i < count; i++) {
+          basalRow += `<div class="cell cell--basal" style="width:${randInt(26,32)}px;"><span class="cell__nucleus"></span></div>`;
+        }
+        return `
+          <div class="tissue" data-tissue="transitional">
+            <div class="tissue__lumen"></div>
+            <div class="tissue__layer" style="top:24%;">${topRow}</div>
+            <div class="tissue__layer" style="top:48%;">${midRow}</div>
+            <div class="tissue__layer" style="top:70%;">${basalRow}</div>
+            <div class="tissue__membrane" style="bottom:10%;"></div>
+          </div>`;
+      }
+    }
+  ];
+
+  /* ------------------------------------------------------------
+     2. BODY MAP HOTSPOTS
+     ------------------------------------------------------------ */
+  const HOTSPOTS = [
+    // Head/neck
+    { id: 'mouth',        cx: 110, cy: 56,  r: 9, label: 'Mouth',     tissue: 'stratified_squamous' },
+    { id: 'pharynx',      cx: 110, cy: 78,  r: 7, label: 'Pharynx',   tissue: 'stratified_columnar' },
+    { id: 'salivary',     cx: 132, cy: 78,  r: 7, label: 'Salivary',  tissue: 'stratified_cuboidal' },
+    { id: 'thyroid',      cx: 90,  cy: 86,  r: 7, label: 'Thyroid',   tissue: 'simple_cuboidal' },
+    { id: 'trachea',      cx: 110, cy: 100, r: 7, label: 'Trachea',   tissue: 'pseudostratified_columnar' },
+    // Thorax
+    { id: 'lung_alveoli', cx: 78,  cy: 140, r: 9, label: 'Alveoli',   tissue: 'simple_squamous' },
+    { id: 'capillaries',  cx: 110, cy: 168, r: 7, label: 'Capillary', tissue: 'simple_squamous' },
+    { id: 'mammary',      cx: 132, cy: 200, r: 7, label: 'Mammary',   tissue: 'stratified_cuboidal' },
+    { id: 'skin',         cx: 170, cy: 230, r: 8, label: 'Skin',      tissue: 'stratified_squamous' },
+    { id: 'sweat_gland',  cx: 180, cy: 250, r: 7, label: 'Sweat',     tissue: 'stratified_cuboidal' },
+    // Abdomen
+    { id: 'ovary',        cx: 92,  cy: 230, r: 6, label: 'Ovary',     tissue: 'simple_cuboidal' },
+    { id: 'kidney',       cx: 75,  cy: 252, r: 8, label: 'Kidney',    tissue: 'simple_cuboidal' },
+    { id: 'pancreas',     cx: 95,  cy: 268, r: 7, label: 'Pancreas',  tissue: 'stratified_cuboidal' },
+    { id: 'small_intestine', cx: 110, cy: 280, r: 8, label: 'Sm.Int', tissue: 'simple_columnar' },
+    // Pelvis
+    { id: 'uterus',       cx: 110, cy: 300, r: 7, label: 'Uterus',    tissue: 'simple_columnar' },
+    { id: 'ureter',       cx: 90,  cy: 308, r: 6, label: 'Ureter',    tissue: 'transitional' },
+    { id: 'bladder',      cx: 110, cy: 322, r: 8, label: 'Bladder',   tissue: 'transitional' },
+    // Lower
+    { id: 'vas_deferens', cx: 95,  cy: 350, r: 6, label: 'Vas',       tissue: 'stratified_columnar' },
+    { id: 'urethra',      cx: 110, cy: 368, r: 7, label: 'Urethra',   tissue: 'stratified_columnar' }
+  ];
+
+  /* ------------------------------------------------------------
+     3. STATE
+     ------------------------------------------------------------ */
+  const state = {
+    score: 0,
+    streak: 0,
+    caseNum: 1,
+    currentTissue: null,   // tissue type object
+    identified: false,     // has user correctly identified tissue?
+    bodyAnswered: false,   // has user clicked body map?
+    focusLevel: 0
+  };
+
+  /* ------------------------------------------------------------
+     4. DOM REFERENCES
+     ------------------------------------------------------------ */
+  const el = {
+    stage:        document.getElementById('stage'),
+    score:        document.getElementById('score'),
+    streak:       document.getElementById('streak'),
+    caseNum:      document.getElementById('caseNum'),
+    newCaseBtn:   document.getElementById('newCaseBtn'),
+    focusSlider:  document.getElementById('focusSlider'),
+    focusValue:   document.getElementById('focusValue'),
+    idGrid:       document.getElementById('idGrid'),
+    notesList:    document.getElementById('notesList'),
+    hintBox:      document.getElementById('hintBox'),
+    hotspots:     document.getElementById('hotspots'),
+    bodyLegend:   document.getElementById('bodyLegend'),
+    bodyHelp:     document.getElementById('bodyHelp'),
+    feedback:     document.getElementById('feedback')
+  };
+
+  /* ------------------------------------------------------------
+     5. INITIALIZATION
+     ------------------------------------------------------------ */
+  function init() {
+    buildIdButtons();
+    buildBodyMap();
+    bindEvents();
+    newCase();
+  }
+
+  function buildIdButtons() {
+    el.idGrid.innerHTML = '';
+    TISSUE_TYPES.forEach(t => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'id-btn';
+      btn.dataset.tissueId = t.id;
+      btn.disabled = true;
+      btn.innerHTML = `<span>${t.name}</span><small>${t.tag}</small>`;
+      btn.addEventListener('click', () => onIdentify(t.id, btn));
+      el.idGrid.appendChild(btn);
+    });
+  }
+
+  function buildBodyMap() {
+    el.hotspots.innerHTML = '';
+    HOTSPOTS.forEach(h => {
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('class', 'hotspot');
+      c.setAttribute('cx', h.cx);
+      c.setAttribute('cy', h.cy);
+      c.setAttribute('r', h.r);
+      c.setAttribute('tabindex', '-1');
+      c.setAttribute('role', 'button');
+      c.setAttribute('aria-label', h.label);
+      c.dataset.hotspotId = h.id;
+      c.dataset.tissueId = h.tissue;
+      c.addEventListener('click', () => onBodyClick(h, c));
+      c.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click(); }
+      });
+      el.hotspots.appendChild(c);
+
+      // Label
+      const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      lbl.setAttribute('class', 'hotspot__label');
+      lbl.setAttribute('x', h.cx);
+      lbl.setAttribute('y', h.cy + 2);
+      lbl.textContent = h.label;
+      el.hotspots.appendChild(lbl);
+    });
+  }
+
+  function bindEvents() {
+    el.focusSlider.addEventListener('input', onFocusChange);
+    el.newCaseBtn.addEventListener('click', newCase);
+    document.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+      if (e.key === 'n' || e.key === 'N') newCase();
+      if (e.key === 'f' || e.key === 'F') toggleFocus();
+    });
+  }
+
+  /* ------------------------------------------------------------
+     6. NEW CASE / TISSUE GENERATION
+     ------------------------------------------------------------ */
+  function newCase() {
+    // pick a random tissue — ensures replayability
+    const tissue = TISSUE_TYPES[randInt(0, TISSUE_TYPES.length - 1)];
+    state.currentTissue = tissue;
+    state.identified = false;
+    state.bodyAnswered = false;
+    state.focusLevel = 0;
+
+    // Reset focus slider
+    el.focusSlider.value = 0;
+    el.focusSlider.style.setProperty('--p', '0%');
+    el.focusValue.textContent = '0%';
+    el.stage.style.setProperty('--blur', '18px');
+
+    // Render tissue
+    el.stage.innerHTML = tissue.generate();
+
+    // Reset ID buttons
+    [...el.idGrid.children].forEach(b => {
+      b.disabled = true;
+      b.classList.remove('id-btn--locked', 'id-btn--correct', 'id-btn--wrong');
+    });
+
+    // Reset body map
+    [...el.hotspots.querySelectorAll('.hotspot')].forEach(c => {
+      c.classList.remove('hotspot--correct', 'hotspot--wrong', 'hotspot--dim');
+      c.setAttribute('tabindex', '-1');
+    });
+    el.bodyLegend.innerHTML = '<h3>Body Map</h3><p>Identify the tissue first, then click the matching organ.</p>';
+    el.bodyHelp.textContent = 'Identify the tissue first, then click the organ where it is found.';
+
+    // Reset notes
+    renderNotes(true);
+
+    // Reset feedback
+    setFeedback('New specimen loaded. Slide the focus dial to examine.', 'info');
+
+    // Update HUD
+    el.caseNum.textContent = state.caseNum;
+  }
+
+  /* ------------------------------------------------------------
+     7. FOCUS SLIDER
+     ------------------------------------------------------------ */
+  function onFocusChange(e) {
+    const v = +e.target.value;
+    state.focusLevel = v;
+    el.focusSlider.style.setProperty('--p', v + '%');
+    el.focusValue.textContent = v + '%';
+
+    // Map slider 0-100 to blur 18px -> 0px (non-linear for nicer feel)
+    const blur = (1 - v / 100) ** 1.6 * 18;
+    el.stage.style.setProperty('--blur', blur.toFixed(2) + 'px');
+
+    // Enable ID buttons only when reasonably focused
+    const enable = v >= 40;
+    [...el.idGrid.children].forEach(b => {
+      if (!b.classList.contains('id-btn--locked') && !b.classList.contains('id-btn--correct')) {
+        b.disabled = !enable;
+      }
+    });
+
+    // Update notes — more detail as focus increases
+    renderNotes(false);
+  }
+
+  function toggleFocus() {
+    const target = state.focusLevel >= 80 ? 0 : 100;
+    el.focusSlider.value = target;
+    el.focusSlider.dispatchEvent(new Event('input'));
+  }
+
+  /* ------------------------------------------------------------
+     8. DIAGNOSTIC NOTES — dynamically revealed based on focus
+     ------------------------------------------------------------ */
+  function renderNotes(reset) {
+    const t = state.currentTissue;
+    if (!t) return;
+
+    const lvl = state.focusLevel;
+    // Determine which characteristics are observable at current focus
+    const obs = [];
+    if (lvl < 10) {
+      el.notesList.innerHTML = '<li class="notes__placeholder">Specimen is heavily blurred. Increase focus to begin observation.</li>';
+      return;
+    }
+    if (lvl < 30) {
+      obs.push({ k: 'Cellularity', v: 'Tightly packed sheet of cells (epithelial)' });
+      obs.push({ k: 'Polarity', v: 'Distinct apical and basal surfaces visible', dim: true });
+    } else if (lvl < 60) {
+      obs.push({ k: 'Cellularity', v: 'Tightly packed sheet of cells (epithelial)' });
+      obs.push({ k: 'Layers', v: t.characteristics.layers });
+      obs.push({ k: 'Cell shape', v: t.characteristics.shape, dim: lvl < 50 });
+    } else {
+      obs.push({ k: 'Cellularity', v: 'Tightly packed sheet of cells (epithelial)' });
+      obs.push({ k: 'Layers', v: t.characteristics.layers });
+      obs.push({ k: 'Cell shape', v: t.characteristics.shape });
+      obs.push({ k: 'Nuclei', v: t.characteristics.nuclei });
+      obs.push({ k: 'Surface mods', v: t.characteristics.modifications });
+      obs.push({ k: 'Function', v: t.characteristics.function, dim: true });
+    }
+
+    el.notesList.innerHTML = obs.map(o =>
+      `<li class="${o.dim ? 'dim' : ''}"><strong>${o.k}:</strong> ${o.v}</li>`
+    ).join('');
+  }
+
+  /* ------------------------------------------------------------
+     9. IDENTIFICATION (Step 1)
+     ------------------------------------------------------------ */
+  function onIdentify(tissueId, btn) {
+    if (state.identified) return;
+
+    const correct = tissueId === state.currentTissue.id;
+    if (correct) {
+      btn.classList.add('id-btn--correct', 'id-btn--locked');
+      state.identified = true;
+      // Disable + dim other buttons
+      [...el.idGrid.children].forEach(b => {
+        if (b !== btn) {
+          b.disabled = true;
+          b.style.opacity = '.35';
+        }
+      });
+      // Activate body map
+      activateBodyMap();
+      APTools.recordAnswer('tissue-microscope', true, { xp: 10, streak: state.streak, questionId: 'id-' + state.currentTissue.id });
+      const t = state.currentTissue;
+      setFeedback(`✓ Identified: ${t.fullName}. Now click the matching body location on the map.`, 'ok');
+      el.bodyHelp.textContent = `Where in the body is ${t.fullName} found? Click the matching organ.`;
+      el.bodyLegend.innerHTML = `<h3>Step 2</h3><p>Locate <strong>${t.fullName}</strong> on the body map.</p>`;
+    } else {
+      btn.classList.add('id-btn--wrong');
+      state.streak = 0;
+      el.streak.textContent = state.streak;
+      APTools.recordAnswer('tissue-microscope', false, { questionId: 'id-' + state.currentTissue.id });
+      const wrong = TISSUE_TYPES.find(x => x.id === tissueId);
+      setFeedback(`✕ Not quite — "${wrong.name}" does not match this specimen. Re-examine the cell layers and shape.`, 'err');
+      setTimeout(() => btn.classList.remove('id-btn--wrong'), 600);
+    }
+  }
+
+  /* ------------------------------------------------------------
+     10. BODY MAP (Step 2)
+     ------------------------------------------------------------ */
+  function activateBodyMap() {
+    [...el.hotspots.querySelectorAll('.hotspot')].forEach(c => {
+      c.setAttribute('tabindex', '0');
+    });
+  }
+
+  function onBodyClick(hotspot, circle) {
+    if (!state.identified || state.bodyAnswered) return;
+
+    const correct = hotspot.tissue === state.currentTissue.id;
+    if (correct) {
+      circle.classList.add('hotspot--correct');
+      state.bodyAnswered = true;
+      state.score += 1;
+      state.streak += 1;
+      state.caseNum += 1;
+      APTools.recordAnswer('tissue-microscope', true, { xp: 10, streak: state.streak, questionId: 'loc-' + state.currentTissue.id });
+      flashHud(el.score);
+      flashHud(el.streak);
+      el.score.textContent = state.score;
+      el.streak.textContent = state.streak;
+
+      // Dim all other hotspots
+      [...el.hotspots.querySelectorAll('.hotspot')].forEach(c => {
+        if (c !== circle) c.classList.add('hotspot--dim');
+      });
+
+      const t = state.currentTissue;
+      setFeedback(`✓ Correct! ${t.fullName} is found in the ${hotspot.label.toLowerCase()}. Loading next specimen…`, 'ok');
+      el.bodyLegend.innerHTML = `<h3>✓ Correct</h3><p><strong>${t.fullName}</strong><br>Location: ${hotspot.label}<br>Function: ${t.characteristics.function}</p>`;
+
+      // Auto-advance
+      setTimeout(newCase, 2400);
+    } else {
+      circle.classList.add('hotspot--wrong');
+      state.streak = 0;
+      el.streak.textContent = state.streak;
+      APTools.recordAnswer('tissue-microscope', false, { questionId: 'loc-' + state.currentTissue.id });
+      const correctTissue = TISSUE_TYPES.find(x => x.id === state.currentTissue.id);
+      const wrongTissue = TISSUE_TYPES.find(x => x.id === hotspot.tissue);
+      setFeedback(`✕ The ${hotspot.label} is lined by ${wrongTissue.name}, not ${correctTissue.name}. Try another location.`, 'err');
+      setTimeout(() => circle.classList.remove('hotspot--wrong'), 600);
+    }
+  }
+
+  /* ------------------------------------------------------------
+     11. FEEDBACK + HUD HELPERS
+     ------------------------------------------------------------ */
+  function setFeedback(msg, kind) {
+    el.feedback.textContent = msg;
+    el.feedback.className = 'feedback' + (kind ? ` is-${kind}` : '');
+  }
+
+  function flashHud(node) {
+    node.classList.remove('flash');
+    void node.offsetWidth; // reflow
+    node.classList.add('flash');
+  }
+
+  /* ------------------------------------------------------------
+     12. BOOT
+     ------------------------------------------------------------ */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tonicity & Osmosis — Interactive Dashboard</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<style>
+  :root{
+    --bg:#eef2f7;
+    --card:#ffffff;
+    --ink:#1e293b;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --blue:#2563eb;
+    --blue-soft:#dbeafe;
+    --water:#bfe0f5;
+    --water-deep:#7fbfe6;
+    --rbc:#C0392B;
+    --rbc-dark:#96261a;
+    --iso:#16a34a;
+    --hypo:#2563eb;
+    --hyper:#d97706;
+    --danger:#dc2626;
+    --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.08);
+    --radius:16px;
+    --font:"Segoe UI",Roboto,system-ui,-apple-system,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+    line-height:1.45;-webkit-font-smoothing:antialiased;
+  }
+  header.app{
+    padding:20px 28px;background:linear-gradient(120deg,#1e3a8a,#2563eb);
+    color:#fff;box-shadow:var(--shadow);
+  }
+  header.app h1{margin:0;font-size:1.4rem;letter-spacing:.2px}
+  header.app p{margin:4px 0 0;opacity:.85;font-size:.85rem;max-width:70ch}
+  .wrap{
+    display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;
+    padding:20px;max-width:1280px;margin:0 auto;align-items:start;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px;
+  }
+  .card h2{margin:0 0 12px;font-size:.95rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+  /* ---- Stage ---- */
+  .stage-svg{width:100%;height:auto;display:block;border-radius:12px;background:#f8fafc}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+  .ctrl-group{display:flex;flex-direction:column;gap:4px}
+  .ctrl-group label{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  select,input[type=range]{font-family:inherit}
+  select{
+    padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;
+    color:var(--ink);font-size:.85rem;cursor:pointer;min-width:120px;
+  }
+  .slider-row{flex:1 1 260px;min-width:240px}
+  .slider-row .val{font-variant-numeric:tabular-nums;font-weight:700;color:var(--blue)}
+  input[type=range]{
+    width:100%;-webkit-appearance:none;height:8px;border-radius:8px;
+    background:linear-gradient(90deg,#c7e0f4,#93c5fd,#fbbf24);outline:none;margin-top:8px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+    background:#fff;border:3px solid var(--blue);cursor:pointer;box-shadow:var(--shadow);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--blue);cursor:pointer;
+  }
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  button.btn{
+    padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;
+    color:var(--ink);font-weight:600;font-size:.82rem;cursor:pointer;transition:.15s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  button.btn:hover{border-color:var(--blue);color:var(--blue)}
+  button.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+  button.btn.primary:hover{background:#1d4ed8;color:#fff}
+  button.btn.toggle.on{background:#fef3c7;border-color:#fbbf24;color:#92400e}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{border:none;background:#fff;padding:8px 12px;font-weight:600;font-size:.82rem;cursor:pointer;color:var(--muted)}
+  .seg button.active{background:var(--blue);color:#fff}
+  /* ---- Reference cells ---- */
+  .refs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+  .ref{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:#f8fafc}
+  .ref svg{width:100%;height:78px}
+  .ref .tag{font-size:.72rem;font-weight:700;margin-top:4px}
+  .ref .sub{font-size:.66rem;color:var(--muted)}
+  /* ---- Sidebar data panel ---- */
+  .panel .row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);gap:10px}
+  .panel .row:last-child{border-bottom:none}
+  .panel .k{font-size:.8rem;color:var(--muted);font-weight:600}
+  .panel .v{font-size:.9rem;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+  .pill{padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:800;letter-spacing:.4px}
+  .pill.iso{background:#dcfce7;color:#166534}
+  .pill.hypo{background:#dbeafe;color:#1e40af}
+  .pill.hyper{background:#fef3c7;color:#92400e}
+  .risk{display:flex;align-items:center;gap:8px}
+  .dot{width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+  .dot.safe{background:var(--iso)}.dot.warn{background:var(--hyper)}.dot.high{background:var(--danger)}
+  /* ---- Gauge ---- */
+  .gauge{margin-top:6px}
+  .gauge .lbl{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin:10px 0 3px}
+  .gbar{height:16px;border-radius:8px;background:#eef2f7;position:relative;overflow:hidden}
+  .gbar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:8px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+  .gbar .fill.beaker{background:linear-gradient(90deg,#60a5fa,#2563eb)}
+  .gbar .fill.icf{background:linear-gradient(90deg,#f59e0b,#d97706)}
+  .gbar .mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:#334155;left:50%}
+  .gbar .mark::after{content:"300";position:absolute;top:-15px;left:-9px;font-size:.6rem;color:#334155}
+  /* ---- ELI5 ---- */
+  .eli5{margin-top:16px;background:linear-gradient(120deg,#fff7ed,#eff6ff);border:1px dashed #fbbf24;border-radius:12px;padding:14px;display:none}
+  .eli5.show{display:block}
+  .eli5 h3{margin:0 0 6px;font-size:.9rem;color:#92400e}
+  .eli5 p{margin:6px 0;font-size:.85rem}
+  .eli5 .em{font-weight:700}
+  .note{font-size:.72rem;color:var(--muted);margin-top:10px;line-height:1.5}
+  .flash{animation:flash .6s ease}
+  @keyframes flash{0%{background:#fff7ed}100%{background:#f8fafc}}
+  /* water flow arrows */
+  .wa line{stroke:var(--water-deep);stroke-width:3;stroke-linecap:round}
+  .wa polygon{fill:var(--water-deep)}
+  .flow-in{animation:flowIn 1.15s linear infinite}
+  .flow-out{animation:flowOut 1.15s linear infinite}
+  @keyframes flowIn{0%{transform:translateX(7px);opacity:.15}100%{transform:translateX(-7px);opacity:1}}
+  @keyframes flowOut{0%{transform:translateX(-7px);opacity:.15}100%{transform:translateX(7px);opacity:1}}
+  .lysis-txt{font-size:13px;font-weight:800;fill:var(--danger)}
+  @media(max-width:900px){
+    .wrap{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header class="app">
+  <h1>💧 Tonicity &amp; Osmosis — Water Movement Predictor</h1>
+  <p>Drag the solution concentration to predict how water crosses a semipermeable membrane and how the cell responds. Tonicity is set by <strong>non-permeant</strong> solutes only.</p>
+</header>
+
+<div class="wrap">
+  <!-- ================= MAIN STAGE ================= -->
+  <main class="card">
+    <h2>Beaker &amp; Cell Simulation</h2>
+    <svg class="stage-svg" viewBox="0 0 520 360" id="stage" role="img" aria-label="Beaker containing a cell">
+      <!-- beaker glass -->
+      <defs>
+        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#d6ecfa"/>
+          <stop offset="1" stop-color="#a9d5f0"/>
+        </linearGradient>
+        <!-- spherical (swollen) RBC: offset specular highlight -->
+        <radialGradient id="rbcSphere" cx="38%" cy="35%" r="75%">
+          <stop offset="0" stop-color="#e88478"/>
+          <stop offset="45%" stop-color="#cf4a3c"/>
+          <stop offset="80%" stop-color="#C0392B"/>
+          <stop offset="100%" stop-color="#96261a"/>
+        </radialGradient>
+        <!-- biconcave disc: pale thin centre, thick dark rim (classic face-on RBC) -->
+        <radialGradient id="rbcBiconcave" cx="50%" cy="50%" r="55%">
+          <stop offset="0"   stop-color="#e79385"/>
+          <stop offset="42%" stop-color="#d55a4c"/>
+          <stop offset="70%" stop-color="#C0392B"/>
+          <stop offset="100%" stop-color="#96261a"/>
+        </radialGradient>
+        <!-- concave central depression shadow -->
+        <radialGradient id="dimpleGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0"   stop-color="#8a2418" stop-opacity="0.55"/>
+          <stop offset="60%" stop-color="#8a2418" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#8a2418" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="plantGrad" cx="40%" cy="35%" r="80%">
+          <stop offset="0" stop-color="#9cc96a"/>
+          <stop offset="70%" stop-color="#7fae54"/>
+          <stop offset="100%" stop-color="#4d7c2e"/>
+        </radialGradient>
+      </defs>
+      <!-- beaker body -->
+      <path d="M110 40 L110 300 Q110 330 140 330 L380 330 Q410 330 410 300 L410 40"
+            fill="url(#waterGrad)" stroke="#93b8d6" stroke-width="3"/>
+      <rect x="100" y="30" width="320" height="16" rx="6" fill="#c7dced" stroke="#93b8d6" stroke-width="2"/>
+      <!-- water line ticks -->
+      <g stroke="#8fb6d4" stroke-width="1.5" opacity=".6">
+        <line x1="118" y1="110" x2="138" y2="110"/>
+        <line x1="118" y1="180" x2="138" y2="180"/>
+        <line x1="118" y1="250" x2="138" y2="250"/>
+      </g>
+      <!-- water flow arrows layer -->
+      <g id="arrows"></g>
+      <!-- semipermeable membrane + cell -->
+      <g id="cellGroup" transform="translate(260,185)">
+        <circle id="membrane" r="90" fill="none" stroke="#7fa8c9" stroke-width="2" stroke-dasharray="6 6" opacity=".55"/>
+        <!-- plant wall (hidden for RBC) -->
+        <rect id="plantWall" x="-95" y="-95" width="190" height="190" rx="14" fill="none" stroke="#3f6212" stroke-width="6" style="display:none"/>
+        <!-- ===== RBC (biconcave disc) ===== -->
+        <g id="rbc">
+          <g id="spikes"></g>
+          <circle id="cellSphere" r="70" fill="url(#rbcSphere)" stroke="#96261a" stroke-width="2"/>
+          <circle id="cellDisc" r="70" fill="url(#rbcBiconcave)" stroke="#96261a" stroke-width="2"/>
+          <ellipse id="dimple" rx="30" ry="26" fill="url(#dimpleGrad)"/>
+          <ellipse id="rbcHi" cx="-22" cy="-24" rx="16" ry="9" fill="#fff" opacity=".22"/>
+        </g>
+        <!-- ===== Plant protoplast ===== -->
+        <g id="plant" style="display:none">
+          <rect id="plantBody" x="-88" y="-88" width="176" height="176" rx="16" fill="url(#plantGrad)" stroke="#3f6212" stroke-width="2"/>
+          <ellipse id="plantHi" cx="-40" cy="-42" rx="20" ry="12" fill="#fff" opacity=".18"/>
+        </g>
+      </g>
+      <text id="lysisTxt" x="260" y="30" text-anchor="middle" class="lysis-txt" style="display:none">⚠ CELL LYSED (burst)</text>
+      <text id="crenTxt" x="260" y="30" text-anchor="middle" class="lysis-txt" style="display:none;fill:#d97706">⚠ CRENATION / plasmolysis</text>
+    </svg>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="slider-row">
+        <div class="ctrl-group">
+          <label>Solution concentration — <span class="val" id="concVal">300</span> mOsm/L</label>
+          <input type="range" id="conc" min="0" max="600" step="5" value="300" />
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <label>Solute type</label>
+        <select id="solute">
+          <option value="NaCl">NaCl (non-permeant)</option>
+          <option value="Glucose">Glucose (non-permeant)</option>
+          <option value="Urea">Urea (permeant)</option>
+          <option value="D5W">Dextrose · D5W (metabolized)</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <label>Cell type</label>
+        <div class="seg" id="cellSeg">
+          <button data-cell="RBC" class="active">🩸 RBC</button>
+          <button data-cell="Plant">🌿 Plant</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="btn primary" id="play">▶ Play</button>
+      <button class="btn" id="stepBtn">⏭ Step</button>
+      <button class="btn" id="reset">↺ Reset</button>
+      <button class="btn toggle" id="eli5Btn">🧒 Explain Like I'm 5</button>
+    </div>
+
+    <!-- Reference cells -->
+    <h2 style="margin-top:20px">Reference — Always-On Comparison</h2>
+    <div class="refs" id="refs"></div>
+
+    <div class="eli5" id="eli5">
+      <h3>🎈 Imagine a water balloon in a pool…</h3>
+      <p><span class="em">Same water on both sides</span> = balanced. The balloon stays the same. That's <span class="em">isotonic</span>.</p>
+      <p><span class="em">Pool water is fresher</span> (less salty) than inside the balloon = water rushes IN, the balloon fills up and might <span class="em">POP</span>. That's <span class="em">hypotonic</span>.</p>
+      <p><span class="em">Pool water is salty</span> = water leaves the balloon, and it shrivels like a <span class="em">raisin</span>. That's <span class="em">hypertonic</span>.</p>
+      <p style="color:#92400e"><span class="em">Sneaky urea:</span> it can walk straight through the balloon skin, so it never pulls water — a urea "pool" acts like plain fresh water!</p>
+    </div>
+
+    <p class="note" id="note"></p>
+  </main>
+
+  <!-- ================= SIDEBAR DATA PANEL ================= -->
+  <aside class="card panel">
+    <h2>Live Data Panel</h2>
+
+    <div class="gauge">
+      <div class="lbl"><span>Beaker (ECF) osmolarity</span><span id="gBeaker">300 mOsm</span></div>
+      <div class="gbar"><div class="fill beaker" id="fBeaker" style="width:50%"></div><div class="mark"></div></div>
+      <div class="lbl"><span>Cell (ICF) osmolarity</span><span id="gIcf">300 mOsm</span></div>
+      <div class="gbar"><div class="fill icf" id="fIcf" style="width:50%"></div><div class="mark"></div></div>
+    </div>
+
+    <div style="margin-top:16px">
+      <div class="row"><span class="k">Effective (tonicity)</span><span class="v" id="dEff">300 mOsm</span></div>
+      <div class="row"><span class="k">Tonicity</span><span class="v"><span class="pill iso" id="dTon">ISOTONIC</span></span></div>
+      <div class="row"><span class="k">Water flow</span><span class="v" id="dFlow">No net flow</span></div>
+      <div class="row"><span class="k">Cell volume</span><span class="v" id="dVol">100% of normal</span></div>
+      <div class="row"><span class="k">Predicted equilibrium</span><span class="v" id="dEq">100%</span></div>
+      <div class="row"><span class="k">Hemolysis / integrity risk</span>
+        <span class="v"><span class="risk"><span class="dot safe" id="dDot"></span><span id="dRisk">Stable</span></span></span></div>
+      <div class="row"><span class="k">Matching IV fluid</span><span class="v" id="dIv">0.9% NaCl</span></div>
+    </div>
+
+    <p class="note">
+      <strong>Rule of thumb:</strong> normal plasma ≈ <strong>300&nbsp;mOsm</strong>.
+      Only <strong>non-permeant</strong> solutes (NaCl, glucose) create tonicity.
+      <strong>Urea</strong> crosses the membrane freely, so it contributes measured osmolarity but <strong>zero</strong> effective tonicity.
+      Plant cells resist bursting via <strong>turgor pressure</strong> instead of lysing.
+    </p>
+  </aside>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- State ---------------- */
+  const ICF = 300; // intracellular baseline osmolarity (mOsm/L)
+  const state = {
+    conc: 300,        // measured beaker concentration (slider)
+    solute: 'NaCl',
+    cell: 'RBC',
+    volume: 1.0,      // current cell volume, fraction of normal
+    gluc: 1.0,        // fraction of D5W dextrose NOT yet metabolized (1 -> 0 over time)
+    playing: false,
+  };
+
+  /* ---------------- DOM ---------------- */
+  const $ = id => document.getElementById(id);
+  const concSlider=$('conc'), concVal=$('concVal'), soluteSel=$('solute');
+  const cellSeg=$('cellSeg'), playBtn=$('play'), stepBtn=$('stepBtn'), resetBtn=$('reset');
+  const eli5Btn=$('eli5Btn'), eli5=$('eli5');
+  const rbcG=$('rbc'), cellSphere=$('cellSphere'), cellDisc=$('cellDisc'), dimple=$('dimple'),
+        rbcHi=$('rbcHi'), spikes=$('spikes'),
+        plantG=$('plant'), plantBody=$('plantBody'), plantHi=$('plantHi'),
+        membrane=$('membrane'), plantWall=$('plantWall'), cellGroup=$('cellGroup');
+  const arrows=$('arrows'), lysisTxt=$('lysisTxt'), crenTxt=$('crenTxt');
+  const SVGNS='http://www.w3.org/2000/svg';
+
+  /* ---------------- Physiology model ---------------- */
+  // Effective osmolarity = only NON-PERMEANT solutes drive tonicity.
+  //  - Urea is permeant -> equilibrates across membrane -> 0 effective tonicity.
+  //  - D5W dextrose is metabolized once infused: its osmotic contribution decays to 0,
+  //    so it starts isotonic (~278) and becomes hypotonic (free water) over time.
+  function effectiveOsm(){
+    if(state.solute === 'Urea') return 0;
+    if(state.solute === 'D5W')  return Math.round(state.conc * state.gluc);
+    return state.conc;
+  }
+  function classify(eff){
+    if(Math.abs(eff - ICF) <= 10) return 'iso';
+    return eff < ICF ? 'hypo' : 'hyper';
+  }
+  // Equilibrium volume: at osmotic equilibrium, internal solute (fixed) redistributes
+  // so ICF concentration matches effective ECF -> V_eq/V0 = ICF / effectiveECF.
+  function eqVolume(){
+    const eff = Math.max(effectiveOsm(), 15); // floor prevents divide-by-zero (pure water / urea)
+    let v = ICF / eff;
+    v = Math.min(Math.max(v, 0.15), 3.0);
+    // Plant cells: rigid wall caps swelling -> turgor pressure, no lysis.
+    if(state.cell === 'Plant' && v > 1.18) v = 1.18;
+    return v;
+  }
+  // Matching IV fluid by nearest measured osmolarity.
+  function ivFluid(){
+    const refs=[
+      {n:'0.45% NaCl (½ NS) — hypotonic', o:154},
+      {n:'D5W (5% Dextrose) — isotonic in bag, then free water', o:278},
+      {n:'0.9% NaCl (Normal Saline) — isotonic', o:308},
+      {n:'3% NaCl (Hypertonic Saline)', o:513}, // clamp within slider range for matching
+    ];
+    if(state.solute==='D5W') return 'D5W (5% Dextrose) — isotonic in bag → hypotonic after metabolism';
+    let best=refs[0], bd=1e9;
+    for(const r of refs){const d=Math.abs(r.o-state.conc); if(d<bd){bd=d;best=r;}}
+    if(state.solute==='Glucose' && Math.abs(state.conc-278)<40) return 'D5W (5% Dextrose)';
+    return best.n;
+  }
+
+  /* ---------------- Rendering ---------------- */
+  function volToRadius(v){ return 70 * Math.pow(v, 0.6); } // exaggerated for visibility
+
+  // Echinocyte spicules for a crenating RBC. intensity 0..1 sets spike length.
+  function drawSpikes(r, intensity){
+    spikes.innerHTML='';
+    if(intensity<=0) return;
+    const n=18, len=4+10*intensity;
+    let d='';
+    for(let i=0;i<n;i++){
+      const a=(i/n)*Math.PI*2;
+      const a2=a+Math.PI/n;              // valley between spikes
+      const tipX=Math.cos(a)*(r+len), tipY=Math.sin(a)*(r+len);
+      const vX=Math.cos(a2)*(r-1),   vY=Math.sin(a2)*(r-1);
+      d+=(i===0?'M':'L')+tipX.toFixed(1)+','+tipY.toFixed(1)+' L'+vX.toFixed(1)+','+vY.toFixed(1)+' ';
+    }
+    d+='Z';
+    const p=document.createElementNS(SVGNS,'path');
+    p.setAttribute('d',d);
+    p.setAttribute('fill','#96261a');
+    p.setAttribute('opacity',(0.55*intensity+0.25).toFixed(2));
+    spikes.appendChild(p);
+  }
+
+  function buildArrows(dir, r){
+    // dir: 'in' | 'out' | null
+    arrows.innerHTML='';
+    if(!dir) return;
+    const cx=260, cy=185;
+    const inner=r+10, outer=r+34;
+    const cls = dir==='in' ? 'flow-in' : 'flow-out';
+    for(let a=0;a<360;a+=45){
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('transform',`translate(${cx},${cy}) rotate(${a})`);
+      const wa=document.createElementNS('http://www.w3.org/2000/svg','g');
+      wa.setAttribute('class','wa '+cls);
+      // line along +X (radial). For 'in' arrowhead at inner end, for 'out' at outer end.
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',inner);line.setAttribute('y1',0);
+      line.setAttribute('x2',outer);line.setAttribute('y2',0);
+      const head=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      if(dir==='in'){
+        head.setAttribute('points',`${inner-8},-6 ${inner-8},6 ${inner-16},0`);
+      }else{
+        head.setAttribute('points',`${outer+2},-6 ${outer+2},6 ${outer+10},0`);
+      }
+      wa.appendChild(line);wa.appendChild(head);g.appendChild(wa);arrows.appendChild(g);
+    }
+  }
+
+  function render(){
+    const measured = state.conc;
+    const eff = effectiveOsm();
+    const ton = classify(eff);
+    const eqV = eqVolume();
+    const v = state.volume;
+    const r = volToRadius(v);
+
+    /* --- cell visuals --- */
+    if(state.cell==='Plant'){
+      // Plant: rigid wall fixed; protoplast (membrane+contents) swells to fill it (turgor)
+      // or retracts from it (plasmolysis).
+      rbcG.style.display='none'; plantG.style.display=''; plantWall.style.display='';
+      membrane.style.display='none';
+      const half=Math.min(88, r+18);          // fills the 176px wall at/above normal volume
+      const gap=88-half;                       // how far the membrane has pulled off the wall
+      plantBody.setAttribute('x',-half); plantBody.setAttribute('y',-half);
+      plantBody.setAttribute('width',half*2); plantBody.setAttribute('height',half*2);
+      plantBody.setAttribute('rx',14+gap*0.9); // rounder as it shrinks away from the wall
+      plantHi.setAttribute('cx',-half*0.45); plantHi.setAttribute('cy',-half*0.48);
+    }else{
+      // RBC: biconcave disc <-> sphere crossfade + crenation spicules.
+      rbcG.style.display=''; plantG.style.display='none'; plantWall.style.display='none';
+      membrane.style.display=''; membrane.setAttribute('r', r+14);
+
+      cellSphere.setAttribute('r', r);
+      cellDisc.setAttribute('r', r);
+      // Biconcavity fades out as the cell rounds up into a sphere when swelling.
+      const discOp = Math.max(0, Math.min(1, (1.30 - v)/0.25)); // 1 at v<=1.05, 0 at v>=1.30
+      cellDisc.setAttribute('opacity', discOp.toFixed(2));
+      dimple.setAttribute('opacity', discOp.toFixed(2));
+      dimple.setAttribute('rx', (r*0.42).toFixed(1));
+      dimple.setAttribute('ry', (r*0.36).toFixed(1));
+      rbcHi.setAttribute('rx', Math.max(6, r*0.22));
+      rbcHi.setAttribute('ry', Math.max(4, r*0.13));
+      rbcHi.setAttribute('cx', -r*0.30);
+      rbcHi.setAttribute('cy', -r*0.32);
+      // Spikes appear as the cell shrinks below normal (echinocyte / crenation).
+      const spikeIntensity = Math.max(0, Math.min(1, (0.92 - v)/0.22));
+      drawSpikes(r, spikeIntensity);
+    }
+
+    /* --- flow direction --- */
+    let dir=null, flowTxt='No net flow (equilibrium)';
+    if(ton==='hypo'){ dir='in'; flowTxt='INTO cell → swells'; }
+    else if(ton==='hyper'){ dir='out'; flowTxt='OUT of cell → shrinks'; }
+    // Only show arrows while there is still a gradient to resolve
+    if(dir && Math.abs(eqV - v) < 0.02) { /* keep showing subtle flow at steady swell */ }
+    buildArrows(dir, r);
+
+    /* --- lysis / crenation banners --- */
+    lysisTxt.style.display='none'; crenTxt.style.display='none';
+    let riskLabel='Stable', riskCls='safe';
+    if(state.cell==='RBC'){
+      if(v>=1.5){ lysisTxt.style.display=''; riskLabel='HEMOLYSIS — cell lysed'; riskCls='high'; }
+      else if(v>=1.25){ riskLabel='High swelling — lysis imminent'; riskCls='warn'; }
+      else if(v<=0.72){ crenTxt.textContent='⚠ CRENATION'; crenTxt.style.display=''; riskLabel='Crenation (shriveled)'; riskCls='warn'; }
+      else riskLabel='Stable';
+    }else{
+      if(v>=1.15){ riskLabel='Turgid (healthy turgor pressure)'; riskCls='safe'; }
+      else if(v<=0.8){ crenTxt.textContent='⚠ PLASMOLYSIS'; crenTxt.style.display=''; riskLabel='Plasmolysis (wilting)'; riskCls='warn'; }
+      else riskLabel='Flaccid';
+    }
+
+    /* --- gauges --- */
+    $('gBeaker').textContent = measured+' mOsm';
+    $('gIcf').textContent = Math.round(ICF/v)+' mOsm';
+    $('fBeaker').style.width = Math.min(100, measured/600*100)+'%';
+    $('fIcf').style.width = Math.min(100, (ICF/v)/600*100)+'%';
+
+    /* --- data panel --- */
+    let effSuffix='';
+    if(state.solute==='Urea') effSuffix=' (urea ineffective)';
+    else if(state.solute==='D5W') effSuffix=' ('+Math.round(state.gluc*100)+'% dextrose left)';
+    $('dEff').textContent = eff+' mOsm'+effSuffix;
+    const tonEl=$('dTon');
+    tonEl.className='pill '+ton;
+    tonEl.textContent = ton==='iso'?'ISOTONIC':ton==='hypo'?'HYPOTONIC':'HYPERTONIC';
+    $('dFlow').textContent = flowTxt;
+    $('dVol').textContent = Math.round(v*100)+'% of normal';
+    $('dEq').textContent = ((state.solute==='Urea' || state.solute==='D5W') && eff<=15 ? '↑↑ lyses' : Math.round(eqV*100)+'%');
+    $('dRisk').textContent = riskLabel;
+    $('dDot').className = 'dot '+riskCls;
+    $('dIv').textContent = ivFluid();
+
+    /* --- contextual note --- */
+    let note='';
+    if(state.solute==='D5W'){
+      note='D5W is iso-osmotic in the bag (measured ~278–290 mOsm), so at first there is NO net flow. But cells rapidly metabolize the dextrose ('+Math.round(state.gluc*100)+'% remaining) — press Play/Step to watch it disappear. What is left behind is free water, so D5W becomes effectively HYPOTONIC and the cell swells. Never used to resuscitate volume; useful only as free water.';
+    }else if(state.solute==='Urea'){
+      note='Even though the beaker reads '+measured+' mOsm, urea diffuses freely across the membrane, so its EFFECTIVE tonicity is 0 mOsm — the cell behaves as if placed in pure water and swells toward lysis. Classic exam trap: an "iso-osmotic" urea solution is still hypotonic.';
+    }else if(ton==='iso'){
+      note='Beaker ≈ 300 mOsm of non-permeant solute matches ICF. No osmotic gradient → no net water movement → cell holds normal volume.';
+    }else if(ton==='hypo'){
+      note='Beaker < 300 mOsm. Water moves down its concentration gradient INTO the cell. '+(state.cell==='Plant'?'The rigid cell wall generates turgor pressure and prevents bursting.':'An RBC has no wall, so it swells and can hemolyze.');
+    }else{
+      note='Beaker > 300 mOsm of non-permeant solute. Water leaves the cell. '+(state.cell==='Plant'?'The membrane pulls away from the wall — plasmolysis.':'The RBC shrivels — crenation.');
+    }
+    $('note').textContent = note;
+  }
+
+  /* ---------------- Simulation ---------------- */
+  function integrate(frac){
+    // D5W: dextrose is metabolized as time advances -> effective osmolarity decays -> free water.
+    if(state.solute==='D5W') state.gluc = Math.max(0, state.gluc - frac*0.5);
+    const target = eqVolume();
+    state.volume += (target - state.volume) * frac;
+    if(Math.abs(target - state.volume) < 0.002) state.volume = target;
+  }
+  let last = performance.now();
+  function loop(now){
+    const dt = Math.min((now-last)/1000, 0.05); last=now;
+    if(state.playing){
+      integrate(1 - Math.pow(0.15, dt)); // smooth exponential easing
+      render();
+      // auto-pause once RBC has clearly lysed
+      if(state.cell==='RBC' && state.volume>=1.5 && Math.abs(eqVolume()-state.volume)<0.02){
+        state.playing=false; playBtn.textContent='▶ Play'; playBtn.classList.add('primary');
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  /* ---------------- Reference cells (always on) ---------------- */
+  function drawRefs(){
+    const refData=[
+      {key:'hypo', name:'HYPOTONIC', sub:'&lt;300 · swells', r:34, col:'#2563eb', arrow:'in'},
+      {key:'iso',  name:'ISOTONIC',  sub:'≈300 · stable', r:26, col:'#16a34a', arrow:''},
+      {key:'hyper',name:'HYPERTONIC',sub:'&gt;300 · shrinks', r:17, col:'#d97706', arrow:'out'},
+    ];
+    $('refs').innerHTML = refData.map(d=>{
+      const cx=60,cy=39;
+      let ar='';
+      if(d.arrow==='in') ar=`<g stroke="#7fbfe6" stroke-width="2.4" fill="#7fbfe6">
+        <line x1="14" y1="39" x2="26" y2="39"/><polygon points="26,35 26,43 32,39"/>
+        <line x1="106" y1="39" x2="94" y2="39"/><polygon points="94,35 94,43 88,39"/></g>`;
+      if(d.arrow==='out') ar=`<g stroke="#f0b45f" stroke-width="2.4" fill="#f0b45f">
+        <line x1="30" y1="39" x2="18" y2="39"/><polygon points="18,35 18,43 12,39"/>
+        <line x1="90" y1="39" x2="102" y2="39"/><polygon points="102,35 102,43 108,39"/></g>`;
+      const fill = d.key==='iso' ? '#C0392B' : d.key==='hypo' ? '#d1554a' : '#a83224';
+      return `<div class="ref">
+        <svg viewBox="0 0 120 78">
+          <circle cx="${cx}" cy="${cy}" r="${d.r+8}" fill="none" stroke="#cbd5e1" stroke-dasharray="4 4"/>
+          ${ar}
+          <circle cx="${cx}" cy="${cy}" r="${d.r}" fill="${fill}" stroke="#96261a"/>
+        </svg>
+        <div class="tag" style="color:${d.col}">${d.name}</div>
+        <div class="sub">${d.sub}</div>
+      </div>`;
+    }).join('');
+  }
+  drawRefs();
+
+  /* ---------------- Events ---------------- */
+  concSlider.addEventListener('input', e=>{
+    state.conc = +e.target.value;
+    concVal.textContent = state.conc;
+    render();
+  });
+  soluteSel.addEventListener('change', e=>{
+    state.solute=e.target.value;
+    state.gluc=1.0; // fresh dextrose whenever the solute is re-selected
+    if(state.solute==='D5W'){
+      // Snap to the canonical D5W demo: iso-osmotic (~290 mOsm), cell at baseline, paused.
+      state.conc=290; concSlider.value=290; concVal.textContent='290';
+      state.volume=1.0; state.playing=false;
+      playBtn.textContent='▶ Play'; playBtn.classList.add('primary');
+    }
+    render();
+  });
+  cellSeg.addEventListener('click', e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    [...cellSeg.children].forEach(c=>c.classList.remove('active'));
+    b.classList.add('active');
+    state.cell=b.dataset.cell;
+    render();
+  });
+  playBtn.addEventListener('click', ()=>{
+    state.playing=!state.playing;
+    playBtn.textContent = state.playing ? '⏸ Pause' : '▶ Play';
+    playBtn.classList.toggle('primary', !state.playing);
+  });
+  stepBtn.addEventListener('click', ()=>{
+    integrate(0.35); // one discrete time unit
+    render();
+    stepBtn.classList.add('flash'); setTimeout(()=>stepBtn.classList.remove('flash'),600);
+  });
+  resetBtn.addEventListener('click', ()=>{
+    state.conc=300; state.volume=1.0; state.gluc=1.0; state.playing=false;
+    concSlider.value=300; concVal.textContent='300';
+    playBtn.textContent='▶ Play'; playBtn.classList.add('primary');
+    render();
+  });
+  eli5Btn.addEventListener('click', ()=>{
+    eli5.classList.toggle('show');
+    eli5Btn.classList.toggle('on');
+  });
+
+  /* ---------------- Init ---------------- */
+  render();
+})();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Tonicity &amp; Osmosis</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"tonicity", title:"Tonicity & Osmosis", unit:"Unit 3" });
+  APTools.mountHUD("#apHud","tonicity");
+  var BANK=[
+    { id:"t1", bloom:"Understand", outcome:"Define tonicity",
+      q:"A cell placed in a HYPOTONIC solution will:",
+      choices:["Gain water and swell (may lyse)","Lose water and shrink","Stay the same size","Gain solute and shrink"],
+      answer:0, why:"Hypotonic = lower solute outside, so water moves INTO the cell by osmosis, causing swelling and possible lysis." },
+    { id:"t2", bloom:"Understand", outcome:"Define tonicity",
+      q:"A red blood cell in a HYPERTONIC solution undergoes:",
+      choices:["Crenation (shrinks)","Hemolysis (bursts)","No change","Active swelling"],
+      answer:0, why:"Hypertonic = more solute outside, water leaves the cell, so it shrivels — called crenation in RBCs." },
+    { id:"t3", bloom:"Remember", outcome:"Isotonic balance",
+      q:"In an ISOTONIC solution, the net movement of water is:",
+      choices:["Zero — equal in and out","Into the cell","Out of the cell","Only across the nucleus"],
+      answer:0, why:"Isotonic solutions have equal effective solute concentration, so water moves in and out at equal rates — no net change." },
+    { id:"t4", bloom:"Apply", outcome:"Clinical relevance",
+      q:"Which IV fluid is ISOTONIC to blood and safe for volume replacement?",
+      choices:["0.9% NaCl (normal saline)","Pure distilled water","10% NaCl","5% NaCl"],
+      answer:0, why:"0.9% NaCl matches blood's osmolarity, so it doesn't shift water into or out of cells." },
+    { id:"t5", bloom:"Analyze", outcome:"Predict cell behavior",
+      q:"A red blood cell placed in distilled water will:",
+      choices:["Swell and hemolyze","Crenate","Remain unchanged","Pump out water via ATP"],
+      answer:0, why:"Distilled water is extremely hypotonic; water rushes in and the cell bursts (hemolysis)." },
+    { id:"t6", bloom:"Understand", outcome:"Osmosis mechanism",
+      q:"Osmosis is specifically the movement of:",
+      choices:["Water across a selectively permeable membrane","Solutes down their gradient","Ions via ATP pumps","Proteins through channels"],
+      answer:0, why:"Osmosis is diffusion of WATER across a selectively permeable membrane from low to high solute concentration." },
+    { id:"t7", bloom:"Understand", outcome:"Define tonicity",
+      q:"Tonicity is determined by the concentration of solutes that:",
+      choices:["Cannot cross the membrane (non-penetrating)","Freely cross the membrane","Are only inside the nucleus","Are always proteins"],
+      answer:0, why:"Only non-penetrating solutes create an effective osmotic gradient, so they set a solution's tonicity." },
+    { id:"t8", bloom:"Apply", outcome:"Predict cell behavior",
+      q:"Water always moves toward the compartment with the ____ solute concentration:",
+      choices:["Higher","Lower","Equal","Most protein only"],
+      answer:0, why:"Water moves toward higher solute (lower water) concentration to equalize — the driving principle of osmosis." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"tonicity", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

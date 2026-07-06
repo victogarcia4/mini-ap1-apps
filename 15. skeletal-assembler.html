@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="The Skeletal Assembler — sort bones into axial vs appendicular, hunt anatomical landmarks, and compare the male vs female pelvis. Single-file, no dependencies." />
+<title>The Skeletal Assembler — Organization & Dimorphism</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1" />
+<style>
+/* ============================================================
+   App 7.4 — The Skeletal Assembler (purple accent)
+   ============================================================ */
+:root{
+  --bg:#f1eef8; --card:#ffffff; --ink:#2a1f4a; --primary:#6d28d9;
+  --accent:#6d28d9; --accent-2:#8b5cf6; --line:#ddd4f0; --line-2:#ece6f8;
+  --muted:#61568a; --mute-2:#948bb8;
+  --ok:#0f766e; --ok-soft:#d9f0ec; --warn:#b45309; --warn-soft:#fdf1e0;
+  --danger:#c0392b; --danger-soft:#fbe9e6;
+  --axial:#6d28d9; --append:#0ea5a3; --female:#db2777; --male:#2563b6;
+  --radius:14px; --radius-s:10px;
+  --shadow:0 8px 26px rgba(80,40,140,.12);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);color:var(--ink);min-height:100vh;line-height:1.5;
+  background:radial-gradient(900px 460px at 84% -10%,rgba(139,92,246,.12),transparent 60%),radial-gradient(760px 460px at -6% 110%,rgba(109,40,217,.07),transparent 60%),var(--bg);
+  -webkit-font-smoothing:antialiased;}
+header.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 24px;background:rgba(255,255,255,.82);backdrop-filter:blur(9px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;}
+.brand{display:flex;align-items:center;gap:13px;}
+.brand .logo{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#4c1d95);box-shadow:0 4px 14px rgba(109,40,217,.35);}
+.brand h1{font-size:1.12rem;font-weight:800;letter-spacing:-.01em;}
+.brand p{font-size:.76rem;color:var(--muted);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.switch{display:flex;align-items:center;gap:9px;font-size:.8rem;color:var(--muted);cursor:pointer;user-select:none;font-weight:600;}
+.switch input{display:none;}
+.track{width:46px;height:25px;border-radius:20px;background:#cabfe6;position:relative;transition:.25s;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.switch input:checked + .track{background:var(--accent);}
+.switch input:checked + .track::after{transform:translateX(21px);}
+.btn-link{text-decoration:none;color:var(--muted);font-weight:700;font-size:.82rem;border:1px solid var(--line);border-radius:9px;padding:8px 13px;background:#fff;}
+.btn-link:hover{color:var(--accent);border-color:var(--accent);}
+.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;max-width:1440px;margin:0 auto;padding:20px 24px 26px;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.panel h2{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:14px 16px 0;}
+.panel .body{padding:14px 16px 16px;}
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0;}
+button.btn{font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 12px;transition:.15s;}
+button.btn:hover{border-color:var(--accent);color:var(--accent);}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}button.btn.primary:hover{background:#5b21b6;color:#fff;}
+button.btn.ghost{background:var(--line-2);}button.btn.wide{width:100%;}
+.ctl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+/* sorter */
+.tray{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+.bone{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;cursor:grab;user-select:none;transition:.15s;}
+.bone:hover{border-color:var(--accent);}
+.bone.armed{background:var(--accent);color:#fff;border-color:var(--accent);}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.bin{border:2px dashed var(--line);border-radius:12px;min-height:120px;padding:8px;}
+.bin.axial{border-color:#c9b6f0;}.bin.append{border-color:#a6e3e1;}
+.bin.over{background:var(--line-2);}
+.bin h3{font-size:.8rem;text-align:center;margin-bottom:6px;}
+.bin.axial h3{color:var(--axial);}.bin.append h3{color:var(--append);}
+.bin .drop{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
+.bone.placed{font-size:.68rem;padding:3px 7px;cursor:default;background:var(--ok-soft);border-color:#a7d8cf;color:var(--ok);}
+.progress-line{font-size:.82rem;color:var(--muted);margin-top:8px;}.progress-line b{color:var(--ok);}
+/* scavenger */
+.scav-prompt{font-size:.95rem;font-weight:700;background:var(--line-2);border-radius:10px;padding:10px 13px;margin-bottom:10px;}
+.scav-prompt b{color:var(--accent);}
+.skel-wrap{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#faf9ff;}
+.skel-wrap svg{display:block;width:100%;height:auto;}
+.hot{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;border:2.5px dashed var(--accent);background:rgba(109,40,217,.10);cursor:pointer;transition:.15s;}
+.hot:hover{background:rgba(109,40,217,.25);}
+.hot.found{border:2.5px solid var(--ok);background:var(--ok);}
+.hot.miss{animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translate(-50%,-50%);}25%{transform:translate(calc(-50% - 6px),-50%);}75%{transform:translate(calc(-50% + 6px),-50%);}}
+/* pelvis compare */
+.pelvis-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pelvis-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#faf9ff;cursor:pointer;transition:.15s;}
+.pelvis-card:hover{border-color:var(--accent);}
+.pelvis-card.sel{outline:3px solid var(--accent);}
+.pelvis-card svg{display:block;width:100%;height:auto;}
+.pelvis-card h3{font-size:.9rem;padding:8px 10px 0;text-align:center;}
+.pelvis-card .tag{font-size:.72rem;text-align:center;padding:0 10px 8px;color:var(--muted);}
+.diff-list{margin-top:12px;border-top:1px solid var(--line-2);padding-top:10px;font-size:.84rem;display:none;}
+.diff-list.show{display:block;}
+.diff-list .row{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--line-2);}
+.diff-list .row.head{font-weight:800;color:var(--muted);font-size:.74rem;text-transform:uppercase;}
+.diff-list .f{color:var(--female);font-weight:700;}.diff-list .m{color:var(--male);font-weight:700;}
+.hintbox{margin-top:12px;border-radius:10px;padding:11px 13px;font-size:.86rem;line-height:1.45;display:none;border:1px solid var(--line);background:var(--line-2);}
+.hintbox.show{display:block;}
+.hintbox.ok{background:var(--ok-soft);border-color:#a7d8cf;color:#0b3f39;}
+.hintbox.no{background:var(--warn-soft);border-color:#f2d6a8;color:#7c4a06;}
+.hintbox b{display:block;margin-bottom:2px;}
+.eli5-note{margin-top:12px;background:#f3eefe;border:1px solid #d8c9f5;border-radius:10px;padding:11px 13px;font-size:.86rem;color:#4c1d95;line-height:1.5;display:none;}
+.eli5-note.show{display:block;}.eli5-note b{color:var(--accent);}
+.asset-slot{margin-top:14px;border:2px dashed var(--line);border-radius:12px;background:repeating-linear-gradient(45deg,#f8f6fd,#f8f6fd 10px,#f1eef8 10px,#f1eef8 20px);min-height:118px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--mute-2);gap:6px;}
+.asset-slot .ico{font-size:1.6rem;}.asset-slot .cap{font-size:.78rem;font-weight:700;color:var(--muted);}.asset-slot .sub{font-size:.72rem;max-width:420px;}
+.asset-slot.loaded{border:1px solid var(--line);background:#fff;padding:12px;display:block;min-height:0;}
+.asset-figure{margin:0;text-align:center;}
+.asset-figure img{max-width:100%;max-height:420px;width:auto;display:inline-block;border-radius:10px;border:1px solid var(--line-2);}
+.asset-figure figcaption{margin-top:8px;font-size:.78rem;color:var(--muted);font-weight:600;}
+.footnote{max-width:1440px;margin:0 auto;padding:4px 24px 30px;color:var(--mute-2);font-size:.74rem;}
+@media(max-width:880px){.layout{grid-template-columns:1fr;}.pelvis-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><path d="M12 7.5V15M12 15l-4 5M12 15l4 5M7 10h10"/></svg></div>
+    <div>
+      <h1>The Skeletal Assembler</h1>
+      <p>Axial vs appendicular · landmark hunt · male vs female pelvis · Ch 7</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Axial vs Appendicular</h2>
+      <div class="body">
+        <p style="font-size:.82rem;color:var(--muted);">Click a bone, then click its division (or drag it into a bin).</p>
+        <div class="tray" id="boneTray"></div>
+        <div class="bins">
+          <div class="bin axial" data-div="axial"><h3>Axial</h3><div class="drop" id="dropAxial"></div></div>
+          <div class="bin append" data-div="append"><h3>Appendicular</h3><div class="drop" id="dropAppend"></div></div>
+        </div>
+        <div class="progress-line">Sorted <b id="sortCount">0</b> / <span id="sortTotal">10</span></div>
+        <div class="hintbox" id="sortHint"></div>
+        <div class="eli5-note" id="eli5Note"></div>
+        <div class="ctl-row"><button class="btn ghost" id="resetSort">↺ Reset sorter</button></div>
+      </div>
+    </section>
+  </aside>
+
+  <div class="stack">
+    <section class="panel">
+      <h2>Anatomical Landmark Scavenger Hunt</h2>
+      <div class="body">
+        <div class="scav-prompt" id="scavPrompt">Loading…</div>
+        <div class="skel-wrap">
+          <svg id="skelSVG" viewBox="0 0 360 520" role="img" aria-label="Skeleton with landmark hotspots"></svg>
+          <div id="skelHots"></div>
+        </div>
+        <div class="progress-line">Found <b id="scavCount">0</b> / <span id="scavTotal">5</span> &nbsp;·&nbsp; ★ <b id="scavScore">0</b></div>
+        <div class="hintbox" id="scavHint"></div>
+        <div class="ctl-row"><button class="btn ghost" id="scavSkip">Skip landmark →</button><button class="btn ghost" id="scavReset">↺ Restart hunt</button></div>
+        <figure class="asset-slot" id="slot-skeleton"
+          data-img="assets/ch7-skeleton-labeled.png"
+          data-prompt="Full anterior human skeleton, axial vs appendicular color-coded, clean white background, labeled-ready, 4k.">
+          <div class="ico">🦴</div><div class="cap">Reference atlas — axial (tinted) vs appendicular skeleton</div>
+          <div class="sub">Compare the interactive schematic above with a full labeled skeleton.</div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Forensic Comparison — Male vs Female Pelvis</h2>
+      <div class="body">
+        <p style="font-size:.82rem;color:var(--muted);">Two pelves below have their labels hidden. <b id="challengePrompt">Click the FEMALE pelvis.</b></p>
+        <div class="pelvis-grid" id="pelvisGrid"></div>
+        <div class="hintbox" id="pelvisHint"></div>
+        <div class="ctl-row">
+          <button class="btn" id="revealBtn">Show differences ▾</button>
+          <button class="btn ghost" id="pelvisReset">↺ New challenge</button>
+        </div>
+        <div class="diff-list" id="diffList">
+          <div class="row head"><span>Feature</span><span>Female ♀</span><span>Male ♂</span></div>
+          <div class="row"><span>Pubic arch angle</span><span class="f">Wide (&gt; 90°)</span><span class="m">Narrow (&lt; 90°)</span></div>
+          <div class="row"><span>Greater sciatic notch</span><span class="f">Wide</span><span class="m">Narrow</span></div>
+          <div class="row"><span>Pelvic inlet</span><span class="f">Round / oval</span><span class="m">Heart-shaped</span></div>
+          <div class="row"><span>Ilium flare</span><span class="f">More flared, shallow</span><span class="m">Less flared, deep</span></div>
+          <div class="row"><span>Overall</span><span class="f">Lighter, built for childbirth</span><span class="m">Heavier, more robust</span></div>
+        </div>
+        <figure class="asset-slot" id="slot-pelvis"
+          data-img="assets/ch7-pelvis-male-female.png"
+          data-prompt="Side-by-side anatomical comparison of male and female human pelvis, anterior view, white background, highlighting pubic arch angle and sciatic notch, labeled-ready, 4k.">
+          <div class="ico">⚖️</div><div class="cap">Reference — male vs female pelvis, side by side</div>
+          <div class="sub">A real comparison to check your answer against the differences table above.</div>
+        </figure>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="footnote">Schematic teaching model — pelvis outlines and landmark positions are stylized for clarity, not anatomical tracings. Sex differences are population tendencies (Table 7.10), not absolute rules for any individual.</div>
+
+<script>
+"use strict";
+var State={ eli5:false, armedBone:null, sorted:{}, scavIdx:0, scavFound:{}, scavScore:0, femaleLeft:true, challengeDone:false };
+
+/* ---------- Axial vs Appendicular sorter ---------- */
+var BONES=[
+  {id:"skull",name:"Skull",div:"axial"},
+  {id:"vertebrae",name:"Vertebrae",div:"axial"},
+  {id:"ribs",name:"Ribs",div:"axial"},
+  {id:"sternum",name:"Sternum",div:"axial"},
+  {id:"hyoid",name:"Hyoid",div:"axial"},
+  {id:"clavicle",name:"Clavicle",div:"append"},
+  {id:"scapula",name:"Scapula",div:"append"},
+  {id:"humerus",name:"Humerus",div:"append"},
+  {id:"coxal",name:"Coxal (hip) bone",div:"append"},
+  {id:"femur",name:"Femur",div:"append"}
+];
+document.getElementById("sortTotal").textContent=BONES.length;
+function buildSorter(){
+  var tray=document.getElementById("boneTray"); tray.innerHTML="";
+  BONES.forEach(function(b){
+    if(State.sorted[b.id]) return;
+    var d=document.createElement("div"); d.className="bone"+(State.armedBone===b.id?" armed":"");
+    d.textContent=b.name; d.dataset.id=b.id; d.draggable=true;
+    d.addEventListener("click",function(){ State.armedBone=State.armedBone===b.id?null:b.id; buildSorter(); });
+    d.addEventListener("dragstart",function(e){ e.dataTransfer.setData("text/plain",b.id); });
+    tray.appendChild(d);
+  });
+  ["axial","append"].forEach(function(div){
+    var host=document.getElementById(div==="axial"?"dropAxial":"dropAppend"); host.innerHTML="";
+    BONES.filter(function(b){return State.sorted[b.id]===div;}).forEach(function(b){
+      var s=document.createElement("span"); s.className="bone placed"; s.textContent=b.name; host.appendChild(s);
+    });
+  });
+  document.getElementById("sortCount").textContent=Object.keys(State.sorted).length;
+}
+function sortBone(boneId,div){
+  var b=BONES.filter(function(x){return x.id===boneId;})[0]; if(!b||State.sorted[boneId]) return;
+  var correct=b.div===div;
+  APTools.recordAnswer("skeletal-organization",correct,{xp:8,questionId:"sort-"+boneId});
+  if(correct){ State.sorted[boneId]=div; State.armedBone=null; sortFlash("ok","✓ "+b.name+" → "+(div==="axial"?"Axial":"Appendicular"),axialWhy(b)); }
+  else { sortFlash("no","Not "+(div==="axial"?"axial":"appendicular"),wrongSortHint(b)); }
+  buildSorter();
+  if(Object.keys(State.sorted).length===BONES.length) sortFlash("ok","🎉 All bones sorted!","You separated the 80 axial bones (skull, spine, ribs, sternum, hyoid) from the 126 appendicular bones (girdles + limbs).");
+}
+function axialWhy(b){ return b.div==="axial"?"Axial = the central pole of the body: skull, vertebral column, ribs, sternum, hyoid.":"Appendicular = the limbs plus the girdles (pectoral & pelvic) that attach them to the axis."; }
+function wrongSortHint(b){
+  if(b.div==="append") return b.name+" belongs to a limb or a girdle that attaches a limb → <b>appendicular</b>. The pectoral & pelvic girdles count as appendicular even though they sit near the axis.";
+  return b.name+" is part of the body's central axis (skull, spine, ribs, sternum, hyoid) → <b>axial</b>.";
+}
+function sortFlash(kind,head,body){ var hb=document.getElementById("sortHint"); hb.className="hintbox show "+kind; hb.innerHTML="<b>"+head+"</b>"+body; }
+document.querySelectorAll(".bin").forEach(function(bin){
+  var div=bin.dataset.div;
+  bin.addEventListener("click",function(){ if(State.armedBone) sortBone(State.armedBone,div); });
+  bin.addEventListener("dragover",function(e){ e.preventDefault(); bin.classList.add("over"); });
+  bin.addEventListener("dragleave",function(){ bin.classList.remove("over"); });
+  bin.addEventListener("drop",function(e){ e.preventDefault(); bin.classList.remove("over"); sortBone(e.dataTransfer.getData("text/plain"),div); });
+});
+document.getElementById("resetSort").addEventListener("click",function(){ State.sorted={}; State.armedBone=null; document.getElementById("sortHint").className="hintbox"; buildSorter(); });
+
+/* ---------- Skeleton + landmark scavenger hunt ---------- */
+var LANDMARKS=[
+  {key:"foramen-magnum",name:"Foramen magnum",bone:"Occipital bone (skull)",x:50,y:11,hint:"The large hole at the BASE of the skull where the spinal cord passes."},
+  {key:"glenoid",name:"Glenoid cavity",bone:"Scapula",x:33,y:26,hint:"The shallow shoulder socket that receives the head of the humerus."},
+  {key:"xiphoid",name:"Xiphoid process",bone:"Sternum",x:50,y:34,hint:"The small inferior tip of the breastbone (sternum)."},
+  {key:"acetabulum",name:"Acetabulum",bone:"Coxal (hip) bone",x:44,y:61,hint:"The deep hip SOCKET (where the pelvis meets the femur head) that receives the head of the femur."},
+  {key:"greater-trochanter",name:"Greater trochanter",bone:"Femur",x:39,y:67,hint:"The large lateral bump at the top of the femur, just below and to the side of the hip socket."}
+];
+document.getElementById("scavTotal").textContent=LANDMARKS.length;
+function buildSkeleton(){
+  var svg=document.getElementById("skelSVG");
+  /* very schematic anterior skeleton */
+  svg.innerHTML=
+    '<g fill="#e9e4f5" stroke="#b9abdf" stroke-width="2">'
+    +'<circle cx="180" cy="46" r="30"/>'                                  /* skull */
+    +'<rect x="176" y="76" width="8" height="20"/>'                        /* neck */
+    +'<rect x="120" y="128" width="120" height="10" rx="5"/>'             /* clavicles/shoulder line */
+    +'<ellipse cx="120" cy="140" rx="20" ry="14"/>'                        /* L scapula */
+    +'<ellipse cx="240" cy="140" rx="20" ry="14"/>'                        /* R scapula */
+    +'<rect x="164" y="96" width="32" height="150" rx="10"/>'             /* spine/thorax core */
+    /* ribs */
+    +'<path d="M168,120 q-40,10 -44,44" fill="none"/><path d="M192,120 q40,10 44,44" fill="none"/>'
+    +'<path d="M168,150 q-46,10 -48,40" fill="none"/><path d="M192,150 q46,10 48,40" fill="none"/>'
+    +'<rect x="174" y="120" width="12" height="80" rx="6"/>'              /* sternum */
+    /* arms */
+    +'<rect x="96" y="150" width="9" height="90" rx="4"/><rect x="255" y="150" width="9" height="90" rx="4"/>' /* humeri */
+    +'<rect x="92" y="242" width="8" height="80" rx="4"/><rect x="260" y="242" width="8" height="80" rx="4"/>' /* forearms */
+    /* pelvis */
+    +'<path d="M140,258 q40,-14 80,0 q6,40 -20,60 q-20,10 -40,0 q-26,-20 -20,-60 z"/>'
+    /* legs */
+    +'<rect x="150" y="315" width="11" height="150" rx="5"/><rect x="199" y="315" width="11" height="150" rx="5"/>' /* femurs */
+    +'<circle cx="112" cy="57" r="0"/>'
+    +'</g>'
+    +'<text x="180" y="500" text-anchor="middle" font-size="12" fill="#948bb8">Anterior view (schematic)</text>';
+  renderHots();
+}
+function renderHots(){
+  var host=document.getElementById("skelHots"); host.innerHTML="";
+  LANDMARKS.forEach(function(l,i){
+    var h=document.createElement("div");
+    h.className="hot"+(State.scavFound[l.key]?" found":"");
+    h.style.left=l.x+"%"; h.style.top=l.y+"%"; h.dataset.key=l.key;
+    h.title=State.scavFound[l.key]?l.name:"?";
+    h.addEventListener("click",function(){ scavClick(l.key); });
+    host.appendChild(h);
+  });
+}
+function currentLandmark(){ return LANDMARKS[State.scavIdx]; }
+function renderScavPrompt(){
+  var done=Object.keys(State.scavFound).length;
+  document.getElementById("scavCount").textContent=done;
+  document.getElementById("scavScore").textContent=State.scavScore;
+  if(done>=LANDMARKS.length){ document.getElementById("scavPrompt").innerHTML='🎉 <b>Hunt complete!</b> You located all '+LANDMARKS.length+' landmarks.'; return; }
+  var l=currentLandmark();
+  document.getElementById("scavPrompt").innerHTML='Find the <b>'+l.name+'</b> &nbsp;·&nbsp; <span style="color:var(--muted);font-weight:600">'+l.bone+'</span>';
+}
+function scavClick(key){
+  if(Object.keys(State.scavFound).length>=LANDMARKS.length) return;
+  var target=currentLandmark();
+  var correct = key===target.key;
+  APTools.recordAnswer("skeletal-organization",correct,{xp:10,questionId:"scav-"+target.key});
+  if(correct){
+    State.scavFound[key]=true; State.scavScore++;
+    scavFlash("ok","✓ "+target.name,target.hint);
+    advanceScav();
+  } else {
+    var el=document.querySelector('#skelHots .hot[data-key="'+key+'"]');
+    if(el){ el.classList.add("miss"); setTimeout(function(){el.classList.remove("miss");},400); }
+    var picked=LANDMARKS.filter(function(x){return x.key===key;})[0];
+    scavFlash("no","That's the "+(picked?picked.name:"wrong spot"),"You're looking for the <b>"+target.name+"</b>: "+target.hint);
+  }
+  renderHots(); renderScavPrompt();
+}
+function advanceScav(){
+  /* move to next not-yet-found landmark */
+  for(var k=1;k<=LANDMARKS.length;k++){
+    var idx=(State.scavIdx+k)%LANDMARKS.length;
+    if(!State.scavFound[LANDMARKS[idx].key]){ State.scavIdx=idx; return; }
+  }
+}
+function scavFlash(kind,head,body){ var hb=document.getElementById("scavHint"); hb.className="hintbox show "+kind; hb.innerHTML="<b>"+head+"</b>"+body; }
+document.getElementById("scavSkip").addEventListener("click",function(){ advanceScav(); renderScavPrompt(); });
+document.getElementById("scavReset").addEventListener("click",function(){ State.scavFound={}; State.scavIdx=0; State.scavScore=0; document.getElementById("scavHint").className="hintbox"; renderHots(); renderScavPrompt(); });
+
+/* ---------- Pelvis comparison ---------- */
+function pelvisSVG(sex){
+  var female=sex==="female";
+  /* female: wider arch, more flared, rounder inlet */
+  var archAngle=female?"wide":"narrow";
+  return '<svg viewBox="0 0 220 190" role="img" aria-label="'+sex+' pelvis">'
+    +'<rect width="220" height="190" fill="#faf9ff"/>'
+    /* two hip bones */
+    +'<path d="M110,30 C '+(female?"55,20 35,60 45,95":"65,26 52,60 60,92")+' C '+(female?"55,130 90,150 110,150":"66,128 92,145 110,145")+'" fill="none" stroke="#8b5cf6" stroke-width="4"/>'
+    +'<path d="M110,30 C '+(female?"165,20 185,60 175,95":"155,26 168,60 160,92")+' C '+(female?"165,130 130,150 110,150":"154,128 128,145 110,145")+'" fill="none" stroke="#8b5cf6" stroke-width="4"/>'
+    /* sacrum */
+    +'<path d="M104,28 q6,-8 12,0 q4,30 -6,52 q-8,-2 -12,-2 q-6,-26 6,-50z" fill="#d8ccf2" stroke="#8b5cf6" stroke-width="2"/>'
+    /* pubic arch (angle indicator) */
+    +'<path d="M'+(female?"78,150":"88,145")+' L110,175 L'+(female?"142,150":"132,145")+'" fill="none" stroke="'+(female?"#db2777":"#2563b6")+'" stroke-width="3"/>'
+    +'<text x="110" y="188" text-anchor="middle" font-size="11" fill="'+(female?"#db2777":"#2563b6")+'" font-weight="700">pubic arch: '+(female?"&gt; 90° (wide)":"&lt; 90° (narrow)")+'</text>'
+    /* acetabulum sockets */
+    +'<circle cx="'+(female?"52":"60")+'" cy="100" r="9" fill="none" stroke="#6d28d9" stroke-width="3"/>'
+    +'<circle cx="'+(female?"168":"160")+'" cy="100" r="9" fill="none" stroke="#6d28d9" stroke-width="3"/>'
+    +'</svg>';
+}
+function buildPelvis(){
+  var grid=document.getElementById("pelvisGrid"); grid.innerHTML="";
+  var order = State.femaleLeft ? ["female","male"] : ["male","female"];
+  order.forEach(function(sex){
+    var card=document.createElement("div"); card.className="pelvis-card"; card.dataset.sex=sex;
+    card.innerHTML='<h3 class="lbl">Specimen '+(sex===order[0]?"A":"B")+'</h3>'+pelvisSVG(sex)+'<div class="tag reveal" style="display:none"></div>';
+    card.addEventListener("click",function(){ pelvisPick(sex,card); });
+    grid.appendChild(card);
+  });
+}
+function pelvisPick(sex,card){
+  if(State.challengeDone) return;
+  document.querySelectorAll(".pelvis-card").forEach(function(c){c.classList.remove("sel");});
+  card.classList.add("sel");
+  var correct=sex==="female";
+  APTools.recordAnswer("skeletal-organization",correct,{xp:10,questionId:"pelvis-sex"});
+  State.challengeDone=true;
+  if(correct){ pelvisFlash("ok","✓ Correct — that's the female pelvis","Give-aways: a WIDER pubic arch (>90°), wider greater sciatic notch, a rounder pelvic inlet, and more flared ilia — adaptations for childbirth."); }
+  else { pelvisFlash("no","Actually that's the male pelvis","The MALE pelvis has a NARROWER pubic arch (<90°), narrower sciatic notch, a heart-shaped inlet, and less flared ilia. The female pelvis is the other one."); }
+  revealPelvisLabels();
+}
+function revealPelvisLabels(){
+  document.querySelectorAll(".pelvis-card").forEach(function(c){
+    var tag=c.querySelector(".tag"); var sex=c.dataset.sex;
+    tag.style.display="block"; tag.textContent=(sex==="female"?"♀ Female":"♂ Male");
+    tag.style.color = sex==="female" ? "var(--female)":"var(--male)";
+    tag.style.fontWeight="700";
+  });
+}
+function pelvisFlash(kind,head,body){ var hb=document.getElementById("pelvisHint"); hb.className="hintbox show "+kind; hb.innerHTML="<b>"+head+"</b>"+body; }
+document.getElementById("revealBtn").addEventListener("click",function(){
+  var d=document.getElementById("diffList"); d.classList.toggle("show");
+  this.textContent=d.classList.contains("show")?"Hide differences ▴":"Show differences ▾";
+});
+document.getElementById("pelvisReset").addEventListener("click",function(){
+  State.femaleLeft=Math.random()<0.5; State.challengeDone=false;
+  document.getElementById("pelvisHint").className="hintbox";
+  buildPelvis();
+});
+
+/* ---------- ELI5 + init ---------- */
+function renderEli5(){
+  var n=document.getElementById("eli5Note");
+  if(!State.eli5){ n.className="eli5-note"; return; }
+  n.className="eli5-note show";
+  n.innerHTML='<b>Axial = the flagpole; appendicular = the flags.</b> The axial skeleton is the body\'s central pole — skull, spine, ribs, breastbone. The appendicular skeleton is the "add-ons": arms and legs, plus the shoulder and hip girdles (the straps) that hold them onto the pole.';
+}
+document.getElementById("eli5Toggle").addEventListener("change",function(e){ State.eli5=e.target.checked; document.getElementById("modeLabel").textContent=e.target.checked?"ELI5 · Plain":"Professional"; renderEli5(); });
+
+/* load real images into asset slots (adapted into a capped, captioned figure) */
+document.querySelectorAll(".asset-slot").forEach(function(slot){
+  var src=slot.dataset.img; if(!src) return;
+  var capText=(slot.querySelector(".cap")||{}).textContent||"";
+  var img=new Image(); img.alt=capText;
+  img.onload=function(){
+    slot.classList.add("loaded"); slot.innerHTML="";
+    var fig=document.createElement("figure"); fig.className="asset-figure"; fig.appendChild(img);
+    if(capText){ var c=document.createElement("figcaption"); c.textContent=capText; fig.appendChild(c); }
+    slot.appendChild(fig);
+  };
+  img.src=src;
+});
+
+State.femaleLeft=Math.random()<0.5;
+buildSorter();
+buildSkeleton();
+renderScavPrompt();
+buildPelvis();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:8px auto 40px;padding:0 24px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.12);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Skeletal Organization</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"skeletal-organization", title:"Skeletal Organization", unit:"Ch 7 · Skeletal — Bones" });
+  APTools.mountHUD("#apHud","skeletal-organization");
+  var BANK=[
+    { id:"s1", bloom:"Remember", outcome:"Axial skeleton",
+      q:"Which of these belongs to the AXIAL skeleton?",
+      choices:["Vertebral column","Femur","Scapula","Clavicle"],
+      answer:0, why:"The axial skeleton is the skull, vertebral column, ribs, sternum, and hyoid — the body's central axis." },
+    { id:"s2", bloom:"Remember", outcome:"Appendicular skeleton",
+      q:"Which structure is part of the APPENDICULAR skeleton?",
+      choices:["Pectoral girdle (scapula & clavicle)","Sternum","Ribs","Hyoid bone"],
+      answer:0, why:"The appendicular skeleton is the limbs plus the pectoral and pelvic girdles that attach them." },
+    { id:"s3", bloom:"Understand", outcome:"Girdle classification",
+      q:"Why is the pelvic girdle considered appendicular even though it sits near the body's axis?",
+      choices:["It attaches the lower limbs to the axial skeleton","It protects the brain","It is part of the vertebral column","It contains red marrow"],
+      answer:0, why:"Girdles are appendicular because their job is to anchor the limbs (appendages) to the axial skeleton." },
+    { id:"s4", bloom:"Remember", outcome:"Skull landmark",
+      q:"The foramen magnum is a landmark of the:",
+      choices:["Occipital bone of the skull","Femur","Scapula","Sternum"],
+      answer:0, why:"The foramen magnum is the large hole in the occipital bone where the spinal cord connects to the brain." },
+    { id:"s5", bloom:"Remember", outcome:"Hip landmark",
+      q:"The acetabulum is:",
+      choices:["The hip socket that receives the head of the femur","The shoulder socket","A skull suture","The kneecap"],
+      answer:0, why:"The acetabulum is the deep socket of the coxal (hip) bone that articulates with the femur's head." },
+    { id:"s6", bloom:"Remember", outcome:"Shoulder landmark",
+      q:"The glenoid cavity is found on the:",
+      choices:["Scapula","Femur","Sternum","Vertebra"],
+      answer:0, why:"The glenoid cavity (fossa) of the scapula receives the head of the humerus at the shoulder." },
+    { id:"s7", bloom:"Understand", outcome:"Female pelvis",
+      q:"Compared with the male pelvis, the FEMALE pelvis typically has a:",
+      choices:["Wider pubic arch (> 90°)","Narrower pubic arch (< 90°)","Heart-shaped inlet","Deeper, less flared ilium"],
+      answer:0, why:"The female pelvis is adapted for childbirth: wider pubic arch, wider sciatic notch, rounder inlet, more flared ilia." },
+    { id:"s8", bloom:"Understand", outcome:"Male pelvis",
+      q:"A pelvis with a narrow pubic arch, heart-shaped inlet, and narrow sciatic notch is most likely:",
+      choices:["Male","Female","Infant","Impossible to tell"],
+      answer:0, why:"Those robust, narrower features are characteristic of the male pelvis." },
+    { id:"s9", bloom:"Remember", outcome:"Femur landmark",
+      q:"The greater trochanter is a prominent landmark of the:",
+      choices:["Femur","Humerus","Skull","Rib"],
+      answer:0, why:"The greater trochanter is the large lateral projection at the proximal femur, a major muscle attachment." },
+    { id:"s10", bloom:"Remember", outcome:"Bone counts",
+      q:"The adult human skeleton has how many bones in total?",
+      choices:["206","150","300","112"],
+      answer:0, why:"The adult skeleton has 206 bones — 80 axial and 126 appendicular." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"skeletal-organization", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

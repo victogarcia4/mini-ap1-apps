@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Atomic Structure Lab — build an atom and watch ions, isotopes, radioisotopes and free radicals form. Single-file, no dependencies." />
+<title>Atomic Structure Lab — Atoms, Ions &amp; Isotopes</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1" />
+<style>
+/* ===== Light clinical theme (shared A&P palette) ===== */
+:root{
+  --primary:#1B2A4A; --primary-2:#27395f; --accent:#2563b6; --accent-soft:#e7f0fb;
+  --bg:#eef3f9; --panel:#ffffff; --ink:#1B2A4A; --muted:#5b6b86; --line:#c9d7ea; --line-2:#e2ebf6;
+  --proton:#e4572e; --neutron:#7c8aa5; --electron:#2563b6;
+  --ok:#1B7D46; --warn:#b5651d; --danger:#c0392b;
+  --radius:14px; --shadow:0 6px 20px rgba(27,42,74,.10); --shadow-sm:0 2px 8px rgba(27,42,74,.08);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:linear-gradient(160deg,#eef3f9,#e2ebf6);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+header.topbar{background:var(--primary);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand .logo{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#2f6fd6,#e4572e);}
+.brand h1{font-size:1.16rem;font-weight:700;}
+.brand p{font-size:.78rem;color:#c9d7ea;margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.switch{display:flex;align-items:center;gap:9px;font-size:.82rem;color:#c9d7ea;cursor:pointer;user-select:none;}
+.switch input{display:none;}
+.track{width:44px;height:24px;border-radius:20px;background:#3a4d73;position:relative;transition:.25s;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.25s;}
+.switch input:checked + .track{background:#4a9d6b;}
+.switch input:checked + .track::after{transform:translateX(20px);}
+.btn-link{text-decoration:none;color:#c9d7ea;font-weight:600;font-size:.82rem;border:1px solid #3a4d73;border-radius:9px;padding:8px 13px;}
+.btn-link:hover{color:#fff;border-color:#fff;}
+
+.layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;max-width:1420px;margin:0 auto;padding:20px 24px 30px;}
+@media (max-width:940px){.layout{grid-template-columns:1fr;}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.card h2{font-size:.74rem;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);font-weight:700;padding:15px 18px 0;}
+.card .body{padding:14px 18px 18px;}
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+
+/* particle steppers */
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line-2);}
+.stepper:last-child{border-bottom:none;}
+.stepper .lab{display:flex;align-items:center;gap:9px;font-weight:600;font-size:.9rem;}
+.dot{width:16px;height:16px;border-radius:50%;flex:none;border:1.5px solid rgba(0,0,0,.15);}
+.dot.p{background:var(--proton);} .dot.n{background:var(--neutron);} .dot.e{background:var(--electron);}
+.stepper .lab small{display:block;color:var(--muted);font-size:.7rem;font-weight:400;}
+.step-ctrls{display:flex;align-items:center;gap:6px;}
+.step-ctrls button{width:30px;height:30px;border:1px solid var(--line);background:var(--accent-soft);color:var(--primary);border-radius:8px;font-size:1.1rem;font-weight:800;cursor:pointer;line-height:1;}
+.step-ctrls button:hover{background:#d4e4f7;}
+.step-ctrls .num{min-width:30px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:1.05rem;}
+
+.preset-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px;}
+.chip-btn{font:inherit;font-weight:650;font-size:.78rem;border:1px solid var(--line);background:#fff;color:var(--primary);border-radius:999px;padding:7px 12px;cursor:pointer;}
+.chip-btn:hover{border-color:var(--accent);color:var(--accent);}
+.chip-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* challenge */
+.challenge{background:#fff7e6;border-left:4px solid #e0a800;border-radius:11px;padding:12px 14px;font-size:.85rem;line-height:1.45;}
+.challenge b{color:var(--primary);}
+.challenge .target{font-weight:800;color:#b5651d;}
+.challenge .fb{margin-top:8px;font-weight:700;}
+.challenge .fb.ok{color:var(--ok);} .challenge .fb.no{color:var(--danger);}
+
+/* viewport */
+.viewport{display:flex;flex-direction:column;gap:16px;}
+.atom-stage{background:radial-gradient(circle at 50% 45%,#f7fbff,#eaf1fb);border-radius:12px;border:1px solid var(--line-2);position:relative;}
+.atom-stage svg{display:block;width:100%;height:auto;}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:2px;}
+.ro{background:var(--accent-soft);border:1px solid var(--line-2);border-radius:11px;padding:11px 13px;}
+.ro .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;}
+.ro .v{font-size:1.25rem;font-weight:800;color:var(--primary);margin-top:2px;font-variant-numeric:tabular-nums;}
+.ro .v small{font-size:.7rem;color:var(--muted);font-weight:600;}
+
+/* classification flags */
+.flags{display:flex;flex-direction:column;gap:8px;}
+.flagrow{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#f7fafd;border:1px solid var(--line-2);font-size:.86rem;line-height:1.4;}
+.flagrow .tag{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:999px;flex:none;margin-top:1px;}
+.flagrow.on{background:#eef8f2;border-color:#bfe6cf;}
+.flagrow.on .tag{background:var(--ok);color:#fff;}
+.flagrow.off .tag{background:#e2ebf6;color:var(--muted);}
+.flagrow.warn.on{background:#fff4e6;border-color:#f3d9a8;}
+.flagrow.warn.on .tag{background:var(--warn);color:#fff;}
+
+/* compare/contrast table */
+.cc{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:6px;}
+.cc th,.cc td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-2);vertical-align:top;}
+.cc th{background:var(--primary);color:#fff;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;}
+.cc td:first-child{font-weight:800;color:var(--accent);white-space:nowrap;}
+.cc tr:nth-child(even) td{background:#f6f9fd;}
+
+.eli5-note{margin-top:12px;padding:11px 14px;background:var(--accent-soft);border-radius:10px;font-size:.86rem;line-height:1.5;border-left:4px solid var(--accent);}
+footer.note{max-width:1420px;margin:0 auto;padding:4px 24px 30px;color:var(--muted);font-size:.78rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="2.5" fill="#fff"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(120 12 12)"/></svg>
+    </div>
+    <div>
+      <h1>Atomic Structure Lab</h1>
+      <p>Build an atom — make ions, isotopes, radioisotopes &amp; free radicals (Chemistry, Ch. 2)</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><span id="modeLabel">Professional</span><input type="checkbox" id="eli5Toggle"><span class="track"></span><span>ELI5</span></label>
+    <a href="index.html" class="btn-link">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <section class="card">
+      <h2>Subatomic Particles</h2>
+      <div class="body">
+        <div class="stepper">
+          <span class="lab"><span class="dot p"></span><span>Protons <small>set the element (Z)</small></span></span>
+          <span class="step-ctrls"><button data-part="p" data-d="-1">−</button><span class="num" id="pNum">6</span><button data-part="p" data-d="1">+</button></span>
+        </div>
+        <div class="stepper">
+          <span class="lab"><span class="dot n"></span><span>Neutrons <small>set the isotope</small></span></span>
+          <span class="step-ctrls"><button data-part="n" data-d="-1">−</button><span class="num" id="nNum">6</span><button data-part="n" data-d="1">+</button></span>
+        </div>
+        <div class="stepper">
+          <span class="lab"><span class="dot e"></span><span>Electrons <small>set the charge</small></span></span>
+          <span class="step-ctrls"><button data-part="e" data-d="-1">−</button><span class="num" id="eNum">6</span><button data-part="e" data-d="1">+</button></span>
+        </div>
+        <div class="preset-row">
+          <button class="chip-btn primary" data-preset="12,6,6">Carbon-12</button>
+          <button class="chip-btn" data-preset="14,6,6">Carbon-14 ☢</button>
+          <button class="chip-btn" data-preset="23,11,10">Na⁺</button>
+          <button class="chip-btn" data-preset="35,17,18">Cl⁻</button>
+          <button class="chip-btn" data-preset="16,8,9">Free radical</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Challenge</h2>
+      <div class="body">
+        <div class="challenge" id="challengeBox">
+          <div>Target: <span class="target" id="challengeText">—</span></div>
+          <div class="fb" id="challengeFb"></div>
+        </div>
+        <div class="preset-row" style="margin-top:10px">
+          <button class="chip-btn" id="newChallenge">🎯 New challenge</button>
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- ===== VIEWPORT ===== -->
+  <main class="viewport">
+    <section class="card">
+      <h2>Atom Model</h2>
+      <div class="body" style="padding-top:8px">
+        <div class="atom-stage">
+          <svg id="atomSvg" viewBox="0 0 520 400" preserveAspectRatio="xMidYMid meet" aria-label="Bohr model of the current atom"></svg>
+        </div>
+        <div class="readouts">
+          <div class="ro"><div class="k">Element</div><div class="v" id="roElement">Carbon <small>C</small></div></div>
+          <div class="ro"><div class="k">Atomic # (Z)</div><div class="v" id="roZ">6</div></div>
+          <div class="ro"><div class="k">Mass # (A)</div><div class="v" id="roA">12</div></div>
+          <div class="ro"><div class="k">Net charge</div><div class="v" id="roCharge">0</div></div>
+          <div class="ro"><div class="k">Notation</div><div class="v" id="roNotation" style="font-size:1.05rem">¹²C</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Classification — what did you just make?</h2>
+      <div class="body">
+        <div class="flags" id="flags"></div>
+        <div class="eli5-note" id="eli5Note" style="display:none"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Compare &amp; Contrast — the 5 terms</h2>
+      <div class="body">
+        <table class="cc">
+          <thead><tr><th>Term</th><th>What it is</th><th>Which particle change causes it</th></tr></thead>
+          <tbody>
+            <tr><td>Ion</td><td>Atom with a net electric charge</td><td>Gain/lose <b>electrons</b> (protons unchanged)</td></tr>
+            <tr><td>Electrolyte</td><td>Ion dissolved in water that conducts electricity</td><td>An ion (charged) placed <b>in solution</b></td></tr>
+            <tr><td>Free radical</td><td>Atom/molecule with an <b>unpaired</b> electron — highly reactive</td><td>An odd/unpaired <b>electron</b> in the valence shell</td></tr>
+            <tr><td>Isotope</td><td>Same element, different mass</td><td>Change the number of <b>neutrons</b></td></tr>
+            <tr><td>Radioisotope</td><td>An <b>unstable</b> isotope that emits radiation as it decays</td><td>An unstable <b>neutron</b>:proton ratio</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="note">
+  Educational model. Electron shells use the simplified Bohr filling (2, 8, 8, 2) for elements 1–20. "Free-radical character" is flagged from an unpaired (odd) electron count — a teaching simplification of reactive species such as O₂•⁻ and •OH.
+</footer>
+
+<script>
+"use strict";
+/* ============================================================================
+   MODEL — an atom is fully described by (protons, neutrons, electrons).
+   Changing each particle produces a different concept:
+     protons  -> the ELEMENT (atomic number Z)
+     neutrons -> the ISOTOPE (mass number A = Z + N)
+     electrons-> the CHARGE  (ion; unpaired electron -> free-radical character)
+   ========================================================================== */
+const SVGNS = "http://www.w3.org/2000/svg";
+
+/* Elements 1–20: symbol, name, neutrons in the most common isotope */
+const ELEMENTS = {
+  1:["H","Hydrogen",0], 2:["He","Helium",2], 3:["Li","Lithium",4], 4:["Be","Beryllium",5],
+  5:["B","Boron",6], 6:["C","Carbon",6], 7:["N","Nitrogen",7], 8:["O","Oxygen",8],
+  9:["F","Fluorine",10], 10:["Ne","Neon",10], 11:["Na","Sodium",12], 12:["Mg","Magnesium",12],
+  13:["Al","Aluminum",14], 14:["Si","Silicon",14], 15:["P","Phosphorus",16], 16:["S","Sulfur",16],
+  17:["Cl","Chlorine",18], 18:["Ar","Argon",22], 19:["K","Potassium",20], 20:["Ca","Calcium",20]
+};
+/* A few famous RADIOisotopes (key "Z-A") so we never mislabel a stable isotope as radioactive */
+const RADIO = { "1-3":"Tritium (³H)", "6-14":"Carbon-14", "15-32":"Phosphorus-32",
+  "16-35":"Sulfur-35", "19-40":"Potassium-40", "11-24":"Sodium-24", "20-45":"Calcium-45" };
+
+const state = { p:6, n:6, e:6, eli5:false, challenge:null };
+
+const SUPER = {0:"⁰",1:"¹",2:"²",3:"³",4:"⁴",5:"⁵",6:"⁶",7:"⁷",8:"⁸",9:"⁹"};
+const toSuper = num => String(num).split("").map(d=>SUPER[d]).join("");
+
+/* --- derive everything from state --- */
+function derive(){
+  const p = state.p, n = state.n, e = state.e;
+  const el = ELEMENTS[p] || ["?","(beyond Z=20)",p];
+  const A = p + n;
+  const charge = p - e;                 // + = cation, - = anion
+  const commonN = el[2];
+  const isIon = charge !== 0;
+  const isIsotope = n !== commonN;
+  const radioKey = p + "-" + A;
+  const isRadio = !!RADIO[radioKey];
+  const oddElectron = e % 2 === 1;      // simplified free-radical flag: unpaired electron
+  return {p,n,e,el,A,charge,commonN,isIon,isIsotope,isRadio,radioName:RADIO[radioKey],oddElectron};
+}
+
+/* ============================================================================
+   SVG BOHR MODEL — nucleus (protons+neutrons) + electron shells (2,8,8,2)
+   ========================================================================== */
+const svg = document.getElementById("atomSvg");
+const CX = 260, CY = 200;
+const SHELL_CAP = [2,8,8,2];
+
+function renderAtom(d){
+  let out = "";
+  // electron shells (rings) + electrons
+  let remaining = d.e, shellR = 70;
+  for(let s=0; s<SHELL_CAP.length && (remaining>0 || s===0); s++){
+    const r = shellR + s*45;
+    out += `<circle cx="${CX}" cy="${CY}" r="${r}" fill="none" stroke="#c9d7ea" stroke-width="1.5"/>`;
+    const inShell = Math.min(remaining, SHELL_CAP[s]);
+    for(let i=0;i<inShell;i++){
+      const ang = (i/Math.max(inShell,1))*2*Math.PI - Math.PI/2 + s*0.4;
+      const x = CX + r*Math.cos(ang), y = CY + r*Math.sin(ang);
+      out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="#2563b6" stroke="#fff" stroke-width="1.5"/>`;
+      out += `<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">−</text>`;
+    }
+    remaining -= inShell;
+  }
+  // nucleus: pack protons (red) + neutrons (grey) in a spiral
+  const total = d.p + d.n;
+  const nucR = 20 + Math.min(total,26)*1.3;
+  out += `<circle cx="${CX}" cy="${CY}" r="${nucR}" fill="#fff" stroke="#e2ebf6" stroke-width="1"/>`;
+  const parts = [];
+  for(let i=0;i<d.p;i++) parts.push("p");
+  for(let i=0;i<d.n;i++) parts.push("n");
+  parts.sort(()=>0); // keep order p then n (deterministic)
+  const gr = 8.2; // packing radius
+  parts.forEach((t,i)=>{
+    // sunflower packing
+    const k = i+0.5;
+    const rr = nucR>0 ? (Math.sqrt(k/total))*(nucR-6) : 0;
+    const ang = k*2.399963; // golden angle
+    const x = CX + rr*Math.cos(ang), y = CY + rr*Math.sin(ang);
+    const fill = t==="p" ? "#e4572e" : "#7c8aa5";
+    out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6.4" fill="${fill}" stroke="#fff" stroke-width="1"/>`;
+    out += `<text x="${x.toFixed(1)}" y="${(y+3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#fff" font-weight="800">${t==="p"?"+":"0"}</text>`;
+  });
+  svg.innerHTML = out;
+}
+
+/* ============================================================================
+   DUAL-MODE explanations (Professional vs ELI5 "stadium / team" analogy)
+   ========================================================================== */
+function eli5Text(d){
+  if(d.oddElectron) return "🎯 Free radical: this atom has a lonely, unpaired electron — like a kid without a partner who grabs onto anything nearby. That makes it very reactive (this is what antioxidants mop up!).";
+  if(d.isRadio) return "☢ Radioisotope: same team (element) but so overloaded with neutrons that it's wobbly and unstable — it throws off radiation to calm down. " + (d.radioName||"") + ".";
+  if(d.isIsotope) return "⚖️ Isotope: same team, different weight. You changed the neutrons (the 'heavy padding') but not who the atom is — the element is the same.";
+  if(d.isIon) return (d.charge>0? "➕ Cation: the atom lost an electron 'ball', so it now has more + than −." : "➖ Anion: the atom grabbed an extra electron 'ball', so it now has more − than +.") + " A charged atom is an ion; drop it in water and it becomes an electrolyte that carries electricity.";
+  return "🟢 Neutral atom: equal protons and electrons, and the usual number of neutrons — perfectly balanced.";
+}
+
+/* ============================================================================
+   RENDER
+   ========================================================================== */
+function render(){
+  const d = derive();
+  document.getElementById("pNum").textContent = d.p;
+  document.getElementById("nNum").textContent = d.n;
+  document.getElementById("eNum").textContent = d.e;
+
+  renderAtom(d);
+
+  document.getElementById("roElement").innerHTML = d.el[1] + ' <small>' + d.el[0] + '</small>';
+  document.getElementById("roZ").textContent = d.p;
+  document.getElementById("roA").textContent = d.A;
+  const chg = d.charge===0 ? "0" : (d.charge>0? "+"+d.charge : d.charge);
+  document.getElementById("roCharge").innerHTML = chg + (d.charge>0?' <small>cation</small>':d.charge<0?' <small>anion</small>':'');
+  document.getElementById("roNotation").textContent = toSuper(d.A) + d.el[0] + (d.charge!==0 ? (Math.abs(d.charge)>1?Math.abs(d.charge):"") + (d.charge>0?"⁺":"⁻") : "");
+
+  /* classification flags */
+  const rows = [
+    { on:d.isIon, warn:false, tag:"Ion", txt: d.isIon ? `Net charge ${chg} → this is ${d.charge>0?"a cation (lost electrons)":"an anion (gained electrons)"}.` : "Neutral atom — protons equal electrons, no net charge." },
+    { on:d.isIon, warn:false, tag:"Electrolyte", txt: d.isIon ? "Because it is charged, dissolved in water it acts as an electrolyte and conducts electricity (e.g., Na⁺, K⁺, Cl⁻ in body fluids)." : "Not charged → would not conduct as an electrolyte." },
+    { on:d.oddElectron, warn:true, tag:"Free radical", txt: d.oddElectron ? "Odd electron count → an unpaired electron. This gives free-radical character: highly reactive, damages cells (mopped up by antioxidants)." : "Even electrons → all paired, no free-radical character." },
+    { on:d.isIsotope, warn:false, tag:"Isotope", txt: d.isIsotope ? `Neutron count (${d.n}) differs from the common ${d.el[1]} isotope (${d.commonN}) → this is ${d.el[0]}-${d.A}, an isotope.` : `Most common isotope of ${d.el[1]} (${d.commonN} neutrons).` },
+    { on:d.isRadio, warn:true, tag:"Radioisotope", txt: d.isRadio ? `${d.radioName} is a radioisotope — an unstable isotope that emits radiation as it decays (used in dating & medicine).` : "Not a known radioisotope in this range (change neutrons to an unstable ratio, e.g., Carbon-14)." }
+  ];
+  document.getElementById("flags").innerHTML = rows.map(r=>
+    `<div class="flagrow ${r.warn?'warn':''} ${r.on?'on':'off'}"><span class="tag">${r.tag}</span><span>${r.txt}</span></div>`).join("");
+
+  const note = document.getElementById("eli5Note");
+  note.style.display = state.eli5 ? "" : "none";
+  if(state.eli5) note.textContent = eli5Text(d);
+
+  checkChallenge(d);
+}
+
+/* ============================================================================
+   CHALLENGES — validate the current build against a target
+   ========================================================================== */
+const CHALLENGES = [
+  { text:"Build a sodium ion, Na⁺ (11 protons, charge +1).", test:d=>d.p===11 && d.charge===1 },
+  { text:"Build Carbon-14 (the radioisotope).", test:d=>d.p===6 && d.A===14 },
+  { text:"Build a chloride ion, Cl⁻ (17 protons, charge −1).", test:d=>d.p===17 && d.charge===-1 },
+  { text:"Make an atom with free-radical character (an unpaired electron).", test:d=>d.oddElectron },
+  { text:"Build a neutral oxygen atom (8 protons, no charge, common isotope).", test:d=>d.p===8 && d.charge===0 && !d.isIsotope },
+  { text:"Make any isotope of carbon that is NOT carbon-12.", test:d=>d.p===6 && d.isIsotope }
+];
+function newChallenge(){
+  state.challenge = CHALLENGES[Math.floor(Math.random()*CHALLENGES.length)];
+  document.getElementById("challengeText").textContent = state.challenge.text;
+  document.getElementById("challengeFb").textContent = "";
+  render();
+}
+function checkChallenge(d){
+  if(!state.challenge) return;
+  const fb = document.getElementById("challengeFb");
+  if(state.challenge.test(d)){ fb.textContent = "✓ Correct — challenge complete!"; fb.className = "fb ok"; }
+  else { fb.textContent = ""; fb.className = "fb"; }
+}
+
+/* ============================================================================
+   CONTROLS
+   ========================================================================== */
+document.querySelectorAll(".step-ctrls button").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const part = b.dataset.part, d = +b.dataset.d;
+    if(part==="p") state.p = Math.max(1, Math.min(20, state.p + d));
+    if(part==="n") state.n = Math.max(0, Math.min(30, state.n + d));
+    if(part==="e") state.e = Math.max(0, Math.min(26, state.e + d));
+    render();
+  });
+});
+document.querySelectorAll("[data-preset]").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const [A,p,e] = b.dataset.preset.split(",").map(Number);
+    state.p = p; state.e = e; state.n = A - p;
+    render();
+  });
+});
+document.getElementById("newChallenge").addEventListener("click", newChallenge);
+document.getElementById("eli5Toggle").addEventListener("change", e=>{
+  state.eli5 = e.target.checked;
+  document.getElementById("modeLabel").textContent = e.target.checked ? "ELI5" : "Professional";
+  render();
+});
+
+/* init */
+newChallenge();
+render();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1420px;margin:8px auto 40px;padding:0 24px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Atoms, Ions &amp; Isotopes</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"atomic-structure", title:"Atomic Structure Lab", unit:"Ch 2 · Chemistry" });
+  APTools.mountHUD("#apHud","atomic-structure");
+  var BANK=[
+    { id:"at1", bloom:"Understand", outcome:"Ion vs isotope",
+      q:"An ion is an atom that has changed its number of:",
+      choices:["Electrons (giving it a net charge)","Neutrons","Protons","Nuclei"],
+      answer:0, why:"Gaining or losing electrons changes the charge and makes an ion; protons stay the same (or it would be a different element)." },
+    { id:"at2", bloom:"Understand", outcome:"Ion vs isotope",
+      q:"Isotopes of the same element differ in their number of:",
+      choices:["Neutrons","Electrons","Protons","Charge"],
+      answer:0, why:"Isotopes have the same protons (same element) but different neutron counts, so different mass numbers." },
+    { id:"at3", bloom:"Remember", outcome:"Define electrolyte",
+      q:"An electrolyte is best defined as:",
+      choices:["An ion dissolved in water that conducts electricity","A neutral atom","An isotope that decays","A shared electron pair"],
+      answer:0, why:"Electrolytes are ions (e.g., Na⁺, K⁺, Cl⁻) in solution; because they are charged, they conduct electric current." },
+    { id:"at4", bloom:"Understand", outcome:"Define free radical",
+      q:"A free radical is dangerous to cells because it has:",
+      choices:["An unpaired electron, making it highly reactive","Too many neutrons","No electrons at all","A double positive charge"],
+      answer:0, why:"An unpaired (odd) electron makes a free radical extremely reactive, stealing electrons from and damaging biomolecules." },
+    { id:"at5", bloom:"Understand", outcome:"Define radioisotope",
+      q:"A radioisotope differs from a stable isotope because it:",
+      choices:["Is unstable and emits radiation as it decays","Has extra electrons","Has fewer protons","Cannot exist in nature"],
+      answer:0, why:"A radioisotope has an unstable neutron:proton ratio and releases radiation as it decays (e.g., carbon-14)." },
+    { id:"at6", bloom:"Apply", outcome:"Particle → concept",
+      q:"Carbon-12 and Carbon-14 are both carbon because they have the same number of:",
+      choices:["Protons (6)","Neutrons","Electrons in shell 3","Radioactive particles"],
+      answer:0, why:"Both have 6 protons (atomic number 6 = carbon); they differ only in neutrons (6 vs 8)." },
+    { id:"at7", bloom:"Apply", outcome:"Ion formation",
+      q:"A sodium atom (11 protons) that loses one electron becomes:",
+      choices:["Na⁺, a cation","Na⁻, an anion","A different element","An isotope of sodium"],
+      answer:0, why:"Losing an electron leaves 11 protons vs 10 electrons → net charge +1, a cation (Na⁺)." },
+    { id:"at8", bloom:"Analyze", outcome:"Distinguish the 5 terms",
+      q:"Changing the number of NEUTRONS in an atom produces a(n):",
+      choices:["Isotope (and possibly a radioisotope if unstable)","Ion","Free radical","Electrolyte"],
+      answer:0, why:"Neutrons set the isotope; if the new neutron:proton ratio is unstable, that isotope is also a radioisotope." },
+    { id:"at9", bloom:"Remember", outcome:"Atomic number",
+      q:"The atomic number of an element equals its number of:",
+      choices:["Protons","Neutrons","Electron shells","Neutrons + electrons"],
+      answer:0, why:"Atomic number (Z) = number of protons, which defines the element's identity." },
+    { id:"at10", bloom:"Apply", outcome:"Radioisotope example",
+      q:"Carbon-14 is used in radiocarbon dating because it:",
+      choices:["Is radioactive and decays at a known rate","Never changes","Has no neutrons","Is an ion"],
+      answer:0, why:"C-14 is an unstable radioisotope; its predictable decay rate lets scientists date organic remains." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"atomic-structure", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

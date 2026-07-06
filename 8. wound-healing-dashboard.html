@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Interactive Wound Healing Dashboard — visualize the four overlapping phases of cutaneous repair. Single-file, no dependencies." />
+<title>Interactive Wound Healing Dashboard — Cutaneous Repair</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1" />
+<style>
+/* ============================================================
+   Interactive Wound Healing Dashboard
+   Palette: Slate (#1e293b) + Blue (#3b82f6). Dark medical UI.
+   ============================================================ */
+:root{
+  --bg:#0b1220; --slate:#1e293b; --slate-2:#273449; --slate-3:#334155;
+  --line:#3a4a63; --line-2:#2a3850;
+  --text:#e8eefc; --text-dim:#9fb1d4; --text-mute:#6b7ea3;
+  --blue:#3b82f6; --blue-2:#2563eb; --blue-soft:#1d3a6b;
+  --ok:#22c55e; --warn:#f59e0b; --danger:#ef4444;
+  /* wound tissue palette */
+  --clot:#5b1a1a; --inflamed:#7f1d1d; --granulation:#dc2626;
+  --granulation-2:#ef4444; --pink:#f0a1a1; --scar:#e7d8d2;
+  --radius:14px; --radius-s:9px;
+  --shadow:0 8px 30px rgba(0,0,0,.35);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:var(--sans); color:var(--text); min-height:100vh; line-height:1.5;
+  background:
+    radial-gradient(1100px 560px at 82% -8%,rgba(59,130,246,.12),transparent 60%),
+    radial-gradient(800px 500px at -6% 108%,rgba(59,130,246,.08),transparent 60%),
+    linear-gradient(180deg,#0b1220,#0e1728);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---- header ---- */
+header.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:16px 24px;background:rgba(30,41,59,.72);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand .logo{
+  width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--blue),#1e40af);box-shadow:0 4px 14px rgba(59,130,246,.4);
+}
+.brand h1{font-size:1.16rem;font-weight:700;letter-spacing:-.01em;}
+.brand p{font-size:.78rem;color:var(--text-dim);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+
+/* toggle switch (generic) */
+.switch{display:flex;align-items:center;gap:9px;font-size:.8rem;color:var(--text-dim);cursor:pointer;user-select:none;}
+.switch input{display:none;}
+.track{width:46px;height:25px;border-radius:20px;background:#3a4d73;position:relative;transition:.25s;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.25s;}
+.switch input:checked + .track{background:var(--blue);}
+.switch input:checked + .track::after{transform:translateX(21px);}
+.btn-link{
+  text-decoration:none;color:var(--text-dim);font-weight:600;font-size:.82rem;
+  border:1px solid var(--line);border-radius:9px;padding:8px 13px;background:var(--slate-2);
+}
+.btn-link:hover{color:#fff;border-color:var(--blue);}
+
+/* ---- layout ---- */
+.layout{
+  display:grid;grid-template-columns:340px minmax(0,1fr);gap:20px;
+  max-width:1440px;margin:0 auto;padding:20px 24px 30px;
+}
+@media (max-width:960px){ .layout{grid-template-columns:1fr;} }
+
+.card{background:var(--slate);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.card h2{
+  font-size:.74rem;text-transform:uppercase;letter-spacing:1.1px;color:var(--text-mute);
+  font-weight:700;padding:15px 18px 0;
+}
+.card .body{padding:14px 18px 18px;}
+
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+
+/* phase toggle chips for reference */
+.phase-track{display:flex;gap:5px;margin-bottom:6px;}
+.phase-track .seg{
+  flex:1;height:7px;border-radius:4px;background:var(--slate-3);transition:.25s;
+}
+.phase-track .seg.on{background:var(--blue);}
+
+/* time controls */
+.slider-row label{display:flex;justify-content:space-between;font-size:.8rem;font-weight:600;color:var(--text-dim);margin-bottom:8px;}
+.slider-row label b{color:var(--blue);font-variant-numeric:tabular-nums;}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;
+  background:linear-gradient(90deg,var(--blue) 0%,var(--slate-3) 0%);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:#fff;border:3px solid var(--blue);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--blue);cursor:pointer;}
+.btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;}
+.btn{
+  border:none;border-radius:9px;padding:11px 8px;font-weight:650;font-size:.84rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;transition:.16s;font-family:inherit;
+  background:var(--slate-3);color:var(--text);
+}
+.btn:hover{background:#3d4f6d;}
+.btn.primary{background:var(--blue);color:#fff;grid-column:span 3;}
+.btn.primary:hover{background:var(--blue-2);}
+.btn:active{transform:translateY(1px);}
+
+/* condition toggles */
+.cond{display:flex;flex-direction:column;gap:12px;}
+.cond .switch{justify-content:space-between;font-size:.86rem;color:var(--text);width:100%;}
+.cond .switch .lab small{display:block;font-size:.72rem;color:var(--text-mute);font-weight:400;margin-top:1px;}
+
+/* data panel */
+.stat{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line-2);font-size:.9rem;}
+.stat:last-child{border-bottom:none;}
+.stat .k{color:var(--text-mute);font-size:.8rem;}
+.stat .v{font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
+.badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:.78rem;font-weight:700;}
+.badge.hemostasis{background:rgba(148,163,184,.2);color:#cbd5e1;}
+.badge.inflammation{background:rgba(239,68,68,.18);color:#fca5a5;}
+.badge.proliferation{background:rgba(59,130,246,.18);color:#93c5fd;}
+.badge.maturation{background:rgba(34,197,94,.16);color:#86efac;}
+.badge.chronic{background:rgba(245,158,11,.2);color:#fcd34d;}
+
+.risk-list{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
+.risk{font-size:.82rem;display:flex;gap:8px;align-items:flex-start;line-height:1.4;}
+.risk .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none;}
+.risk.ok .dot{background:var(--ok);}
+.risk.warn .dot{background:var(--warn);}
+.risk.bad .dot{background:var(--danger);}
+
+/* viewport */
+.viewport{display:flex;flex-direction:column;gap:16px;}
+.stage{position:relative;background:linear-gradient(180deg,#0c1526,#0a1120);border-radius:12px;overflow:hidden;border:1px solid var(--line-2);}
+.stage svg{display:block;width:100%;height:auto;}
+.phase-caption{
+  position:absolute;right:14px;top:12px;left:auto;background:rgba(15,23,42,.86);backdrop-filter:blur(6px);
+  border:1px solid var(--line);border-radius:10px;padding:9px 13px;max-width:min(42%,320px);
+}
+.phase-caption .ph{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--blue);}
+.phase-caption .day{font-size:.72rem;color:var(--text-mute);}
+.phase-caption .txt{font-size:.86rem;color:var(--text);margin-top:4px;line-height:1.45;}
+.alert-flags{position:absolute;left:14px;top:12px;display:flex;flex-direction:column;gap:7px;align-items:flex-start;}
+.flag{font-size:.72rem;font-weight:800;padding:5px 10px;border-radius:8px;display:none;align-items:center;gap:6px;}
+.flag.show{display:inline-flex;animation:pulse 1.6s infinite;}
+.flag.infection{background:rgba(239,68,68,.9);color:#fff;}
+.flag.diabetes{background:rgba(245,158,11,.92);color:#111;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* tensile gauge */
+.gauge-wrap{display:grid;grid-template-columns:1fr;gap:8px;}
+.gauge-head{display:flex;justify-content:space-between;align-items:baseline;}
+.gauge-head .lbl{font-size:.74rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-mute);font-weight:700;}
+.gauge-head .val{font-size:1.5rem;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;}
+.gauge-track{position:relative;height:16px;border-radius:10px;background:var(--slate-3);overflow:hidden;border:1px solid var(--line-2);}
+.gauge-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#ef4444,#f59e0b 55%,#22c55e);transition:width .35s ease;}
+.gauge-max{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--text-dim);}
+.gauge-max::after{content:"~80% max";position:absolute;top:-16px;right:-18px;font-size:.62rem;color:var(--text-dim);white-space:nowrap;}
+.gauge-scale{display:flex;justify-content:space-between;font-size:.66rem;color:var(--text-mute);font-variant-numeric:tabular-nums;}
+
+footer.note{max-width:1440px;margin:0 auto;padding:6px 24px 34px;color:var(--text-mute);font-size:.78rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 2a5 5 0 0 0-5 5c0 2 1 3 1 5a4 4 0 0 1-4 4"/><path d="M13 2a5 5 0 0 1 5 5c0 2-1 3-1 5a4 4 0 0 0 4 4"/><path d="M8 21c1.5-1 2.5-2 4-2s2.5 1 4 2"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Interactive Wound Healing Dashboard</h1>
+      <p>Cutaneous repair — Hemostasis · Inflammation · Proliferation · Maturation (Integ. System, Ch. 6)</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="switch" title="Switch between clinical language and a plain-language 'pothole' analogy">
+      <span id="modeLabel">Professional</span>
+      <input type="checkbox" id="eli5Toggle">
+      <span class="track"></span>
+      <span>ELI5</span>
+    </label>
+    <a href="index.html" class="btn-link">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <!-- Time controls -->
+    <section class="card">
+      <h2>Timeline Controls</h2>
+      <div class="body">
+        <div class="phase-track" id="phaseTrack" aria-hidden="true">
+          <div class="seg" data-ph="hemostasis"></div>
+          <div class="seg" data-ph="inflammation"></div>
+          <div class="seg" data-ph="proliferation"></div>
+          <div class="seg" data-ph="maturation"></div>
+        </div>
+        <div class="slider-row">
+          <label>Post-injury day <b id="dayLabel">0</b></label>
+          <input type="range" id="daySlider" min="0" max="90" value="0" step="1">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="playBtn">▶ Play</button>
+          <button class="btn" id="stepBtn">⏭ +1 day</button>
+          <button class="btn" id="backBtn">⏮ −1 day</button>
+          <button class="btn" id="resetBtn">↺ Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Condition toggles -->
+    <section class="card">
+      <h2>Complicating Conditions</h2>
+      <div class="body cond">
+        <label class="switch">
+          <span class="lab">Wound infection <small>↑ neutrophils, redness/swelling, stalls healing</small></span>
+          <span style="display:flex;gap:0"><input type="checkbox" id="infectionToggle"><span class="track"></span></span>
+        </label>
+        <label class="switch">
+          <span class="lab">Diabetes / chronic <small>impairs angiogenesis, traps in inflammation</small></span>
+          <span style="display:flex;gap:0"><input type="checkbox" id="diabetesToggle"><span class="track"></span></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Data panel -->
+    <section class="card">
+      <h2>Live Data Panel</h2>
+      <div class="body">
+        <div class="stat"><span class="k">Current phase</span><span class="v"><span class="badge hemostasis" id="dPhase">Hemostasis</span></span></div>
+        <div class="stat"><span class="k">Dominant cell</span><span class="v" id="dCell">Platelets</span></div>
+        <div class="stat"><span class="k">Collagen type</span><span class="v" id="dCollagen">—</span></div>
+        <div class="stat"><span class="k">Healing velocity</span><span class="v" id="dVelocity">0.00 mm/day</span></div>
+        <div class="stat"><span class="k">Wound closure</span><span class="v" id="dClosure">0%</span></div>
+        <div style="margin-top:10px">
+          <span class="k" style="font-size:.74rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-mute);font-weight:700">Risk factors</span>
+          <div class="risk-list" id="riskList"></div>
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- ============ VIEWPORT ============ -->
+  <main class="viewport">
+    <section class="card">
+      <h2>Skin Cross-Section</h2>
+      <div class="body" style="padding-top:8px">
+        <div class="stage">
+          <div class="phase-caption">
+            <span class="ph" id="capPhase">Hemostasis</span> <span class="day" id="capDay">· Day 0</span>
+            <div class="txt" id="capText"></div>
+          </div>
+          <div class="alert-flags">
+            <span class="flag infection" id="flagInfection">⚠ Infection — inflamed &amp; swollen</span>
+            <span class="flag diabetes" id="flagDiabetes">⚠ Chronic / non-healing</span>
+          </div>
+          <!-- SVG built + updated by JS -->
+          <svg id="skinSvg" viewBox="0 0 820 520" preserveAspectRatio="xMidYMid meet" aria-label="Animated cross-section of healing skin"></svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="body">
+        <div class="gauge-wrap">
+          <div class="gauge-head">
+            <span class="lbl">Tensile strength recovery</span>
+            <span class="val" id="strengthVal">0%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" id="strengthFill" style="width:0%"></div>
+            <div class="gauge-max" style="left:80%"></div>
+          </div>
+          <div class="gauge-scale"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="note">
+  Educational simulation of cutaneous wound healing. The four phases overlap in time; day boundaries here are teaching approximations.
+  Scarred tissue regains only ~80% of original tensile strength. Infection and diabetes are modeled qualitatively to illustrate delayed / chronic healing.
+</footer>
+
+<script>
+"use strict";
+/* ============================================================================
+   MODEL — physiological calculations (all commented)
+   The wound-healing cascade has four OVERLAPPING phases. We drive everything
+   from a single "biological effective day" (effDay) so that complications
+   (infection, diabetes) can slow or trap the biology while calendar time (the
+   slider) keeps moving.
+   ========================================================================== */
+const SVGNS = "http://www.w3.org/2000/svg";
+
+const state = {
+  day: 0,            // calendar day set by the slider (0–90)
+  playing: false,
+  eli5: false,
+  infection: false,
+  diabetes: false
+};
+
+/* --- clamp / interpolation helpers --- */
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp  = (a, b, t) => a + (b - a) * clamp(t, 0, 1);
+/* smoothstep: eased 0→1 ramp between edges e0 and e1 */
+function smooth(x, e0, e1){ const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); }
+/* deterministic RNG so cells/vessels keep stable positions between frames */
+function mulberry32(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* --- interpolate along a set of {stop, color} by day (hex lerp) --- */
+function hexLerp(c1, c2, t){
+  const a = parseInt(c1.slice(1),16), b = parseInt(c2.slice(1),16);
+  const ar=a>>16&255, ag=a>>8&255, ab=a&255, br=b>>16&255, bg=b>>8&255, bb=b&255;
+  const r=Math.round(lerp(ar,br,t)), g=Math.round(lerp(ag,bg,t)), bl=Math.round(lerp(ab,bb,t));
+  return "#" + ((1<<24)+(r<<16)+(g<<8)+bl).toString(16).slice(1);
+}
+function tissueColor(effDay){
+  // Deep-red clot → bright granulation → pink → pale flat scar
+  const stops = [
+    {d:0,  c:"#5b1a1a"},  // fibrin clot / scab
+    {d:3,  c:"#7f1d1d"},  // inflamed
+    {d:8,  c:"#dc2626"},  // granulation (bright red, well-vascularised)
+    {d:18, c:"#ef6a6a"},  // maturing granulation → pink
+    {d:35, c:"#f0a1a1"},  // pink immature scar
+    {d:70, c:"#e7d8d2"}   // pale flat scar
+  ];
+  for(let i=0;i<stops.length-1;i++){
+    if(effDay <= stops[i+1].d){
+      const t = (effDay - stops[i].d)/(stops[i+1].d - stops[i].d);
+      return hexLerp(stops[i].c, stops[i+1].c, t);
+    }
+  }
+  return stops[stops.length-1].c;
+}
+
+/* --- Effective biological day: complications slow / trap the biology --- */
+function effectiveDay(){
+  let d = state.day;
+  if(state.infection) d *= 0.6;                 // infection ~40% slower repair
+  if(state.diabetes)  d = Math.min(d * 0.5, 5); // diabetes: impaired + trapped ≤ early inflammation
+  return d;
+}
+
+/* --- Phase determination (uses effective day so complications delay it) --- */
+function currentPhase(){
+  const d = effectiveDay();
+  if(state.diabetes && state.day > 5) return "chronic";     // trapped chronic-inflammatory wound
+  if(d < 0.5)  return "hemostasis";   // 0–2 h: vasoconstriction + fibrin clot
+  if(d <= 5)   return "inflammation"; // days 1–5: neutrophils then macrophages
+  if(d <= 24)  return "proliferation";// days 3–24: fibroblasts, collagen, angiogenesis, epithelialisation
+  return "maturation";                // day 24 → 1 yr: remodeling III→I, scar flattens
+}
+
+/* --- Dominant cell type by phase / day --- */
+function dominantCell(phase, effDay){
+  if(phase === "hemostasis") return "Platelets";
+  if(phase === "chronic")    return "Neutrophils (persistent)";
+  if(phase === "inflammation") return effDay < 3 ? "Neutrophils" : "Macrophages";
+  if(phase === "proliferation") return "Fibroblasts";
+  return effDay < 40 ? "Myofibroblasts" : "Fibrocytes";
+}
+
+/* --- Collagen type: Type III laid down early, remodeled to Type I --- */
+function collagenType(phase, effDay){
+  if(phase === "hemostasis") return "Fibrin (no collagen)";
+  if(phase === "inflammation" || phase === "chronic") return "Fibrin → early Type III";
+  if(phase === "proliferation") return "Type III (immature)";
+  // maturation: Type III steadily replaced by stronger Type I
+  const iFrac = Math.round(smooth(effDay, 24, 80) * 100);
+  return "Type I " + iFrac + "% / Type III " + (100 - iFrac) + "%";
+}
+
+/* --- Tensile strength (% of original) — sigmoid, plateaus near 80% --- */
+function tensileStrength(){
+  const d = effectiveDay();
+  // logistic centered ~day 30; asymptote 80% (scar never reaches 100%)
+  const s = 80 / (1 + Math.exp(-(d - 28) / 11));
+  return clamp(s - 4, 0, 80); // small offset so a fresh clot ≈ few %
+}
+
+/* --- Healing (epithelialisation) velocity mm/day — bell curve, peaks in proliferation --- */
+function healingVelocity(phase){
+  const d = effectiveDay();
+  let v = 1.05 * Math.exp(-Math.pow((d - 9) / 7, 2)); // ~1 mm/day peak around day 9
+  if(state.diabetes) v *= 0.35;   // impaired fibroblast/keratinocyte migration
+  if(state.infection) v *= 0.55;  // bacterial burden delays closure
+  if(phase === "chronic") v = Math.min(v, 0.05);
+  return Math.max(0, v);
+}
+
+/* --- Wound closure fraction (0–1): epithelial coverage, complete ~day 21 --- */
+function woundClosure(){
+  const d = effectiveDay();
+  let c = smooth(d, 1, 21);
+  if(state.diabetes) c = Math.min(c, 0.35); // chronic wound stays open
+  return c;
+}
+
+/* --- Cell population counts for the SVG (relative, for teaching) --- */
+function cellCounts(phase, effDay){
+  let neutro = 0, macro = 0, fibro = 0;
+  if(phase === "inflammation" || phase === "chronic"){
+    neutro = phase === "chronic" ? 14 : Math.round(lerp(14, 5, smooth(effDay,1,5)));
+    macro  = Math.round(lerp(2, 9, smooth(effDay,2,5)));
+  } else if(phase === "proliferation"){
+    neutro = 2; macro = Math.round(lerp(8, 3, smooth(effDay,5,24)));
+    fibro  = Math.round(lerp(4, 12, smooth(effDay,5,16)));
+  } else if(phase === "maturation"){
+    fibro = Math.round(lerp(8, 1, smooth(effDay,24,70)));
+  }
+  if(state.infection){ neutro = Math.round(neutro * 2.4) + 6; } // heavy neutrophil infiltrate
+  if(state.diabetes){ fibro = Math.round(fibro * 0.4); }        // impaired fibroblasts
+  return {neutro, macro, fibro};
+}
+
+/* ============================================================================
+   DUAL-MODE EXPLANATIONS — Professional vs ELI5 ("Pothole in a road" analogy)
+   ========================================================================== */
+const EXPLAIN = {
+  hemostasis: {
+    pro: "Vasoconstriction limits blood loss; platelets aggregate and fibrin polymerises into a clot that plugs the defect and forms a provisional matrix.",
+    eli5: "A pothole just opened in the road. Workers rush in with quick-set tar (the clot) to plug the hole so nothing else falls in."
+  },
+  inflammation: {
+    pro: "Vasodilation brings neutrophils that kill bacteria, followed by macrophages that clear debris and release growth factors to recruit repair cells.",
+    eli5: "A cleanup crew arrives at the pothole. First the trash collectors (neutrophils) haul off junk and germs, then the supervisors (macrophages) tidy up and call in the builders."
+  },
+  proliferation: {
+    pro: "Fibroblasts deposit Type III collagen (granulation tissue), new capillaries sprout (angiogenesis), and keratinocytes migrate across the wound to re-epithelialise it.",
+    eli5: "Builders fill the pothole with fresh gravel (collagen), lay tiny new water pipes (blood vessels), and a fresh strip of road (skin) creeps in from the edges to cover the top."
+  },
+  maturation: {
+    pro: "Collagen is remodeled from weak Type III to strong Type I and realigned along stress lines. The scar flattens and pales but regains only ~80% of original tensile strength.",
+    eli5: "The patch hardens and gets repainted to blend in. It looks flat and pale now — but a patched road is never quite as tough as the original, only about 80% as strong."
+  },
+  chronic: {
+    pro: "The wound is trapped in a persistent inflammatory state: poor perfusion and impaired fibroblast/angiogenic function prevent progression to proliferation — a chronic, non-healing wound.",
+    eli5: "The supply trucks can't reach the pothole (bad blood flow), so the cleanup crew is stuck cleaning the same hole forever. The builders never get to start — the pothole just stays open."
+  }
+};
+const PHASE_LABEL = { hemostasis:"Hemostasis", inflammation:"Inflammation", proliferation:"Proliferation", maturation:"Maturation", chronic:"Chronic Inflammation" };
+
+/* ============================================================================
+   SVG BUILD — static skin layers created once, dynamic groups updated per frame
+   ========================================================================== */
+const svg = document.getElementById("skinSvg");
+const CX = 410;               // wound centre-x
+const SURFACE_Y = 70;         // top of epidermis
+const BASE_Y = 330;           // wound base (dermis/subcutaneous boundary)
+
+function buildStaticSVG(){
+  svg.innerHTML = `
+    <defs>
+      <!-- clot / scab texture -->
+      <pattern id="clotTex" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(20)">
+        <rect width="14" height="14" fill="#5b1a1a"/>
+        <circle cx="4" cy="4" r="2.2" fill="#7d2626"/>
+        <circle cx="10" cy="9" r="1.6" fill="#431414"/>
+      </pattern>
+      <!-- granulation bumpy texture -->
+      <pattern id="granTex" width="16" height="16" patternUnits="userSpaceOnUse">
+        <rect width="16" height="16" fill="#dc2626"/>
+        <circle cx="5" cy="5" r="3" fill="#ef4444"/>
+        <circle cx="12" cy="11" r="2.4" fill="#b91c1c"/>
+      </pattern>
+      <linearGradient id="epiGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f3d9b5"/><stop offset="1" stop-color="#e2b98a"/>
+      </linearGradient>
+      <linearGradient id="dermGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f7d0d0"/><stop offset="1" stop-color="#eab0b0"/>
+      </linearGradient>
+    </defs>
+
+    <!-- air / above skin -->
+    <rect x="0" y="0" width="820" height="70" fill="#0c1526"/>
+    <!-- subcutaneous fat -->
+    <rect x="0" y="330" width="820" height="190" fill="#f4e2a1"/>
+    <g id="fatCells"></g>
+    <!-- dermis -->
+    <rect x="0" y="92" width="820" height="238" fill="url(#dermGrad)"/>
+    <!-- epidermis -->
+    <rect x="0" y="70" width="820" height="22" fill="url(#epiGrad)"/>
+    <rect x="0" y="70" width="820" height="4" fill="#8a5a34" opacity="0.5"/>
+
+    <!-- layer labels -->
+    <g font-family="system-ui,sans-serif" font-size="12" fill="#0b1220" opacity="0.62" font-weight="600">
+      <text x="14" y="86">Epidermis</text>
+      <text x="14" y="150">Dermis</text>
+      <text x="14" y="360">Subcutaneous (fat)</text>
+    </g>
+
+    <!-- swelling halo (infection / inflammation) -->
+    <ellipse id="swelling" cx="${CX}" cy="200" rx="150" ry="140" fill="#ef4444" opacity="0"/>
+
+    <!-- dynamic wound content -->
+    <g id="woundGroup">
+      <path id="woundFill" d="" fill="url(#clotTex)"/>
+      <g id="vessels"></g>
+      <g id="cells"></g>
+      <path id="epiLeft"  d="" fill="url(#epiGrad)" stroke="#8a5a34" stroke-width="1"/>
+      <path id="epiRight" d="" fill="url(#epiGrad)" stroke="#8a5a34" stroke-width="1"/>
+      <path id="woundOutline" d="" fill="none" stroke="#7a1f1f" stroke-width="2" opacity="0.5"/>
+    </g>
+  `;
+  // scatter fat globules (static)
+  const fat = svg.querySelector("#fatCells");
+  const rng = mulberry32(99);
+  let g = "";
+  for(let i=0;i<70;i++){
+    const x = rng()*820, y = 345 + rng()*160;
+    if(Math.abs(x-CX) < 60) continue; // keep clear of wound column
+    g += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(7+rng()*6).toFixed(1)}" fill="#f9ecb8" stroke="#e6cf7d" stroke-width="1"/>`;
+  }
+  fat.innerHTML = g;
+}
+
+/* --- current wound edge geometry (narrows as it closes) --- */
+function woundGeometry(closure){
+  const k = closure * 0.9; // never fully collapse the drawing to zero width
+  return {
+    topL:  lerp(322, CX-6, k), topR: lerp(498, CX+6, k),
+    baseL: lerp(378, CX-3, k), baseR: lerp(442, CX+3, k)
+  };
+}
+
+/* ============================================================================
+   RENDER — recompute model + repaint everything for the current state
+   ========================================================================== */
+function render(){
+  const day = state.day;
+  const effDay = effectiveDay();
+  const phase = currentPhase();
+  const closure = woundClosure();
+  const strength = tensileStrength();
+  const velocity = healingVelocity(phase);
+  const counts = cellCounts(phase, effDay);
+  const geo = woundGeometry(closure);
+
+  /* ---- slider fill + label ---- */
+  document.getElementById("dayLabel").textContent = day;
+  document.getElementById("capDay").textContent = "· Day " + day;
+  const sld = document.getElementById("daySlider");
+  const pct = (day/90)*100;
+  sld.style.background = `linear-gradient(90deg, var(--blue) ${pct}%, var(--slate-3) ${pct}%)`;
+
+  /* ---- phase reference track ---- */
+  document.querySelectorAll("#phaseTrack .seg").forEach(seg=>{
+    seg.classList.toggle("on", seg.dataset.ph === phase || (phase==="chronic" && seg.dataset.ph==="inflammation"));
+  });
+
+  /* ---- data panel ---- */
+  const badge = document.getElementById("dPhase");
+  const badgeClass = phase === "chronic" ? "chronic" : phase;
+  badge.className = "badge " + badgeClass;
+  badge.textContent = PHASE_LABEL[phase];
+  document.getElementById("dCell").textContent = dominantCell(phase, effDay);
+  document.getElementById("dCollagen").textContent = collagenType(phase, effDay);
+  document.getElementById("dVelocity").textContent = velocity.toFixed(2) + " mm/day";
+  document.getElementById("dClosure").textContent = Math.round(closure*100) + "%";
+
+  /* ---- risk factors ---- */
+  const risks = [];
+  if(state.infection) risks.push({cls:"bad", t:"Active infection — high bacterial load, prolonged inflammation, risk of dehiscence."});
+  if(state.diabetes)  risks.push({cls:"bad", t:"Diabetic/chronic — impaired perfusion & angiogenesis; wound stalled, ulceration risk."});
+  if(!state.infection && !state.diabetes){
+    if(phase==="maturation") risks.push({cls:"ok", t:"Healing on track — remodeling underway; protect the immature scar."});
+    else risks.push({cls:"ok", t:"No complicating factors — healing progressing normally."});
+  }
+  if(phase==="proliferation" && !state.diabetes) risks.push({cls:"warn", t:"Fragile granulation tissue — avoid disrupting new vessels."});
+  document.getElementById("riskList").innerHTML = risks.map(r=>`<div class="risk ${r.cls}"><span class="dot"></span><span>${r.t}</span></div>`).join("");
+
+  /* ---- tensile gauge ---- */
+  document.getElementById("strengthVal").textContent = Math.round(strength) + "%";
+  document.getElementById("strengthFill").style.width = strength + "%";
+
+  /* ---- caption (dual mode) ---- */
+  document.getElementById("capPhase").textContent = PHASE_LABEL[phase];
+  document.getElementById("capText").textContent = state.eli5 ? EXPLAIN[phase].eli5 : EXPLAIN[phase].pro;
+
+  /* ---- alert flags ---- */
+  document.getElementById("flagInfection").classList.toggle("show", state.infection);
+  document.getElementById("flagDiabetes").classList.toggle("show", phase==="chronic");
+
+  /* ---- SVG: swelling halo (inflammation + infection) ---- */
+  let swell = 0;
+  if(phase==="inflammation"||phase==="chronic") swell = 0.18;
+  if(state.infection) swell += 0.22;
+  document.getElementById("swelling").setAttribute("opacity", Math.min(swell,0.4).toFixed(2));
+
+  /* ---- SVG: wound fill shape + colour/texture ---- */
+  const fillTopY = lerp(84, 66, smooth(effDay, 4, 45)); // sunken early → flush when healed
+  const woundFill = document.getElementById("woundFill");
+  // bumpy top edge during granulation, else straight
+  let topEdge = `M ${geo.topL} ${fillTopY}`;
+  if(phase==="proliferation"){
+    const bumps = 6, span = geo.topR - geo.topL;
+    for(let i=1;i<=bumps;i++){
+      const x = geo.topL + span*(i/bumps);
+      const y = fillTopY + (i%2? -5 : 4);
+      topEdge += ` Q ${x - span/(bumps*2)} ${y} ${x} ${fillTopY}`;
+    }
+  } else {
+    topEdge += ` L ${geo.topR} ${fillTopY}`;
+  }
+  woundFill.setAttribute("d", `${topEdge} L ${geo.baseR} ${BASE_Y} L ${geo.baseL} ${BASE_Y} Z`);
+  // texture / colour by phase
+  if(effDay < 2.5 && phase!=="maturation"){
+    woundFill.setAttribute("fill", "url(#clotTex)");
+  } else if(phase==="proliferation"){
+    woundFill.setAttribute("fill", "url(#granTex)");
+  } else {
+    woundFill.setAttribute("fill", tissueColor(effDay));
+  }
+  document.getElementById("woundOutline").setAttribute("d",
+    `M ${geo.topL} ${fillTopY} L ${geo.baseL} ${BASE_Y} L ${geo.baseR} ${BASE_Y} L ${geo.topR} ${fillTopY}`);
+
+  /* ---- SVG: angiogenesis (new vessels sprout from base in proliferation) ---- */
+  const vessels = document.getElementById("vessels");
+  let vHtml = "";
+  let vesselN = 0;
+  if(phase==="proliferation") vesselN = 7;
+  else if(phase==="maturation") vesselN = 3;
+  if(state.diabetes) vesselN = Math.round(vesselN*0.25); // impaired angiogenesis
+  const vr = mulberry32(7);
+  for(let i=0;i<vesselN;i++){
+    const x = lerp(geo.baseL, geo.baseR, (i+0.5)/vesselN) + (vr()-0.5)*14;
+    const h = 30 + vr()*60;
+    vHtml += `<path d="M ${x.toFixed(0)} ${BASE_Y} q 8 -${(h/2).toFixed(0)} 0 -${h.toFixed(0)}" fill="none" stroke="#b91c1c" stroke-width="2.4" opacity="0.85" stroke-linecap="round"/>`;
+  }
+  vessels.innerHTML = vHtml;
+
+  /* ---- SVG: cells (neutrophils, macrophages, fibroblasts) ---- */
+  const cells = document.getElementById("cells");
+  let cHtml = "";
+  const cr = mulberry32(42);
+  function scatter(n, r, fill, stroke){
+    for(let i=0;i<n;i++){
+      const yy = lerp(fillTopY+10, BASE_Y-8, cr());
+      const halfW = lerp((geo.topR-geo.topL)/2, (geo.baseR-geo.baseL)/2, (yy-fillTopY)/(BASE_Y-fillTopY));
+      const xx = CX + (cr()-0.5)*2*Math.max(halfW-6,4);
+      cHtml += `<circle cx="${xx.toFixed(0)}" cy="${yy.toFixed(0)}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
+    }
+  }
+  scatter(counts.macro, 6.5, "#64748b", "#334155");   // macrophages (large, blue-grey)
+  scatter(counts.neutro, 4, "#c084fc", "#7e22ce");     // neutrophils (small, purple, multilobed idea)
+  scatter(counts.fibro, 5, "#38bdf8", "#0369a1");      // fibroblasts (spindly → shown as blue)
+  cells.innerHTML = cHtml;
+
+  /* ---- SVG: epithelial migration (tongues crawl from each edge, meet at closure=1) ---- */
+  const cover = geo.topR - geo.topL;             // remaining open span at surface
+  const tongue = (cover/2) * clamp(closure,0,1); // each side advances toward centre
+  const epiY = fillTopY;
+  document.getElementById("epiLeft").setAttribute("d",
+    `M ${geo.topL-2} 70 L ${geo.topL-2} 92 L ${(geo.topL+tongue).toFixed(0)} ${(epiY+6).toFixed(0)} L ${(geo.topL+tongue).toFixed(0)} ${(epiY-4).toFixed(0)} Z`);
+  document.getElementById("epiRight").setAttribute("d",
+    `M ${geo.topR+2} 70 L ${geo.topR+2} 92 L ${(geo.topR-tongue).toFixed(0)} ${(epiY+6).toFixed(0)} L ${(geo.topR-tongue).toFixed(0)} ${(epiY-4).toFixed(0)} Z`);
+}
+
+/* ============================================================================
+   CONTROLS
+   ========================================================================== */
+let rafId = null, lastT = 0;
+function tick(ts){
+  if(!state.playing) return;
+  if(!lastT) lastT = ts;
+  const dt = (ts - lastT) / 1000; lastT = ts;
+  // base speed ~6 calendar days/sec; infection stalls the slider's advance
+  let speed = 6;
+  if(state.infection) speed *= 0.45;
+  state.day = clamp(state.day + dt * speed, 0, 90);
+  document.getElementById("daySlider").value = Math.round(state.day);
+  render();
+  if(state.day >= 90){ pause(); return; }
+  rafId = requestAnimationFrame(tick);
+}
+function play(){ if(state.day>=90) state.day=0; state.playing=true; lastT=0; document.getElementById("playBtn").textContent="⏸ Pause"; rafId=requestAnimationFrame(tick); }
+function pause(){ state.playing=false; document.getElementById("playBtn").textContent="▶ Play"; if(rafId) cancelAnimationFrame(rafId); }
+function setDay(d){ state.day = clamp(d,0,90); document.getElementById("daySlider").value = Math.round(state.day); render(); }
+
+document.getElementById("playBtn").addEventListener("click", ()=> state.playing ? pause() : play());
+document.getElementById("stepBtn").addEventListener("click", ()=>{ pause(); setDay(Math.round(state.day)+1); });
+document.getElementById("backBtn").addEventListener("click", ()=>{ pause(); setDay(Math.round(state.day)-1); });
+document.getElementById("resetBtn").addEventListener("click", ()=>{ pause(); state.infection=false; state.diabetes=false;
+  document.getElementById("infectionToggle").checked=false; document.getElementById("diabetesToggle").checked=false; setDay(0); });
+document.getElementById("daySlider").addEventListener("input", e=>{ pause(); setDay(+e.target.value); });
+document.getElementById("infectionToggle").addEventListener("change", e=>{ state.infection=e.target.checked; render(); });
+document.getElementById("diabetesToggle").addEventListener("change", e=>{ state.diabetes=e.target.checked; render(); });
+document.getElementById("eli5Toggle").addEventListener("change", e=>{ state.eli5=e.target.checked;
+  document.getElementById("modeLabel").textContent = e.target.checked ? "ELI5 · Pothole" : "Professional"; render(); });
+
+/* keyboard: space = play/pause, arrows = step */
+document.addEventListener("keydown", e=>{
+  if(e.target.tagName==="INPUT") return;
+  if(e.code==="Space"){ e.preventDefault(); state.playing?pause():play(); }
+  if(e.code==="ArrowRight"){ pause(); setDay(Math.round(state.day)+1); }
+  if(e.code==="ArrowLeft"){ pause(); setDay(Math.round(state.day)-1); }
+});
+
+/* ---- init ---- */
+buildStaticSVG();
+render();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:8px auto 40px;padding:0 24px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Wound Healing</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"wound-healing", title:"Wound Healing", unit:"Ch 6 · Integumentary" });
+  APTools.mountHUD("#apHud","wound-healing");
+  var BANK=[
+    { id:"w1", bloom:"Remember", outcome:"Order the phases",
+      q:"What is the correct order of the wound-healing phases?",
+      choices:["Hemostasis → Inflammation → Proliferation → Maturation","Inflammation → Hemostasis → Maturation → Proliferation","Proliferation → Hemostasis → Inflammation → Maturation","Hemostasis → Proliferation → Inflammation → Maturation"],
+      answer:0, why:"Repair proceeds hemostasis (clot) → inflammation (clean-up) → proliferation (rebuild) → maturation (remodel), though the phases overlap." },
+    { id:"w2", bloom:"Understand", outcome:"Hemostasis",
+      q:"The FIRST event immediately after injury, forming a clot to stop bleeding, is:",
+      choices:["Hemostasis (vasoconstriction + fibrin clot)","Angiogenesis","Collagen remodeling","Re-epithelialization"],
+      answer:0, why:"Hemostasis (0–2 h): vasoconstriction plus platelet aggregation and fibrin form a clot/provisional matrix." },
+    { id:"w3", bloom:"Understand", outcome:"Inflammatory cells",
+      q:"During the inflammatory phase, which cell arrives FIRST to destroy bacteria?",
+      choices:["Neutrophils","Fibroblasts","Keratinocytes","Osteoblasts"],
+      answer:0, why:"Neutrophils are the first responders that kill bacteria; macrophages follow to clear debris and release growth factors." },
+    { id:"w4", bloom:"Understand", outcome:"Macrophage role",
+      q:"Macrophages are critical to healing mainly because they:",
+      choices:["Clear debris and release growth factors that recruit repair cells","Directly form new bone","Produce the fibrin clot","Carry oxygen like red cells"],
+      answer:0, why:"Macrophages phagocytose debris/pathogens and secrete growth factors that drive the transition into the proliferative phase." },
+    { id:"w5", bloom:"Understand", outcome:"Proliferation",
+      q:"The bright-red, bumpy tissue that fills a wound during proliferation is:",
+      choices:["Granulation tissue","Scar (Type I collagen)","Fibrin clot","Adipose tissue"],
+      answer:0, why:"Granulation tissue is new connective tissue rich in fibroblasts, Type III collagen, and capillaries (angiogenesis) — it looks red and bumpy." },
+    { id:"w6", bloom:"Remember", outcome:"Cells & collagen",
+      q:"Which cell deposits the collagen that rebuilds the dermis?",
+      choices:["Fibroblasts","Neutrophils","Platelets","Melanocytes"],
+      answer:0, why:"Fibroblasts synthesize collagen (first Type III, later remodeled to Type I) during proliferation and maturation." },
+    { id:"w7", bloom:"Understand", outcome:"Maturation / collagen switch",
+      q:"During maturation, collagen is remodeled from:",
+      choices:["Weaker Type III to stronger Type I","Type I to Type III","Fibrin to platelets","Elastin to keratin"],
+      answer:0, why:"Maturation replaces the immature Type III collagen with stronger, better-aligned Type I collagen, increasing tensile strength." },
+    { id:"w8", bloom:"Remember", outcome:"Tensile strength limit",
+      q:"A fully matured scar regains approximately what fraction of the skin's original tensile strength?",
+      choices:["About 80%","About 100%","About 20%","About 50% and never more"],
+      answer:0, why:"Even after a year of remodeling, scarred skin reaches only ~80% of its original tensile strength." },
+    { id:"w9", bloom:"Apply", outcome:"Impaired healing",
+      q:"Diabetes commonly produces a chronic, non-healing wound primarily by:",
+      choices:["Impairing perfusion/angiogenesis and trapping the wound in inflammation","Speeding re-epithelialization","Increasing Type I collagen too early","Preventing the clot from forming"],
+      answer:0, why:"Poor perfusion and impaired angiogenesis/fibroblast function stall the wound in a chronic inflammatory state." },
+    { id:"w10", bloom:"Apply", outcome:"Infection effect",
+      q:"An infected wound heals slowly largely because a heavy bacterial load:",
+      choices:["Prolongs the inflammatory phase and can cause dehiscence","Skips straight to maturation","Boosts collagen Type I","Eliminates the need for macrophages"],
+      answer:0, why:"Persistent infection keeps neutrophils/inflammation elevated, delaying proliferation and risking wound breakdown (dehiscence)." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"wound-healing", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Tissue Architect</title>
+    <!-- Tailwind CSS for robust, responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/aptools.css?v=1">
+    <style>
+        /* --- MEDICAL COLOR PALETTE & VARIABLES --- */
+        :root {
+            --ct-bg: #fdf2f8; /* Pink-50 */
+            --ct-fiber: #fbcfe8; /* Pink-200 */
+            --membrane: #db2777; /* Pink-600 */
+            
+            --cell-squamous-bg: #e0e7ff; /* Indigo-100 */
+            --cell-squamous-border: #818cf8; /* Indigo-400 */
+            
+            --cell-cuboidal-bg: #dbeafe; /* Blue-100 */
+            --cell-cuboidal-border: #60a5fa; /* Blue-400 */
+            
+            --cell-columnar-bg: #ede9fe; /* Violet-100 */
+            --cell-columnar-border: #a78bfa; /* Violet-400 */
+
+            --cell-transitional-bg: #f3e8ff; /* Purple-100 */
+            --cell-transitional-border: #c084fc; /* Purple-400 */
+            
+            --nucleus: #312e81; /* Indigo-900 */
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* --- DRAG & DROP TOOLBOX --- */
+        .toolbox-item {
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .toolbox-item:active {
+            cursor: grabbing;
+        }
+        .toolbox-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* --- STAGING AREA (THE BUILD ZONE) --- */
+        #build-stage {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: white;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Build from bottom up */
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+        
+        #build-stage.drag-over {
+            background-color: #f1f5f9;
+            border-color: #3b82f6;
+        }
+
+        /* Connective Tissue (Always present at bottom) */
+        .connective-tissue {
+            width: 100%;
+            height: 80px;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--ct-bg),
+                var(--ct-bg) 10px,
+                var(--ct-fiber) 10px,
+                var(--ct-fiber) 12px
+            );
+            border-top: 6px solid var(--membrane); /* Basement Membrane */
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9d174d;
+            font-weight: bold;
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        /* Container for dropped epithelial cells */
+        #epithelium-container {
+            display: flex;
+            flex-direction: column-reverse; /* Stacks layers basal->apical */
+            align-items: center;
+            width: 100%;
+            z-index: 20;
+            transition: all 0.3s ease;
+            transform-origin: bottom center; /* For transitional stretching */
+        }
+
+        .tissue-layer {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            width: 100%;
+            margin-bottom: -2px; /* Slight overlap */
+        }
+
+        /* --- CELL MORPHOLOGIES --- */
+        .cell {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 1px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .nucleus {
+            background-color: var(--nucleus);
+            border-radius: 50%;
+            opacity: 0.85;
+            transition: all 0.3s ease;
+        }
+
+        /* Squamous */
+        .cell.squamous {
+            width: 80px; height: 24px;
+            background-color: var(--cell-squamous-bg);
+            border: 2px solid var(--cell-squamous-border);
+            border-radius: 45% 45% 10% 10%;
+        }
+        .cell.squamous .nucleus { width: 16px; height: 8px; }
+
+        /* Cuboidal */
+        .cell.cuboidal {
+            width: 60px; height: 60px;
+            background-color: var(--cell-cuboidal-bg);
+            border: 2px solid var(--cell-cuboidal-border);
+            border-radius: 12px 12px 6px 6px;
+        }
+        .cell.cuboidal .nucleus { width: 24px; height: 24px; }
+
+        /* Columnar */
+        .cell.columnar {
+            width: 45px; height: 110px;
+            background-color: var(--cell-columnar-bg);
+            border: 2px solid var(--cell-columnar-border);
+            border-radius: 8px 8px 4px 4px;
+        }
+        .cell.columnar .nucleus { 
+            width: 18px; height: 28px; 
+            position: absolute; bottom: 20px; 
+        }
+
+        /* Transitional (Dome-shaped apical cells) */
+        .cell.transitional {
+            width: 70px; height: 55px;
+            background-color: var(--cell-transitional-bg);
+            border: 2px solid var(--cell-transitional-border);
+            border-radius: 50% 50% 15% 15%;
+        }
+        .cell.transitional .nucleus { width: 22px; height: 22px; }
+
+        /* --- CUSTOM SLIDERS --- */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        input[type=range]:disabled::-webkit-slider-thumb {
+            background: #94a3b8; cursor: not-allowed;
+        }
+        input[type=range]:disabled::-webkit-slider-runnable-track {
+            background: #e2e8f0; cursor: not-allowed;
+        }
+
+        /* Stretching animation class for Transitional Epithelium */
+        .stretch-active .cell.transitional {
+            border-radius: 20% 20% 10% 10%;
+        }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white p-4 shadow-md z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">The Tissue Architect</h1>
+                <p class="text-sm text-indigo-200">Constructivist Histology Builder</p>
+            </div>
+            <div class="bg-indigo-800 px-4 py-2 rounded-lg text-sm hidden md:block">
+                Reference: <span class="font-semibold text-indigo-300">Chapter 5.1 & 5.2</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full p-4 gap-6">
+        
+        <!-- Left Panel: Toolbox -->
+        <aside class="w-full md:w-1/4 flex flex-col gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold mb-1 border-b pb-2">Cell Prototypes</h2>
+                <p class="text-xs text-slate-500 mb-4">Drag a cell type onto the basement membrane to begin building.</p>
+                
+                <div class="space-y-4">
+                    <!-- Draggable Prototypes -->
+                    <div class="toolbox-item bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col items-center gap-2" draggable="true" data-type="squamous">
+                        <div class="cell squamous scale-75">
+                            <div class="nucleus"></div>
+                        </div>
+                        <span class="text-sm font-semibold">Squamous</span>
+                    </div>
+
+                    <div class="toolbox-item bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col items-center gap-2" draggable="true" data-type="cuboidal">
+                        <div class="cell cuboidal scale-75">
+                            <div class="nucleus"></div>
+                        </div>
+                        <span class="text-sm font-semibold">Cuboidal</span>
+                    </div>
+
+                    <div class="toolbox-item bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col items-center gap-2" draggable="true" data-type="columnar">
+                        <div class="cell columnar scale-75" style="height: 60px;"> <!-- scaled visually for toolbox -->
+                            <div class="nucleus"></div>
+                        </div>
+                        <span class="text-sm font-semibold">Columnar</span>
+                    </div>
+
+                    <div class="toolbox-item bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col items-center gap-2" draggable="true" data-type="transitional">
+                        <div class="cell transitional scale-75">
+                            <div class="nucleus"></div>
+                        </div>
+                        <span class="text-sm font-semibold">Transitional</span>
+                    </div>
+                </div>
+                
+                <button id="btn-clear" class="mt-6 w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-lg transition-colors text-sm">
+                    Clear Stage
+                </button>
+            </div>
+        </aside>
+
+        <!-- Right Panel: Construction Zone -->
+        <section class="w-full md:w-3/4 flex flex-col gap-4">
+            
+            <!-- Dynamic Knowledge Display -->
+            <div id="knowledge-panel" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg shadow-sm hidden">
+                <h3 id="panel-title" class="font-bold text-lg text-blue-900 mb-1">Tissue Name</h3>
+                <p id="panel-desc" class="text-sm text-blue-800 mb-2"></p>
+                <div class="text-xs text-blue-700 bg-blue-100 p-2 rounded inline-block">
+                    <strong>Locations:</strong> <span id="panel-loc"></span>
+                </div>
+            </div>
+
+            <!-- Staging Area (Dropzone) -->
+            <div id="build-stage">
+                <div id="drop-prompt" class="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+                    <span class="bg-white/80 px-4 py-2 rounded-full font-semibold text-slate-500 border border-slate-200 shadow-sm backdrop-blur-sm">
+                        Drop cells here to build on the Basement Membrane
+                    </span>
+                </div>
+                
+                <!-- Dropped cells go here -->
+                <div id="epithelium-container"></div>
+                
+                <!-- Static Connective Tissue Base -->
+                <div class="connective-tissue">
+                    <span class="absolute top-0 -mt-5 text-pink-700 text-xs tracking-wider">Basement Membrane</span>
+                    Areolar Connective Tissue (Support & Diffusion)
+                </div>
+            </div>
+
+            <!-- Controls (Sliders) -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Layers Slider -->
+                <div>
+                    <label for="layer-slider" class="flex justify-between text-sm font-semibold text-slate-700 mb-2">
+                        <span>Organization (Layers)</span>
+                        <span id="layer-val" class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-xs">Simple (1)</span>
+                    </label>
+                    <input type="range" id="layer-slider" min="1" max="5" value="1" disabled>
+                    <p class="text-xs text-slate-400 mt-2">Adjusts between Simple and Stratified organizations.</p>
+                </div>
+
+                <!-- Tension Slider (Only for Transitional) -->
+                <div>
+                    <label for="tension-slider" class="flex justify-between text-sm font-semibold text-slate-700 mb-2">
+                        <span>Organ Volume / Tension</span>
+                        <span id="tension-val" class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs hidden">Relaxed</span>
+                    </label>
+                    <input type="range" id="tension-slider" min="0" max="100" value="0" disabled>
+                    <p class="text-xs text-slate-400 mt-2">Simulates distensibility (e.g., bladder filling). Active only for Transitional Epithelium.</p>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        /**
+         * The Tissue Architect - Core Logic
+         * Driven by Chapter 5 text.
+         */
+
+        // --- KNOWLEDGE BASE (From CH05.txt) ---
+        const tissueData = {
+            "squamous": {
+                "simple": {
+                    name: "Simple Squamous Epithelium",
+                    desc: "A single layer of flattened cells. Generally allows for easy passage (diffusion) of substances.",
+                    loc: "Lining air sacs of lungs, lining capillaries, lining body cavities."
+                },
+                "stratified": {
+                    name: "Stratified Squamous Epithelium",
+                    desc: "Many layers of flattened cells. Function is primarily protection.",
+                    loc: "Epidermis of skin (keratinized); lining mouth, throat, vagina, anus (non-keratinized)."
+                }
+            },
+            "cuboidal": {
+                "simple": {
+                    name: "Simple Cuboidal Epithelium",
+                    desc: "A single layer of square-shaped cells with large centrally located nuclei. Functions in secretion and absorption.",
+                    loc: "Lining kidney tubules, lining ducts of glands, covering surface of ovary."
+                },
+                "stratified": {
+                    name: "Stratified Cuboidal Epithelium",
+                    desc: "2-3 layers of cuboidal cells. Provides robust lining.",
+                    loc: "Mammary glands, sweat glands, salivary glands, pancreas."
+                }
+            },
+            "columnar": {
+                "simple": {
+                    name: "Simple Columnar Epithelium",
+                    desc: "A single layer of elongated cells with basally located nuclei. Often features microvilli and goblet cells.",
+                    loc: "Lining small intestine, lining uterus. Functions: protection, absorption, secretion."
+                },
+                "stratified": {
+                    name: "Stratified Columnar Epithelium",
+                    desc: "2-3 layers of elongated cells. Relatively rare in the body.",
+                    loc: "Part of male urethra, parts of the pharynx, vas deferens."
+                }
+            },
+            "transitional": {
+                "simple": {
+                    name: "Invalid Configuration",
+                    desc: "Transitional epithelium is inherently stratified.",
+                    loc: "N/A"
+                },
+                "stratified": {
+                    name: "Transitional Epithelium",
+                    desc: "Many layers of cells that change shape in response to tension. Function is distensibility (stretches easily).",
+                    loc: "Lining urinary bladder and ureters."
+                }
+            }
+        };
+
+        // --- STATE MANAGEMENT ---
+        let currentBaseShape = null; // 'squamous', 'cuboidal', 'columnar', 'transitional'
+        let currentLayers = 1;
+
+        // --- DOM ELEMENTS ---
+        const buildStage = document.getElementById('build-stage');
+        const epiContainer = document.getElementById('epithelium-container');
+        const layerSlider = document.getElementById('layer-slider');
+        const layerVal = document.getElementById('layer-val');
+        const tensionSlider = document.getElementById('tension-slider');
+        const tensionVal = document.getElementById('tension-val');
+        const knowledgePanel = document.getElementById('knowledge-panel');
+        const dropPrompt = document.getElementById('drop-prompt');
+        const btnClear = document.getElementById('btn-clear');
+        const draggables = document.querySelectorAll('.toolbox-item');
+
+        // --- DRAG AND DROP LOGIC ---
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', draggable.dataset.type);
+                e.dataTransfer.effectAllowed = 'copy';
+            });
+        });
+
+        buildStage.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Necessary to allow dropping
+            e.dataTransfer.dropEffect = 'copy';
+            buildStage.classList.add('drag-over');
+        });
+
+        buildStage.addEventListener('dragleave', () => {
+            buildStage.classList.remove('drag-over');
+        });
+
+        buildStage.addEventListener('drop', (e) => {
+            e.preventDefault();
+            buildStage.classList.remove('drag-over');
+            const cellType = e.dataTransfer.getData('text/plain');
+            
+            if (cellType) {
+                currentBaseShape = cellType;
+                
+                // Transitional forces stratification
+                if (currentBaseShape === 'transitional' && currentLayers === 1) {
+                    currentLayers = 3;
+                    layerSlider.value = 3;
+                }
+                
+                layerSlider.disabled = false;
+                dropPrompt.style.display = 'none';
+                
+                updateArchitecture();
+            }
+        });
+
+        // --- SLIDER LOGIC ---
+        layerSlider.addEventListener('input', (e) => {
+            currentLayers = parseInt(e.target.value);
+            
+            // Format label
+            if (currentLayers === 1) layerVal.textContent = "Simple (1)";
+            else if (currentLayers === 2) layerVal.textContent = "Stratified (2)";
+            else layerVal.textContent = `Stratified (${currentLayers})`;
+            
+            updateArchitecture();
+        });
+
+        tensionSlider.addEventListener('input', (e) => {
+            const tension = parseInt(e.target.value);
+            applyTension(tension);
+        });
+
+        btnClear.addEventListener('click', () => {
+            currentBaseShape = null;
+            currentLayers = 1;
+            layerSlider.value = 1;
+            layerSlider.disabled = true;
+            layerVal.textContent = "Simple (1)";
+            tensionSlider.value = 0;
+            tensionSlider.disabled = true;
+            tensionVal.classList.add('hidden');
+            epiContainer.innerHTML = '';
+            knowledgePanel.classList.add('hidden');
+            dropPrompt.style.display = 'flex';
+            applyTension(0); // reset scale
+        });
+
+        // --- RENDER LOGIC ---
+        function updateArchitecture() {
+            if (!currentBaseShape) return;
+
+            // 1. Determine classification (Simple vs Stratified)
+            const classification = currentLayers === 1 ? 'simple' : 'stratified';
+            
+            // 2. Fetch Knowledge Base Data
+            const data = tissueData[currentBaseShape][classification];
+            
+            // 3. Update Knowledge Panel
+            document.getElementById('panel-title').textContent = data.name;
+            document.getElementById('panel-desc').textContent = data.desc;
+            document.getElementById('panel-loc').textContent = data.loc;
+            knowledgePanel.classList.remove('hidden');
+
+            // 4. Handle Special Slider States (Transitional Tension)
+            if (currentBaseShape === 'transitional' && classification === 'stratified') {
+                tensionSlider.disabled = false;
+                tensionVal.classList.remove('hidden');
+                tensionVal.textContent = "Relaxed";
+                tensionSlider.value = 0; // Reset tension on rebuild
+            } else {
+                tensionSlider.disabled = true;
+                tensionVal.classList.add('hidden');
+                tensionSlider.value = 0;
+                applyTension(0);
+            }
+
+            // 5. Build the DOM Nodes
+            epiContainer.innerHTML = ''; // Clear existing
+            
+            // Limit layers based on anatomy realities (e.g., stratified columnar is rare/thin)
+            let maxLayers = currentLayers;
+            if ((currentBaseShape === 'columnar' || currentBaseShape === 'cuboidal') && currentLayers > 3) {
+                maxLayers = 3; // Cap to 3 for anatomical accuracy
+                layerVal.textContent = `Stratified (${maxLayers} - Max)`;
+            }
+
+            for (let layerIndex = 0; layerIndex < maxLayers; layerIndex++) {
+                const layerDiv = document.createElement('div');
+                layerDiv.className = 'tissue-layer';
+                
+                // Determine cells per layer based on shape to fit viewport nicely
+                let cellsCount = 7; 
+                if (currentBaseShape === 'squamous') cellsCount = 6;
+                if (currentBaseShape === 'columnar') cellsCount = 10;
+                
+                // Determine specific cell shape for THIS layer (Crucial for Stratified Squamous)
+                let cellClass = currentBaseShape;
+                
+                if (currentBaseShape === 'squamous' && maxLayers > 1) {
+                    // Rule: Basal layers of stratified squamous are cuboidal
+                    if (layerIndex < maxLayers - 1) {
+                        cellClass = 'cuboidal';
+                        cellsCount = 8; // Adjust count for cuboidal size
+                    } else {
+                        cellClass = 'squamous';
+                        cellsCount = 6;
+                    }
+                }
+
+                if (currentBaseShape === 'transitional') {
+                    // Rule: Basal layers are cuboidal/columnar, apical are dome-shaped
+                    if (layerIndex < maxLayers - 1) {
+                        cellClass = 'cuboidal';
+                        cellsCount = 8;
+                    } else {
+                        cellClass = 'transitional';
+                        cellsCount = 6;
+                    }
+                }
+
+                // Append cells to layer
+                for (let i = 0; i < cellsCount; i++) {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = `cell ${cellClass}`;
+                    
+                    const nucleus = document.createElement('div');
+                    nucleus.className = 'nucleus';
+                    cellDiv.appendChild(nucleus);
+                    
+                    layerDiv.appendChild(cellDiv);
+                }
+                
+                // Append layer to container
+                epiContainer.appendChild(layerDiv);
+            }
+        }
+
+        function applyTension(tensionValue) {
+            // tensionValue is 0 to 100
+            if (tensionValue === 0) tensionVal.textContent = "Relaxed (Empty)";
+            else if (tensionValue > 80) tensionVal.textContent = "Distended (Full)";
+            else tensionVal.textContent = "Filling...";
+
+            // Apply stretching math
+            // Max stretch: width increases by 40%, height decreases by 40%
+            const scaleX = 1 + (tensionValue / 100) * 0.4;
+            const scaleY = 1 - (tensionValue / 100) * 0.4;
+
+            epiContainer.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`;
+
+            // Toggle border-radius flattening on apical cells
+            if (tensionValue > 50) {
+                epiContainer.classList.add('stretch-active');
+            } else {
+                epiContainer.classList.remove('stretch-active');
+            }
+        }
+
+    </script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Building Epithelia</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"tissue-architect", title:"The Tissue Architect", unit:"Unit 5" });
+  APTools.mountHUD("#apHud","tissue-architect");
+  var BANK=[
+    { id:"ta1", bloom:"Understand", outcome:"Naming epithelia",
+      q:"Epithelia are named by TWO features. They are:",
+      choices:["Number of layers + cell shape","Color + size","Location + age","Blood supply + nerve supply"],
+      answer:0, why:"Name = (layers: simple/stratified) + (shape: squamous/cuboidal/columnar), e.g., 'simple squamous'." },
+    { id:"ta2", bloom:"Apply", outcome:"Build correct tissue",
+      q:"To build tissue for the lining of kidney tubules (absorption/secretion), you would stack:",
+      choices:["A single layer of cuboidal cells","Many layers of squamous cells","A single layer of flat squamous cells","Transitional cells only"],
+      answer:0, why:"Simple cuboidal epithelium lines kidney tubules and many glands, handling secretion and absorption." },
+    { id:"ta3", bloom:"Apply", outcome:"Build correct tissue",
+      q:"For a surface exposed to heavy abrasion (like the esophagus), you should build:",
+      choices:["Stratified squamous epithelium","Simple squamous epithelium","Simple cuboidal epithelium","Simple columnar epithelium"],
+      answer:0, why:"Multiple layers of squamous cells (stratified squamous) protect against mechanical wear." },
+    { id:"ta4", bloom:"Understand", outcome:"Foundation layer",
+      q:"When building any epithelium, the first structure to lay down is the:",
+      choices:["Basement membrane","Nucleus","Cilia","Lumen"],
+      answer:0, why:"Epithelium is anchored to a basement membrane that separates it from underlying connective tissue." },
+    { id:"ta5", bloom:"Understand", outcome:"Shape function",
+      q:"Tall, column-shaped cells are chosen when the job is:",
+      choices:["Absorption and secretion","Rapid gas diffusion","Stretching a hollow organ","Filtering blood"],
+      answer:0, why:"Columnar cells have volume for organelles (e.g., mucus, enzymes) — ideal for absorption/secretion in the gut." },
+    { id:"ta6", bloom:"Apply", outcome:"Build correct tissue",
+      q:"To construct the wall of the urinary bladder that must stretch, you'd use:",
+      choices:["Transitional epithelium","Simple squamous epithelium","Stratified columnar epithelium","Simple cuboidal epithelium"],
+      answer:0, why:"Transitional epithelium changes cell shape as the bladder fills and empties, allowing distension." },
+    { id:"ta7", bloom:"Understand", outcome:"Polarity",
+      q:"The free (apical) surface of an epithelium is the side that:",
+      choices:["Faces a lumen or the outside environment","Attaches to the basement membrane","Contains all the blood vessels","Faces bone"],
+      answer:0, why:"Epithelia are polarized: the apical surface faces the lumen/exterior; the basal surface sits on the basement membrane." },
+    { id:"ta8", bloom:"Apply", outcome:"Match structure to location",
+      q:"A thin, single flat layer built for filtration would correctly line the:",
+      choices:["Air sacs (alveoli) of the lungs","Epidermis of the skin","Urinary bladder","Sweat gland ducts"],
+      answer:0, why:"Simple squamous epithelium's thinness suits the alveoli, where gases must diffuse quickly." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"tissue-architect", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

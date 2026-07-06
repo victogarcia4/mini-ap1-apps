@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Organic Compounds &amp; Energy — Active Learning Dashboard</title>
+<style>
+:root{
+  --bg:#eef2f7;--card:#ffffff;--ink:#1e293b;--muted:#64748b;--line:#e2e8f0;
+  --blue:#2563eb;--blue-soft:#dbeafe;--green:#16a34a;--green-soft:#dcfce7;
+  --amber:#d97706;--amber-soft:#fef3c7;--red:#dc2626;--red-soft:#fee2e2;
+  --purple:#7c3aed;--purple-soft:#ede9fe;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 8px 24px rgba(15,23,42,.08);
+  --radius:16px;--font:"Segoe UI",Roboto,system-ui,-apple-system,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* Header */
+header.app{padding:20px 28px;background:linear-gradient(120deg,#1e3a8a,#2563eb);color:#fff;box-shadow:var(--shadow)}
+header.app h1{font-size:1.35rem;letter-spacing:.2px}
+header.app p{margin:4px 0 0;opacity:.85;font-size:.84rem;max-width:75ch}
+
+/* Progress Bar */
+.progress-bar{max-width:1300px;margin:0 auto;padding:16px 20px 0;display:flex;align-items:center;gap:0}
+.prog-step{display:flex;align-items:center;flex:1}
+.prog-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--muted);flex-shrink:0;transition:.3s}
+.prog-dot.active{border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 4px var(--blue-soft)}
+.prog-dot.done{border-color:var(--green);background:var(--green);color:#fff}
+.prog-line{flex:1;height:3px;background:var(--line);transition:.3s}
+.prog-line.filled{background:var(--green)}
+.prog-label{font-size:.65rem;color:var(--muted);position:absolute;top:36px;left:50%;transform:translateX(-50%);white-space:nowrap;font-weight:600}
+.prog-step{position:relative}
+
+/* Layout */
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;padding:20px;max-width:1300px;margin:0 auto;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.card h2{margin:0 0 14px;font-size:.92rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.card h3{margin:0 0 10px;font-size:1rem;color:var(--ink)}
+
+/* Phase sections */
+.phase{display:none}
+.phase.active{display:block}
+
+/* Sidebar */
+.panel .row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);gap:10px}
+.panel .row:last-child{border-bottom:none}
+.panel .k{font-size:.8rem;color:var(--muted);font-weight:600}
+.panel .v{font-size:.88rem;font-weight:700;text-align:right}
+.pill{padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800;letter-spacing:.4px}
+.hint-box{background:linear-gradient(120deg,#fff7ed,#eff6ff);border:1px dashed #fbbf24;border-radius:12px;padding:14px;margin-top:14px}
+.hint-box h3{font-size:.88rem;color:#92400e;margin:0 0 6px}
+.hint-box p{font-size:.84rem;margin:4px 0;color:var(--ink)}
+.feedback-box{margin-top:14px;padding:12px 16px;border-radius:12px;font-size:.88rem;font-weight:600;display:none;animation:fadeIn .3s ease}
+.feedback-box.correct{display:block;background:var(--green-soft);color:#166534;border:1px solid #bbf7d0}
+.feedback-box.incorrect{display:block;background:var(--red-soft);color:#991b1b;border:1px solid #fecaca}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Buttons */
+button.btn{padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600;font-size:.82rem;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+button.btn:hover{border-color:var(--blue);color:var(--blue)}
+button.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+button.btn.primary:hover{background:#1d4ed8}
+button.btn:disabled{opacity:.4;cursor:not-allowed;border-color:var(--line);color:var(--muted)}
+.nav-row{display:flex;gap:10px;margin-top:18px;justify-content:space-between}
+
+/* ===== PHASE 0: INTRO ===== */
+.lo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lo-card{border:1px solid var(--line);border-radius:14px;padding:18px;background:#f8fafc;cursor:default;transition:.2s}
+.lo-card:hover{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+.lo-card .lo-tag{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:inline-block;padding:2px 8px;border-radius:6px}
+.lo-card .lo-tag.carb{background:#dbeafe;color:#1e40af}
+.lo-card .lo-tag.prot{background:#dcfce7;color:#166534}
+.lo-card .lo-tag.enz{background:#fef3c7;color:#92400e}
+.lo-card .lo-tag.atp{background:#ede9fe;color:#5b21b6}
+.lo-card h3{font-size:.95rem;margin-bottom:6px}
+.lo-card p{font-size:.84rem;color:var(--muted);line-height:1.5}
+
+/* ===== PHASE 1: MOLECULAR PLAYGROUND ===== */
+.sort-area{display:flex;gap:16px;flex-wrap:wrap}
+.card-tray{display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:#f8fafc;border:2px dashed var(--line);border-radius:14px;min-height:80px;flex:1}
+.sort-column{flex:1;min-width:140px;background:#f8fafc;border:2px dashed var(--line);border-radius:14px;padding:12px;text-align:center;transition:.2s}
+.sort-column.drag-over{border-color:var(--blue);background:var(--blue-soft)}
+.sort-column h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:8px}
+.sort-column .cards-in{min-height:60px;display:flex;flex-direction:column;gap:6px}
+.drag-card{padding:10px 14px;background:#fff;border:2px solid var(--line);border-radius:10px;cursor:grab;font-size:.82rem;font-weight:600;transition:.15s;user-select:none}
+.drag-card:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+.drag-card.dragging{opacity:.4;cursor:grabbing}
+.drag-card.placed{border-color:var(--green);background:var(--green-soft)}
+.drag-card.wrong{border-color:var(--red);background:var(--red-soft);animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.drag-card .formula{font-family:'Courier New',monospace;font-size:.9rem;display:block;margin-bottom:2px}
+.drag-card .desc{font-size:.72rem;color:var(--muted);font-weight:400}
+.phase1-check-btn{margin-top:16px}
+
+/* ===== PHASE 2: SYNTHESIS LAB ===== */
+.reaction-zone{display:flex;align-items:center;justify-content:center;gap:12px;padding:30px 20px;background:#f8fafc;border:2px dashed var(--line);border-radius:14px;flex-wrap:wrap;min-height:180px;position:relative}
+.monomer-slot{width:100px;height:100px;border:2px dashed var(--blue);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--blue);background:#fff;transition:.2s}
+.monomer-slot.filled{border-style:solid;background:var(--blue-soft);color:var(--ink)}
+.polymer-zone{min-width:200px;min-height:100px;border:2px dashed var(--green);border-radius:14px;display:flex;align-items:center;justify-content:center;gap:4px;padding:10px;background:#fff;flex-wrap:wrap}
+.polymer-unit{width:60px;height:60px;background:var(--green-soft);border:1.5px solid var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;text-align:center;color:#166534;animation:popIn .3s ease}
+@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.bond-symbol{font-size:1.4rem;font-weight:700;color:var(--muted)}
+.water-molecule{font-size:1.1rem;font-weight:800;color:var(--blue);animation:floatUp 1s ease forwards;position:absolute}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px)}}
+.reaction-arrow{font-size:1.6rem;color:var(--muted);font-weight:700}
+.mode-toggle{display:flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.mode-toggle button{border:none;padding:10px 20px;font-weight:700;font-size:.82rem;cursor:pointer;font-family:inherit;transition:.15s;background:#fff;color:var(--muted)}
+.mode-toggle button.active{background:var(--blue);color:#fff}
+.monomer-pool{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pool-item{padding:8px 14px;background:#fff;border:2px solid var(--line);border-radius:10px;cursor:grab;font-size:.8rem;font-weight:600;user-select:none;transition:.15s}
+.pool-item:hover{border-color:var(--blue)}
+.pool-item.used{opacity:.35;pointer-events:none;text-decoration:line-through}
+
+/* ===== PHASE 3: ENZYME CHAMBER ===== */
+.enzyme-area{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.enzyme-svg-wrap{flex:1;min-width:280px}
+.enzyme-svg{width:100%;height:auto;display:block;border-radius:12px;background:#f8fafc}
+.slider-panel{min-width:240px;display:flex;flex-direction:column;gap:16px}
+.slider-group{display:flex;flex-direction:column;gap:4px}
+.slider-group label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.slider-group .val{font-variant-numeric:tabular-nums;font-weight:700;color:var(--blue)}
+input[type=range]{width:100%;-webkit-appearance:none;height:8px;border-radius:8px;background:linear-gradient(90deg,#c7e0f4,#93c5fd,#fbbf24);outline:none;margin-top:8px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--blue);cursor:pointer;box-shadow:var(--shadow)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--blue);cursor:pointer}
+.rate-canvas{width:100%;height:140px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);margin-top:14px}
+.status-badge{display:inline-block;padding:4px 14px;border-radius:999px;font-size:.78rem;font-weight:800;letter-spacing:.4px;margin-top:8px}
+.status-badge.optimal{background:var(--green-soft);color:#166534}
+.status-badge.denatured{background:var(--red-soft);color:#991b1b;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ===== PHASE 4: ATP CYCLE ===== */
+.atp-area{text-align:center;padding:10px 0}
+.atp-svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto}
+.atp-equation{font-size:1rem;font-weight:700;margin:14px 0;padding:12px 20px;background:#f8fafc;border-radius:12px;border:1px solid var(--line);display:inline-block}
+.atp-equation .energy-tag{color:var(--amber);font-weight:800}
+.atp-equation .phosphate{color:var(--blue);font-weight:800}
+.atp-controls{margin-top:16px}
+.energy-burst{position:absolute;width:120px;height:120px;border-radius:50%;pointer-events:none;opacity:0}
+.energy-burst.fire{animation:burst .8s ease-out forwards}
+@keyframes burst{0%{transform:scale(0);opacity:.7;box-shadow:0 0 0 0 rgba(251,191,36,.6)}50%{opacity:.4}100%{transform:scale(2.5);opacity:0;box-shadow:0 0 60px 20px rgba(251,191,36,0)}}
+.atp-info{margin-top:16px;text-align:left}
+.atp-info .fact{padding:8px 0;border-bottom:1px dashed var(--line);font-size:.88rem}
+.atp-info .fact:last-child{border-bottom:none}
+.atp-info .fact strong{color:var(--blue)}
+
+/* ===== PHASE 5: QUIZ ===== */
+.quiz-q{margin-bottom:24px}
+.quiz-q .q-num{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--blue);margin-bottom:6px}
+.quiz-q .q-text{font-size:.95rem;font-weight:700;margin-bottom:10px;line-height:1.5}
+.quiz-q .q-lo{font-size:.68rem;color:var(--muted);margin-bottom:8px}
+.choices{display:flex;flex-direction:column;gap:6px}
+.choice-btn{text-align:left;padding:10px 14px;border:2px solid var(--line);border-radius:10px;background:#fff;font-size:.85rem;cursor:pointer;transition:.15s;font-family:inherit;font-weight:500}
+.choice-btn:hover{border-color:var(--blue);background:var(--blue-soft)}
+.choice-btn.selected{border-color:var(--blue);background:var(--blue-soft);font-weight:700}
+.choice-btn.correct-answer{border-color:var(--green);background:var(--green-soft);color:#166534}
+.choice-btn.wrong-answer{border-color:var(--red);background:var(--red-soft);color:#991b1b}
+.choice-btn:disabled{cursor:default;opacity:.85}
+.quiz-explain{margin-top:8px;padding:10px 14px;border-radius:10px;font-size:.84rem;line-height:1.5;display:none}
+.quiz-explain.show{display:block;background:#f0f9ff;border:1px solid #bae6fd;color:#0c4a6e}
+.score-summary{margin-top:20px}
+.score-lo{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.score-lo .lo-label{font-size:.82rem;font-weight:600;min-width:160px}
+.score-lo .bar-track{flex:1;height:14px;background:#eef2f7;border-radius:7px;overflow:hidden}
+.score-lo .bar-fill{height:100%;border-radius:7px;transition:width .5s ease}
+.score-lo .bar-fill.perfect{background:var(--green)}
+.score-lo .bar-fill.partial{background:var(--amber)}
+.score-lo .bar-fill.zero{background:var(--red)}
+.score-lo .lo-pct{font-size:.82rem;font-weight:700;min-width:40px;text-align:right}
+.final-score{font-size:1.8rem;font-weight:800;text-align:center;margin:10px 0}
+
+/* Responsive */
+@media(max-width:900px){.wrap{grid-template-columns:1fr}.sort-area{flex-direction:column}.enzyme-area{flex-direction:column}.lo-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <h1>&#x1F52C; Organic Compounds &amp; Energy Transfer</h1>
+  <p>Active Learning Dashboard &mdash; Anatomy &amp; Physiology: molecular structure, synthesis, enzymes, and ATP. Work through each phase, then check your mastery.</p>
+</header>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar" role="navigation" aria-label="Phase progress"></div>
+
+<div class="wrap">
+  <main class="card">
+    <!-- ========== PHASE 0: INTRO ========== -->
+    <section class="phase active" id="phase0" aria-label="Introduction">
+      <h2>Learning Objectives Map</h2>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:16px">Click <strong>Start</strong> to begin the interactive assessment covering all outcomes below.</p>
+      <div class="lo-grid">
+        <div class="lo-card">
+          <span class="lo-tag carb">LO 1.a</span>
+          <h3>Molecular Structure Comparisons</h3>
+          <p>Compare carbohydrates, proteins, lipids, and nucleic acids by molecular structure, functional groups, and chemical formulas.</p>
+        </div>
+        <div class="lo-card">
+          <span class="lo-tag prot">LO 1.b</span>
+          <h3>Building Blocks &amp; Synthesis</h3>
+          <p>Identify monomers, polymers, dehydration synthesis, and hydrolysis with specific biological examples.</p>
+        </div>
+        <div class="lo-card">
+          <span class="lo-tag enz">LO 1.c</span>
+          <h3>Enzymes &amp; Factors Affecting Activity</h3>
+          <p>Explore how temperature and pH influence enzyme shape, active-site function, and reaction rate.</p>
+        </div>
+        <div class="lo-card">
+          <span class="lo-tag atp">LO 2.a</span>
+          <h3>ATP Synthesis &amp; Hydrolysis</h3>
+          <p>Model the reversible ATP &#x2194; ADP + P&#x1D62; cycle and the energy released by phosphorylation.</p>
+        </div>
+      </div>
+      <div class="nav-row"><div></div><button class="btn primary" onclick="goPhase(1)">Start Activity &rarr;</button></div>
+    </section>
+
+    <!-- ========== PHASE 1: MOLECULAR PLAYGROUND ========== -->
+    <section class="phase" id="phase1" aria-label="Phase 1: Molecular Playground">
+      <h2>Phase 1: The Molecular Playground</h2>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Drag each card into the correct macromolecule category. Match chemical formulas and functional groups to their class.</p>
+      <div class="sort-area" id="sortArea">
+        <div class="card-tray" id="cardTray" aria-label="Cards to sort"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:2" id="sortColumns">
+          <div class="sort-column" data-cat="carb" aria-label="Carbohydrate drop zone"><h4>&#x1F35E; Carbohydrate</h4><div class="cards-in"></div></div>
+          <div class="sort-column" data-cat="prot" aria-label="Protein drop zone"><h4>&#x1F9EC; Protein</h4><div class="cards-in"></div></div>
+          <div class="sort-column" data-cat="lip" aria-label="Lipid drop zone"><h4>&#x1F9C4; Lipid</h4><div class="cards-in"></div></div>
+          <div class="sort-column" data-cat="nucl" aria-label="Nucleic Acid drop zone"><h4>&#x1F9EC; Nucleic Acid</h4><div class="cards-in"></div></div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn" onclick="goPhase(0)">&larr; Back</button>
+        <button class="btn primary" id="phase1Check" onclick="checkPhase1()">Check Answers</button>
+        <button class="btn" id="phase1Next" onclick="goPhase(2)" style="display:none">Next: Synthesis Lab &rarr;</button>
+      </div>
+    </section>
+
+    <!-- ========== PHASE 2: SYNTHESIS LAB ========== -->
+    <section class="phase" id="phase2" aria-label="Phase 2: Synthesis Lab">
+      <h2>Phase 2: The Synthesis Lab</h2>
+      <div class="mode-toggle" role="tablist" aria-label="Reaction mode">
+        <button class="active" data-mode="synthesis" role="tab" aria-selected="true" onclick="setMode('synthesis')">Dehydration Synthesis</button>
+        <button data-mode="hydrolysis" role="tab" aria-selected="false" onclick="setMode('hydrolysis')">Hydrolysis</button>
+      </div>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:14px" id="synthInstruction">Drag monomers into the reaction zone to build a polymer. Water is released as a byproduct.</p>
+      <div class="reaction-zone" id="reactionZone" aria-label="Reaction zone">
+        <div class="monomer-slot" id="monoSlot1">Monomer 1</div>
+        <span class="reaction-arrow">+</span>
+        <div class="monomer-slot" id="monoSlot2">Monomer 2</div>
+        <span class="reaction-arrow" id="synthArrow">&rarr;</span>
+        <div class="polymer-zone" id="polymerZone">Polymer</div>
+        <div id="waterDisplay" style="position:relative;width:50px;height:50px"></div>
+      </div>
+      <div class="monomer-pool" id="monomerPool" aria-label="Available monomers"></div>
+      <div class="nav-row">
+        <button class="btn" onclick="goPhase(1)">&larr; Back</button>
+        <button class="btn" id="synthReset" onclick="resetSynth()">&#x21BA; Reset</button>
+        <button class="btn primary" id="synthNext" onclick="goPhase(3)">Next: Enzymes &rarr;</button>
+      </div>
+    </section>
+
+    <!-- ========== PHASE 3: ENZYME CHAMBER ========== -->
+    <section class="phase" id="phase3" aria-label="Phase 3: Enzyme Chamber">
+      <h2>Phase 3: The Enzyme Chamber</h2>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Adjust temperature and pH to find the optimal range. Watch the enzyme-substrate complex and reaction rate in real time.</p>
+      <div class="enzyme-area">
+        <div class="enzyme-svg-wrap">
+          <svg class="enzyme-svg" viewBox="0 0 440 280" id="enzymeSvg" role="img" aria-label="Enzyme active site visualization">
+            <defs>
+              <linearGradient id="enzGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#93c5fd"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+              <linearGradient id="subGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
+              <linearGradient id="denGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fca5a5"/><stop offset="100%" stop-color="#ef4444"/></linearGradient>
+            </defs>
+            <!-- Enzyme body -->
+            <path id="enzymeBody" d="M60,200 Q60,80 140,80 L180,80 Q220,80 220,120 L220,200 Q220,240 180,240 L100,240 Q60,240 60,200 Z" fill="url(#enzGrad)" stroke="#2563eb" stroke-width="2" opacity=".85"/>
+            <!-- Active site cleft -->
+            <path id="activeSite" d="M140,80 L160,120 L140,160 L120,120 Z" fill="#1e40af" opacity=".5"/>
+            <!-- Substrate -->
+            <rect id="substrate" x="155" y="108" width="50" height="24" rx="6" fill="url(#subGrad)" stroke="#d97706" stroke-width="1.5"/>
+            <text id="subLabel" x="180" y="124" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">Substrate</text>
+            <!-- Products -->
+            <g id="products" style="display:none">
+              <rect x="280" y="90" width="44" height="20" rx="5" fill="#a7f3d0" stroke="#16a34a" stroke-width="1"/>
+              <text x="302" y="104" text-anchor="middle" font-size="9" font-weight="600" fill="#166534">Prod A</text>
+              <rect x="280" y="130" width="44" height="20" rx="5" fill="#a7f3d0" stroke="#16a34a" stroke-width="1"/>
+              <text x="302" y="144" text-anchor="middle" font-size="9" font-weight="600" fill="#166534">Prod B</text>
+            </g>
+            <!-- Denatured label -->
+            <text id="denLabel" x="220" y="270" text-anchor="middle" font-size="14" font-weight="800" fill="#dc2626" style="display:none">&#x26A0; DENATURED</text>
+            <!-- Active site label -->
+            <text id="asLabel" x="140" y="195" text-anchor="middle" font-size="9" fill="#1e3a8a" font-weight="600">Active Site</text>
+            <!-- Enzyme label -->
+            <text x="140" y="268" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="700" id="enzName">Enzyme</text>
+          </svg>
+          <canvas class="rate-canvas" id="rateCanvas" width="440" height="140" aria-label="Reaction rate graph"></canvas>
+        </div>
+        <div class="slider-panel">
+          <div class="slider-group">
+            <label>Temperature &mdash; <span class="val" id="tempVal">37</span> &deg;C</label>
+            <input type="range" id="tempSlider" min="0" max="80" step="1" value="37" aria-label="Temperature slider" />
+          </div>
+          <div class="slider-group">
+            <label>pH &mdash; <span class="val" id="phVal">7.4</span></label>
+            <input type="range" id="phSlider" min="0" max="14" step="0.1" value="7.4" aria-label="pH slider" />
+          </div>
+          <div style="text-align:center">
+            <div class="status-badge optimal" id="enzStatus">OPTIMAL</div>
+          </div>
+          <div class="hint-box">
+            <h3>Key Concepts</h3>
+            <p>Most human enzymes work best at <strong>37 &deg;C</strong> and <strong>pH 7.35&ndash;7.45</strong>. Extreme heat or pH disrupts hydrogen bonds, <strong>denaturing</strong> the enzyme and destroying its active site.</p>
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn" onclick="goPhase(2)">&larr; Back</button>
+        <button class="btn primary" onclick="goPhase(4)">Next: ATP Cycle &rarr;</button>
+      </div>
+    </section>
+
+    <!-- ========== PHASE 4: ATP CYCLE ========== -->
+    <section class="phase" id="phase4" aria-label="Phase 4: ATP Cycle">
+      <h2>Phase 4: The ATP Cycle</h2>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Toggle between hydrolysis and phosphorylation. Watch the terminal phosphate detach and energy release in real time.</p>
+      <div class="atp-area" style="position:relative">
+        <svg class="atp-svg" viewBox="0 0 500 200" id="atpSvg" role="img" aria-label="ATP to ADP cycle visualization">
+          <defs>
+            <radialGradient id="energyGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fbbf24" stop-opacity=".6"/><stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/></radialGradient>
+          </defs>
+          <!-- Adenine base -->
+          <rect x="20" y="60" width="80" height="80" rx="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+          <text x="60" y="96" text-anchor="middle" font-size="11" font-weight="700" fill="#5b21b6">Adenine</text>
+          <text x="60" y="112" text-anchor="middle" font-size="9" fill="#7c3aed">(base)</text>
+          <!-- Ribose -->
+          <polygon points="140,100 160,75 190,85 190,115 160,125" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+          <text x="165" y="105" text-anchor="middle" font-size="9" font-weight="700" fill="#1e40af">Ribose</text>
+          <!-- Phosphate groups -->
+          <circle id="p1" cx="240" cy="100" r="28" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="240" y="104" text-anchor="middle" font-size="10" font-weight="800" fill="#166534">P</text>
+          <circle id="p2" cx="310" cy="100" r="28" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+          <text x="310" y="104" text-anchor="middle" font-size="10" font-weight="800" fill="#166534">P</text>
+          <circle id="p3" cx="380" cy="100" r="28" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+          <text x="380" y="97" text-anchor="middle" font-size="10" font-weight="800" fill="#92400e">P</text>
+          <text x="380" y="110" text-anchor="middle" font-size="7" fill="#92400e">(terminal)</text>
+          <!-- Bonds -->
+          <line x1="100" y1="100" x2="140" y2="100" stroke="#64748b" stroke-width="2.5"/>
+          <line x1="190" y1="100" x2="212" y2="100" stroke="#64748b" stroke-width="2.5"/>
+          <line x1="268" y1="100" x2="282" y2="100" stroke="#64748b" stroke-width="2.5"/>
+          <line x1="338" y1="100" x2="352" y2="100" stroke="#d97706" stroke-width="2.5" stroke-dasharray="4 3" id="terminalBond"/>
+          <!-- Energy burst -->
+          <circle id="energyCircle" cx="380" cy="100" r="0" fill="url(#energyGlow)" opacity="0"/>
+          <!-- Labels -->
+          <text id="molLabel" x="250" y="30" text-anchor="middle" font-size="14" font-weight="800" fill="#1e293b">ATP (Adenosine Triphosphate)</text>
+          <text id="energyLabel" x="250" y="180" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706" style="display:none">&#x26A1; Energy Released &#x2248; 7.3 kcal/mol</text>
+        </svg>
+        <div class="atp-equation" id="atpEquation">
+          <span class="phosphate">ATP</span> + H&#x2082;O &rarr; <span class="phosphate">ADP</span> + P&#x1D62; + <span class="energy-tag">&#x26A1; Energy (~7.3 kcal/mol)</span>
+        </div>
+      </div>
+      <div class="atp-controls">
+        <button class="btn primary" id="atpToggle" onclick="toggleATP()" aria-label="Toggle between hydrolysis and phosphorylation">&#x21BB; Reverse: Phosphorylation</button>
+      </div>
+      <div class="atp-info" style="margin-top:16px">
+        <div class="fact"><strong>Hydrolysis:</strong> ATP &rarr; ADP + P&#x1D62; releases ~7.3 kcal/mol. The terminal phosphoanhydride bond is broken, releasing energy for cellular work (muscle contraction, active transport, biosynthesis).</div>
+        <div class="fact"><strong>Phosphorylation:</strong> ADP + P&#x1D62; + energy &rarr; ATP. Performed by ATP synthase during cellular respiration (oxidative phosphorylation) or substrate-level phosphorylation in glycolysis/the Krebs cycle.</div>
+        <div class="fact"><strong>Reversibility:</strong> The ATP/ADP cycle is the cell's energy currency. ATP is continuously hydrolyzed and resynthesized &mdash; the average human recycles their body weight in ATP daily.</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn" onclick="goPhase(3)">&larr; Back</button>
+        <button class="btn primary" onclick="goPhase(5)">Next: Knowledge Check &rarr;</button>
+      </div>
+    </section>
+
+    <!-- ========== PHASE 5: KNOWLEDGE CHECK ========== -->
+    <section class="phase" id="phase5" aria-label="Phase 5: Knowledge Check">
+      <h2>Knowledge Check</h2>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:16px">Answer all questions. Your score will be broken down by learning objective.</p>
+      <div id="quizContainer"></div>
+      <div id="scoreSummary" class="score-summary" style="display:none"></div>
+      <div class="nav-row">
+        <button class="btn" onclick="goPhase(4)">&larr; Back</button>
+        <button class="btn primary" id="submitQuiz" onclick="submitQuiz()">Submit Answers</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="card panel" id="sidebar">
+    <h2>Dashboard</h2>
+    <div class="row"><span class="k">Current Phase</span><span class="v" id="sbPhase">Introduction</span></div>
+    <div class="row"><span class="k">Total Score</span><span class="v" id="sbScore">0 / 0</span></div>
+    <div class="row"><span class="k">LO 1.a</span><span class="v" id="sbLO1a">&mdash;</span></div>
+    <div class="row"><span class="k">LO 1.b</span><span class="v" id="sbLO1b">&mdash;</span></div>
+    <div class="row"><span class="k">LO 1.c</span><span class="v" id="sbLO1c">&mdash;</span></div>
+    <div class="row"><span class="k">LO 2.a</span><span class="v" id="sbLO2a">&mdash;</span></div>
+    <div id="feedbackArea"></div>
+    <div class="hint-box" id="hintBox">
+      <h3>How to Use</h3>
+      <p>Work through each phase in order. Drag items, adjust sliders, and answer questions. Your scores accumulate automatically.</p>
+    </div>
+  </aside>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ========== STATE ========== */
+const state = {
+  phase: 0,
+  scores: { total:0, max:0, lo1a:{c:0,m:0}, lo1b:{c:0,m:0}, lo1c:{c:0,m:0}, lo2a:{c:0,m:0} },
+  phase1: { checked:false, items:[], placed:{} },
+  phase2: { mode:'synthesis', slot1:null, slot2:null, polymerCount:0, completed:false },
+  phase3: { temp:37, ph:7.4 },
+  phase4: { isHydrolysis:true },
+  phase5: { answers:{}, submitted:false }
+};
+
+/* ========== UTILITIES ========== */
+const $ = id => document.getElementById(id);
+const phaseNames = ['Introduction','Molecular Playground','Synthesis Lab','Enzyme Chamber','ATP Cycle','Knowledge Check'];
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function updateSidebar(){
+  $('sbPhase').textContent = phaseNames[state.phase];
+  const s = state.scores;
+  $('sbScore').textContent = s.total + ' / ' + s.max;
+  const fmt = lo => lo.m > 0 ? lo.c+'/'+lo.m : '—';
+  $('sbLO1a').textContent = fmt(s.lo1a);
+  $('sbLO1b').textContent = fmt(s.lo1b);
+  $('sbLO1c').textContent = fmt(s.lo1c);
+  $('sbLO2a').textContent = fmt(s.lo2a);
+}
+
+function showFeedback(correct, text){
+  const area = $('feedbackArea');
+  area.innerHTML = '<div class="feedback-box '+(correct?'correct':'incorrect')+'">'+(correct?'&#x2713; Correct':'&#x2717; Incorrect')+' — '+text+'</div>';
+  setTimeout(()=>{if(area.firstChild)area.firstChild.style.display='none'},4000);
+}
+
+/* ========== PROGRESS BAR ========== */
+function renderProgress(){
+  const bar = $('progressBar');
+  let html = '';
+  for(let i=0;i<6;i++){
+    const cls = i < state.phase ? 'done' : i === state.phase ? 'active' : '';
+    const check = i < state.phase ? '&#x2713;' : (i+1);
+    html += '<div class="prog-step"><div class="prog-dot '+cls+'">'+check+'</div>';
+    html += '<span class="prog-label">'+phaseNames[i]+'</span>';
+    if(i<5) html += '<div class="prog-line '+(i<state.phase?'filled':'')+'"></div>';
+    html += '</div>';
+  }
+  bar.innerHTML = html;
+}
+
+/* ========== NAVIGATION ========== */
+window.goPhase = function(n){
+  document.querySelectorAll('.phase').forEach(p=>p.classList.remove('active'));
+  $('phase'+n).classList.add('active');
+  state.phase = n;
+  renderProgress();
+  updateSidebar();
+  if(n===1) initPhase1();
+  if(n===2) initPhase2();
+  if(n===3) initPhase3();
+  if(n===5) initPhase5();
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+/* ========== PHASE 1: MOLECULAR PLAYGROUND ========== */
+const phase1Data = [
+  {id:'c1',formula:'C\u2086H\u2081\u2082O\u2086',desc:'Glucose (monosaccharide)',cat:'carb',lo:'1.a'},
+  {id:'c2',formula:'(C\u2086H\u2081\u2080O\u2085)\u2099',desc:'Starch / Glycogen polymer',cat:'carb',lo:'1.a'},
+  {id:'c3',formula:'C\u2081\u2082H\u2082\u2082O\u2081\u2081',desc:'Sucrose (disaccharide)',cat:'carb',lo:'1.a'},
+  {id:'c4',formula:'\u2014NH\u2082, \u2014COOH',desc:'Amino acid functional groups',cat:'prot',lo:'1.a'},
+  {id:'p1',formula:'\u2014NH\u2014CO\u2014',desc:'Peptide bond',cat:'prot',lo:'1.a'},
+  {id:'p2',formula:'(C\u2084H\u2086NO\u2082)\u2099',desc:'Polypeptide chain (protein)',cat:'prot',lo:'1.a'},
+  {id:'p3',formula:'\u2014SH (cysteine)',desc:'Sulfhydryl group in proteins',cat:'prot',lo:'1.a'},
+  {id:'l1',formula:'C\u2085\u2087H\u2081\u2081\u2080O\u2086',desc:'Triglyceride (fat)',cat:'lip',lo:'1.a'},
+  {id:'l2',formula:'Glycerol + 3 FA',desc:'Dehydration synthesis product',cat:'lip',lo:'1.b'},
+  {id:'l3',formula:'CH\u2082\u2014(CH\u2082)\u2099\u2086\u2014COOH',desc:'Fatty acid chain',cat:'lip',lo:'1.a'},
+  {id:'l4',formula:'Steroid ring (4 fused)',desc:'Cholesterol backbone',cat:'lip',lo:'1.a'},
+  {id:'n1',formula:'A, G, C, T, U',desc:'Nitrogenous bases',cat:'nucl',lo:'1.a'},
+  {id:'n2',formula:'Phosphate + sugar + base',desc:'Nucleotide structure',cat:'nucl',lo:'1.a'},
+  {id:'n3',formula:'\u2014PO\u2084\u2014',desc:'Phosphodiester bond',cat:'nucl',lo:'1.b'},
+  {id:'n4',formula:'(ATP/GTP/CTP/UTP)\u2099',desc:'Nucleic acid polymer',cat:'nucl',lo:'1.a'},
+  {id:'c5',formula:'\u2014OH, \u2014C=O',desc:'Hydroxyl & carbonyl (sugar)',cat:'carb',lo:'1.a'}
+];
+
+function initPhase1(){
+  if(state.phase1.items.length) return;
+  state.phase1.items = shuffle(phase1Data);
+  const tray = $('cardTray');
+  tray.innerHTML = '';
+  state.phase1.items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'drag-card';
+    div.draggable = true;
+    div.dataset.id = item.id;
+    div.dataset.cat = item.cat;
+    div.setAttribute('role','listitem');
+    div.setAttribute('aria-label', item.formula + ' ' + item.desc);
+    div.innerHTML = '<span class="formula">'+item.formula+'</span><span class="desc">'+item.desc+'</span>';
+    div.addEventListener('dragstart', onDragStart);
+    div.addEventListener('dragend', onDragEnd);
+    tray.appendChild(div);
+  });
+}
+
+function onDragStart(e){
+  e.dataTransfer.setData('text/plain', e.target.dataset.id);
+  e.target.classList.add('dragging');
+}
+function onDragEnd(e){ e.target.classList.remove('dragging'); }
+
+document.querySelectorAll('.sort-column').forEach(col => {
+  col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('drag-over'); });
+  col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+  col.addEventListener('drop', e => {
+    e.preventDefault();
+    col.classList.remove('drag-over');
+    if(state.phase1.checked) return;
+    const id = e.dataTransfer.getData('text/plain');
+    const card = document.querySelector('.drag-card[data-id="'+id+'"]');
+    if(!card) return;
+    col.querySelector('.cards-in').appendChild(card);
+    state.phase1.placed[id] = col.dataset.cat;
+  });
+});
+
+$('cardTray').addEventListener('dragover', e => e.preventDefault());
+$('cardTray').addEventListener('drop', e => {
+  e.preventDefault();
+  if(state.phase1.checked) return;
+  const id = e.dataTransfer.getData('text/plain');
+  const card = document.querySelector('.drag-card[data-id="'+id+'"]');
+  if(card) { $('cardTray').appendChild(card); delete state.phase1.placed[id]; }
+});
+
+window.checkPhase1 = function(){
+  if(state.phase1.checked) return;
+  state.phase1.checked = true;
+  $('phase1Check').disabled = true;
+  $('phase1Next').style.display = '';
+  $('phase1Next').classList.add('primary');
+  let correct = 0;
+  phase1Data.forEach(item => {
+    const card = document.querySelector('.drag-card[data-id="'+item.id+'"]');
+    if(!card) return;
+    const placed = state.phase1.placed[item.id];
+    const isCorrect = placed === item.cat;
+    if(isCorrect){
+      correct++;
+      card.classList.add('placed');
+      const loKey = item.lo === '1.a' ? 'lo1a' : item.lo === '1.b' ? 'lo1b' : item.lo;
+      if(state.scores[loKey]){state.scores[loKey].c++;state.scores[loKey].m++;}
+    } else {
+      card.classList.add('wrong');
+      const loKey = item.lo === '1.a' ? 'lo1a' : item.lo === '1.b' ? 'lo1b' : item.lo;
+      if(state.scores[loKey]) state.scores[loKey].m++;
+    }
+  });
+  state.scores.total += correct;
+  state.scores.max += phase1Data.length;
+  updateSidebar();
+  const pct = Math.round(correct/phase1Data.length*100);
+  showFeedback(pct >= 70, 'You got '+correct+'/'+phase1Data.length+' ('+pct+'%). '+ (pct>=70?'Strong understanding of macromolecule classification.':'Review the functional groups and formulas for each macromolecule class.'));
+};
+
+/* ========== PHASE 2: SYNTHESIS LAB ========== */
+const monomers = [
+  {id:'glucose',name:'Glucose',type:'carb',symbol:'G'},
+  {id:'fructose',name:'Fructose',type:'carb',symbol:'F'},
+  {id:'aminoAcid1',name:'Amino Acid',type:'prot',symbol:'AA'},
+  {id:'aminoAcid2',name:'Amino Acid',type:'prot',symbol:'AA'},
+  {id:'glycerol',name:'Glycerol',type:'lip',symbol:'Gly'},
+  {id:'fattyAcid',name:'Fatty Acid',type:'lip',symbol:'FA'},
+  {id:'nucleotide1',name:'Nucleotide',type:'nucl',symbol:'NT'},
+  {id:'nucleotide2',name:'Nucleotide',type:'nucl',symbol:'NT'}
+];
+
+function initPhase2(){
+  if(state.phase2.completed) return;
+  const pool = $('monomerPool');
+  pool.innerHTML = '';
+  monomers.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'pool-item';
+    div.draggable = true;
+    div.dataset.id = m.id;
+    div.textContent = m.name + ' ('+m.symbol+')';
+    div.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', m.id);
+      div.classList.add('dragging');
+    });
+    div.addEventListener('dragend', () => div.classList.remove('dragging'));
+    pool.appendChild(div);
+  });
+  // Drop zones for monomer slots
+  ['monoSlot1','monoSlot2'].forEach(sid => {
+    const slot = $(sid);
+    slot.addEventListener('dragover', e => e.preventDefault());
+    slot.addEventListener('drop', e => {
+      e.preventDefault();
+      if(state.phase2.slot1 && state.phase2.slot2) return;
+      const mid = e.dataTransfer.getData('text/plain');
+      const m = monomers.find(x=>x.id===mid);
+      if(!m) return;
+      if(!state.phase2.slot1){
+        state.phase2.slot1 = m;
+        slot.textContent = m.name;
+        slot.classList.add('filled');
+      } else if(!state.phase2.slot2){
+        state.phase2.slot2 = m;
+        slot.textContent = m.name;
+        slot.classList.add('filled');
+      }
+      const poolItem = document.querySelector('.pool-item[data-id="'+mid+'"]');
+      if(poolItem) poolItem.classList.add('used');
+      checkSynthesis();
+    });
+  });
+}
+
+function checkSynthesis(){
+  if(!state.phase2.slot1 || !state.phase2.slot2) return;
+  const s1 = state.phase2.slot1, s2 = state.phase2.slot2;
+  const canSynth = s1.type === s2.type;
+  if(state.phase2.mode === 'synthesis' && canSynth){
+    performSynthesis();
+  } else if(state.phase2.mode === 'hydrolysis' && canSynth){
+    performHydrolysis();
+  } else {
+    showFeedback(false, 'Monomers must be of the same type to react. '+s1.name+' ('+s1.type+') and '+s2.name+' ('+s2.type+') do not match.');
+    // Reset slots
+    resetSlots();
+  }
+}
+
+function performSynthesis(){
+  const zone = $('polymerZone');
+  const s = state.phase2.slot1;
+  state.phase2.polymerCount += 2;
+  const unit1 = document.createElement('div');
+  unit1.className = 'polymer-unit';
+  unit1.textContent = s.symbol;
+  zone.appendChild(unit1);
+  const bond = document.createElement('span');
+  bond.className = 'bond-symbol';
+  bond.textContent = '\u2014';
+  zone.appendChild(bond);
+  const unit2 = document.createElement('div');
+  unit2.className = 'polymer-unit';
+  unit2.textContent = state.phase2.slot2.symbol;
+  zone.appendChild(unit2);
+
+  // Show water release
+  const wd = $('waterDisplay');
+  const w = document.createElement('div');
+  w.className = 'water-molecule';
+  w.textContent = 'H\u2082O \u2191';
+  wd.appendChild(w);
+  setTimeout(()=>w.remove(),1000);
+
+  state.scores.lo1b.c++;
+  state.scores.lo1b.m++;
+  state.scores.total++;
+  state.scores.max++;
+  state.phase2.completed = true;
+  updateSidebar();
+  showFeedback(true, 'Dehydration synthesis: '+s.name+' + '+state.phase2.slot2.name+' \u2192 polymer + H\u2082O. A water molecule is removed to form a covalent bond between monomers.');
+  $('synthNext').classList.add('primary');
+}
+
+function performHydrolysis(){
+  const zone = $('polymerZone');
+  if(zone.children.length > 0){
+    // Remove last two units + bond
+    const children = [...zone.children];
+    for(let i=children.length-1;i>=Math.max(0,children.length-3);i--){
+      if(children[i]) children[i].remove();
+    }
+  }
+  const wd = $('waterDisplay');
+  const w = document.createElement('div');
+  w.className = 'water-molecule';
+  w.style.animation = 'none';
+  w.textContent = '+ H\u2082O \u2193';
+  w.style.opacity = '1';
+  w.style.color = 'var(--blue)';
+  wd.appendChild(w);
+  setTimeout(()=>w.remove(),1500);
+
+  state.scores.lo1b.c++;
+  state.scores.lo1b.m++;
+  state.scores.total++;
+  state.scores.max++;
+  updateSidebar();
+  showFeedback(true, 'Hydrolysis: water is added to break the covalent bond, releasing individual monomers from the polymer. This is the reverse of dehydration synthesis.');
+}
+
+function resetSlots(){
+  if(state.phase2.slot1){
+    const p = document.querySelector('.pool-item[data-id="'+state.phase2.slot1.id+'"]');
+    if(p) p.classList.remove('used');
+  }
+  if(state.phase2.slot2){
+    const p = document.querySelector('.pool-item[data-id="'+state.phase2.slot2.id+'"]');
+    if(p) p.classList.remove('used');
+  }
+  state.phase2.slot1 = null;
+  state.phase2.slot2 = null;
+  $('monoSlot1').textContent = 'Monomer 1';
+  $('monoSlot1').classList.remove('filled');
+  $('monoSlot2').textContent = 'Monomer 2';
+  $('monoSlot2').classList.remove('filled');
+}
+
+window.setMode = function(mode){
+  state.phase2.mode = mode;
+  document.querySelectorAll('.mode-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+    b.setAttribute('aria-selected', b.dataset.mode === mode);
+  });
+  if(mode === 'synthesis'){
+    $('synthInstruction').textContent = 'Drag monomers into the reaction zone to build a polymer. Water is released as a byproduct.';
+    $('synthArrow').textContent = '\u2192';
+  } else {
+    $('synthInstruction').textContent = 'Add water to break the polymer back into monomers. Hydrolysis is the reverse of dehydration synthesis.';
+    $('synthArrow').textContent = '\u2190';
+  }
+  resetSlots();
+};
+
+window.resetSynth = function(){
+  resetSlots();
+  $('polymerZone').innerHTML = 'Polymer';
+  $('waterDisplay').innerHTML = '';
+  state.phase2.completed = false;
+  document.querySelectorAll('.pool-item').forEach(p=>p.classList.remove('used'));
+};
+
+/* ========== PHASE 3: ENZYME CHAMBER ========== */
+function initPhase3(){
+  updateEnzyme();
+  drawRateGraph();
+}
+
+function enzymeRateFactor(temp, ph){
+  // Temperature factor: bell curve centered at 37
+  const tOpt = 37, tSigma = 12;
+  let tFactor = Math.exp(-0.5 * Math.pow((temp - tOpt)/tSigma, 2));
+  // pH factor: bell curve centered at 7.4
+  const pOpt = 7.4, pSigma = 1.8;
+  let pFactor = Math.exp(-0.5 * Math.pow((ph - pOpt)/pSigma, 2));
+  // Denaturation zones
+  if(temp > 55) tFactor *= Math.max(0, 1 - (temp-55)/15);
+  if(temp < 10) tFactor *= Math.max(0, 1 - (10-temp)/15);
+  if(ph > 11 || ph < 2) pFactor *= Math.max(0, 1 - (ph > 11 ? ph-11 : 2-ph)/1.5);
+  return { tFactor, pFactor, rate: tFactor * pFactor };
+}
+
+function updateEnzyme(){
+  const temp = state.phase3.temp, ph = state.phase3.ph;
+  $('tempVal').textContent = temp;
+  $('phVal').textContent = ph.toFixed(1);
+  const {tFactor, pFactor, rate} = enzymeRateFactor(temp, ph);
+  const isDenatured = rate < 0.15;
+
+  // Update enzyme visual
+  const body = $('enzymeBody');
+  const sub = $('substrate');
+  const prod = $('products');
+  const denLabel = $('denLabel');
+  const asLabel = $('asLabel');
+  const status = $('enzStatus');
+
+  if(isDenatured){
+    body.setAttribute('fill','url(#denGrad)');
+    body.setAttribute('stroke','#dc2626');
+    // Distort active site
+    $('activeSite').setAttribute('d','M130,70 L170,130 L150,170 L110,130 Z');
+    // Substrate detached
+    sub.setAttribute('x','290');
+    sub.setAttribute('y','110');
+    sub.setAttribute('opacity','0.5');
+    prod.style.display = 'none';
+    denLabel.style.display = '';
+    asLabel.style.display = 'none';
+    status.className = 'status-badge denatured';
+    status.textContent = '\u26A0 DENATURED';
+    $('enzName').textContent = 'Enzyme (unfolded)';
+  } else {
+    body.setAttribute('fill','url(#enzGrad)');
+    body.setAttribute('stroke','#2563eb');
+    // Normal active site
+    const distortion = (1 - rate) * 20;
+    $('activeSite').setAttribute('d',
+      'M'+(140-distortion)+','+(80+distortion)+' L'+(160+distortion)+','+(120-distortion/2)+
+      ' L'+(140-distortion)+','+(160-distortion)+' L'+(120+distortion)+','+(120-distortion/2)+' Z'
+    );
+    // Substrate docked
+    const subX = 155 + (1-rate)*40;
+    sub.setAttribute('x', subX);
+    sub.setAttribute('opacity', '1');
+    denLabel.style.display = 'none';
+    asLabel.style.display = '';
+    status.className = 'status-badge optimal';
+    status.textContent = rate > 0.7 ? 'OPTIMAL' : 'SUBOPTIMAL';
+    $('enzName').textContent = 'Enzyme';
+
+    // Show products when rate is high
+    if(rate > 0.6){
+      prod.style.display = '';
+      prod.setAttribute('opacity', rate);
+    } else {
+      prod.style.display = 'none';
+    }
+  }
+  drawRateGraph(temp, ph);
+}
+
+function drawRateGraph(){
+  const canvas = $('rateCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Background
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  for(let i=1;i<5;i++){
+    const y = H * i/5;
+    ctx.beginPath(); ctx.moveTo(40,y); ctx.lineTo(W-10,y); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(40,10); ctx.lineTo(40,H-20); ctx.lineTo(W-10,H-20); ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#64748b';
+  ctx.font = '10px Segoe UI, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Temperature (\u00B0C)', W/2+15, H-4);
+  ctx.save();
+  ctx.translate(12, H/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Reaction Rate', 0, 0);
+  ctx.restore();
+
+  // Temp axis labels
+  for(let t=0;t<=80;t+=20){
+    const x = 40 + (t/80)*(W-50);
+    ctx.fillText(t, x, H-8);
+  }
+
+  // Draw rate curve at current pH
+  const ph = state.phase3.ph;
+  ctx.beginPath();
+  ctx.strokeStyle = '#2563eb';
+  ctx.lineWidth = 2.5;
+  for(let px=0;px<=W-50;px++){
+    const temp = (px/(W-50))*80;
+    const {rate} = enzymeRateFactor(temp, ph);
+    const y = (H-25) - rate*(H-40);
+    if(px===0) ctx.moveTo(40+px, y);
+    else ctx.lineTo(40+px, y);
+  }
+  ctx.stroke();
+
+  // Current temp marker
+  const curX = 40 + (state.phase3.temp/80)*(W-50);
+  const {rate: curRate} = enzymeRateFactor(state.phase3.temp, ph);
+  const curY = (H-25) - curRate*(H-40);
+  ctx.beginPath();
+  ctx.arc(curX, curY, 6, 0, Math.PI*2);
+  ctx.fillStyle = '#dc2626';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Optimal zone highlight
+  const optX1 = 40 + (25/80)*(W-50);
+  const optX2 = 40 + (50/80)*(W-50);
+  ctx.fillStyle = 'rgba(22,163,74,0.08)';
+  ctx.fillRect(optX1, 10, optX2-optX1, H-35);
+  ctx.fillStyle = '#16a34a';
+  ctx.font = '9px Segoe UI, sans-serif';
+  ctx.fillText('Optimal Range', (optX1+optX2)/2, 22);
+}
+
+$('tempSlider').addEventListener('input', e => { state.phase3.temp = +e.target.value; updateEnzyme(); });
+$('phSlider').addEventListener('input', e => { state.phase3.ph = +e.target.value; updateEnzyme(); });
+
+// Score tracking for phase 3 - track when user finds optimal
+let phase3Scored = false;
+const origUpdateEnzyme = updateEnzyme;
+updateEnzyme = function(){
+  origUpdateEnzyme();
+  if(!phase3Scored){
+    const {rate} = enzymeRateFactor(state.phase3.temp, state.phase3.ph);
+    if(rate > 0.85){
+      phase3Scored = true;
+      state.scores.lo1c.c++;
+      state.scores.lo1c.m++;
+      state.scores.total++;
+      state.scores.max++;
+      updateSidebar();
+      showFeedback(true, 'You found the optimal range! Most human enzymes peak near 37\u00B0C and pH 7.4. Deviations reduce the rate by distorting the active site.');
+    }
+  }
+};
+
+/* ========== PHASE 4: ATP CYCLE ========== */
+let atpAnimating = false;
+
+window.toggleATP = function(){
+  if(atpAnimating) return;
+  atpAnimating = true;
+  state.phase4.isHydrolysis = !state.phase4.isHydrolysis;
+  const btn = $('atpToggle');
+  const p3 = $('p3');
+  const label = $('molLabel');
+  const eq = $('atpEquation');
+  const eLabel = $('energyLabel');
+  const bond = $('terminalBond');
+  const glow = $('energyCircle');
+
+  if(state.phase4.isHydrolysis){
+    // Hydrolysis: phosphate detaches, energy releases
+    btn.textContent = '\u21BB Reverse: Phosphorylation';
+    btn.classList.add('primary');
+    p3.style.transition = 'all 0.6s ease';
+    p3.setAttribute('cx','440');
+    p3.setAttribute('cy','60');
+    p3.setAttribute('r','22');
+    p3.setAttribute('fill','#fee2e2');
+    p3.setAttribute('stroke','#dc2626');
+    label.textContent = 'ATP \u2192 ADP + P\u1D62';
+    eq.innerHTML = '<span class="phosphate">ATP</span> + H\u2082O \u2192 <span class="phosphate">ADP</span> + P\u1D62; + <span class="energy-tag">\u26A1 Energy (~7.3 kcal/mol)</span>';
+    eLabel.style.display = '';
+    bond.setAttribute('stroke-dasharray','2 6');
+    bond.setAttribute('stroke','#dc2626');
+    // Energy burst
+    glow.setAttribute('r','10');
+    glow.setAttribute('opacity','1');
+    glow.style.transition = 'all 0.8s ease';
+    requestAnimationFrame(()=>{
+      glow.setAttribute('r','80');
+      glow.setAttribute('opacity','0');
+    });
+
+    // Score
+    state.scores.lo2a.c++;
+    state.scores.lo2a.m++;
+    state.scores.total++;
+    state.scores.max++;
+    updateSidebar();
+    showFeedback(true, 'ATP hydrolysis: the terminal phosphoanhydride bond breaks, releasing ~7.3 kcal/mol of energy. The cell uses this energy for active transport, muscle contraction, and biosynthesis.');
+
+    setTimeout(()=>{atpAnimating=false;},800);
+  } else {
+    // Phosphorylation: phosphate reattaches
+    btn.textContent = '\u21BB Reverse: Hydrolysis';
+    btn.classList.remove('primary');
+    p3.style.transition = 'all 0.6s ease';
+    p3.setAttribute('cx','380');
+    p3.setAttribute('cy','100');
+    p3.setAttribute('r','28');
+    p3.setAttribute('fill','#fef3c7');
+    p3.setAttribute('stroke','#d97706');
+    label.textContent = 'ADP + P\u1D62 \u2192 ATP';
+    eq.innerHTML = '<span class="phosphate">ADP</span> + P\u1D62; + <span class="energy-tag">Energy (~7.3 kcal/mol)</span> \u2192 <span class="phosphate">ATP</span> + H\u2082O';
+    eLabel.style.display = 'none';
+    bond.setAttribute('stroke-dasharray','4 3');
+    bond.setAttribute('stroke','#d97706');
+
+    state.scores.lo2a.c++;
+    state.scores.lo2a.m++;
+    state.scores.total++;
+    state.scores.max++;
+    updateSidebar();
+    showFeedback(true, 'Phosphorylation: ATP synthase (or substrate-level kinases) adds the phosphate back to ADP. This requires energy from cellular respiration or photosynthesis.');
+
+    setTimeout(()=>{atpAnimating=false;},800);
+  }
+};
+
+/* ========== PHASE 5: KNOWLEDGE CHECK ========== */
+const quizBank = [
+  {id:'q1',lo:'1.a',bloom:'Remember',q:'Which of the following is the general formula for a monosaccharide?',choices:['C\u2086H\u2081\u2082O\u2086','C\u2081\u2082H\u2082\u2082O\u2081\u2081','C\u2083H\u2086O\u2083','C\u2085\u2087H\u2081\u2081\u2080O\u2086'],answer:0,why:'C\u2086H\u2081\u2082O\u2086 is the empirical formula for glucose and other hexose monosaccharides, reflecting a 1:2:1 ratio of C:H:O.'},
+  {id:'q2',lo:'1.a',bloom:'Understand',q:'Proteins are polymers of which type of monomer?',choices:['Nucleotides','Monosaccharides','Amino acids','Fatty acids'],answer:2,why:'Proteins are made of amino acid monomers linked by peptide bonds. There are 20 standard amino acids used in protein synthesis.'},
+  {id:'q3',lo:'1.a',bloom:'Analyze',q:'Which functional group is characteristic of fatty acids but NOT carbohydrates?',choices:['Hydroxyl (\u2014OH)','Carbonyl (C=O)','Carboxyl (\u2014COOH)','Amino (\u2014NH\u2082)'],answer:2,why:'Fatty acids have a long hydrocarbon chain with a terminal carboxyl group (\u2014COOH). Carbohydrates have hydroxyl and carbonyl groups but not carboxyl groups.'},
+  {id:'q4',lo:'1.a',bloom:'Remember',q:'DNA and RNA are polymers of:',choices:['Amino acids','Nucleotides','Monosaccharides','Fatty acids'],answer:1,why:'Nucleic acids (DNA and RNA) are composed of nucleotide monomers, each containing a phosphate group, a pentose sugar, and a nitrogenous base.'},
+  {id:'q5',lo:'1.b',bloom:'Understand',q:'In dehydration synthesis, which molecule is removed to join monomers?',choices:['CO\u2082','H\u2082O','O\u2082','NH\u2083'],answer:1,why:'Dehydration synthesis removes a water molecule (H from one monomer, OH from another) to form a covalent bond between the monomers, building a polymer.'},
+  {id:'q6',lo:'1.b',bloom:'Apply',q:'A triglyceride is formed by dehydration synthesis between:',choices:['3 amino acids + glycerol','3 fatty acids + glycerol','3 nucleotides + glucose','3 monosaccharides'],answer:1,why:'Triglycerides (fats) are synthesized by joining 3 fatty acid chains to a glycerol backbone via ester bonds, releasing 3 H\u2082O molecules.'},
+  {id:'q7',lo:'1.b',bloom:'Understand',q:'Hydrolysis of a disaccharide (e.g., sucrose) produces:',choices:['Two amino acids','Two monosaccharides','Two fatty acids','Two nucleotides'],answer:1,why:'Hydrolysis breaks the glycosidic bond in a disaccharide, adding water and yielding two monosaccharide units (e.g., sucrose \u2192 glucose + fructose).'},
+  {id:'q8',lo:'1.c',bloom:'Apply',q:'An enzyme\u2019s active site is best described as:',choices:['A rigid lock that never changes shape','A specific 3D region that complements the substrate\u2019s shape (induced fit)','The entire protein surface','A region that binds any molecule'],answer:1,why:'The active site is a specific 3D cleft that temporarily binds the substrate. The induced-fit model states the active site changes shape slightly upon substrate binding for a tighter fit.'},
+  {id:'q9',lo:'1.c',bloom:'Analyze',q:'If you raise the temperature from 37\u00B0C to 60\u00B0C, what happens to most human enzymes?',choices:['Reaction rate increases steadily','The enzyme denatures and loses function','No change in activity','The enzyme becomes more specific'],answer:1,why:'Above ~45\u201355\u00B0C, heat disrupts the hydrogen bonds and hydrophobic interactions maintaining the enzyme\u2019s tertiary structure, causing denaturation and loss of active-site geometry.'},
+  {id:'q10',lo:'2.a',bloom:'Understand',q:'The energy released by ATP hydrolysis is approximately:',choices:['1.3 kcal/mol','7.3 kcal/mol','34 kcal/mol','686 kcal/mol'],answer:1,why:'The hydrolysis of ATP to ADP + P\u1D62 releases approximately 7.3 kcal/mol under standard cellular conditions. This is the energy \u201ccurrency\u201d of the cell.'},
+  {id:'q11',lo:'2.a',bloom:'Apply',q:'Which bond in ATP is broken during hydrolysis to release energy?',choices:['The bond between adenine and ribose','The bond between ribose and the first phosphate','The terminal phosphoanhydride bond (between 2nd and 3rd phosphate)','All bonds break simultaneously'],answer:2,why:'The terminal phosphoanhydride bond (between the second and third phosphate groups) is hydrolyzed. This bond is relatively unstable and releases the most usable energy for cellular work.'},
+  {id:'q12',lo:'1.c',bloom:'Analyze',q:'Pepsin (a stomach enzyme) has an optimal pH of ~2. What happens if the pH is raised to 7?',choices:['It works even better','It denatures and becomes inactive','It works the same','It becomes a different enzyme'],answer:1,why:'Pepsin is adapted to the highly acidic stomach environment (pH ~2). At neutral pH, the ionization states of its amino acid side chains change, disrupting the active site and denaturing the enzyme.'}
+];
+
+function initPhase5(){
+  if(Object.keys(state.phase5.answers).length) return;
+  const container = $('quizContainer');
+  container.innerHTML = '';
+  const questions = shuffle(quizBank).slice(0,10);
+  questions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.id = 'qq_'+q.id;
+    div.innerHTML =
+      '<div class="q-num">Question '+(i+1)+' &middot; '+q.bloom+'</div>'+
+      '<div class="q-text">'+q.q+'</div>'+
+      '<div class="q-lo">LO '+q.lo+'</div>'+
+      '<div class="choices" data-qid="'+q.id+'" data-lo="'+q.lo+'" data-answer="'+q.answer+'">'+
+      q.choices.map((c,ci)=>'<button class="choice-btn" data-ci="'+ci+'" onclick="selectChoice(this,\''+q.id+'\','+ci+')">'+c+'</button>').join('')+
+      '</div>'+
+      '<div class="quiz-explain" id="exp_'+q.id+'">'+q.why+'</div>';
+    container.appendChild(div);
+  });
+}
+
+window.selectChoice = function(btn, qid, ci){
+  if(state.phase5.submitted) return;
+  const choiceDiv = btn.parentElement;
+  choiceDiv.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.phase5.answers[qid] = ci;
+};
+
+window.submitQuiz = function(){
+  if(state.phase5.submitted) return;
+  state.phase5.submitted = true;
+  $('submitQuiz').disabled = true;
+
+  let totalC = 0, totalM = 0;
+  const loScores = { '1.a':{c:0,m:0}, '1.b':{c:0,m:0}, '1.c':{c:0,m:0}, '2.a':{c:0,m:0} };
+
+  document.querySelectorAll('.choices').forEach(cd => {
+    const qid = cd.dataset.qid;
+    const lo = cd.dataset.lo;
+    const ans = +cd.dataset.answer;
+    const userAns = state.phase5.answers[qid];
+    totalM++;
+    if(loScores[lo]) loScores[lo].m++;
+
+    cd.querySelectorAll('.choice-btn').forEach(b => {
+      b.disabled = true;
+      const ci = +b.dataset.ci;
+      if(ci === ans) b.classList.add('correct-answer');
+      if(ci === userAns && ci !== ans) b.classList.add('wrong-answer');
+    });
+
+    if(userAns === ans){
+      totalC++;
+      if(loScores[lo]) loScores[lo].c++;
+    }
+
+    // Show explanation
+    const exp = document.getElementById('exp_'+qid);
+    if(exp) exp.classList.add('show');
+  });
+
+  // Add to global scores
+  state.scores.lo1a.c += loScores['1.a'].c; state.scores.lo1a.m += loScores['1.a'].m;
+  state.scores.lo1b.c += loScores['1.b'].c; state.scores.lo1b.m += loScores['1.b'].m;
+  state.scores.lo1c.c += loScores['1.c'].c; state.scores.lo1c.m += loScores['1.c'].m;
+  state.scores.lo2a.c += loScores['2.a'].c; state.scores.lo2a.m += loScores['2.a'].m;
+  state.scores.total += totalC; state.scores.max += totalM;
+  updateSidebar();
+
+  // Score summary
+  const summary = $('scoreSummary');
+  summary.style.display = 'block';
+  const pct = totalM > 0 ? Math.round(totalC/totalM*100) : 0;
+  let html = '<div class="final-score" style="color:'+(pct>=70?'var(--green)':pct>=50?'var(--amber)':'var(--red)')+'">'+totalC+' / '+totalM+' ('+pct+'%)</div>';
+  html += '<p style="text-align:center;font-size:.88rem;color:var(--muted);margin-bottom:16px">Score Breakdown by Learning Objective</p>';
+  const loNames = {'1.a':'Molecular Structure','1.b':'Building Blocks & Synthesis','1.c':'Enzymes','2.a':'ATP Cycle'};
+  const loKeys = {'1.a':'lo1a','1.b':'lo1b','1.c':'lo1c','2.a':'lo2a'};
+  for(const [lo, name] of Object.entries(loNames)){
+    const ls = loScores[lo];
+    const lp = ls.m > 0 ? Math.round(ls.c/ls.m*100) : 0;
+    const cls = lp === 100 ? 'perfect' : lp >= 50 ? 'partial' : 'zero';
+    html += '<div class="score-lo"><span class="lo-label">LO '+lo+': '+name+'</span><div class="bar-track"><div class="bar-fill '+cls+'" style="width:'+lp+'%"></div></div><span class="lo-pct">'+ls.c+'/'+ls.m+'</span></div>';
+  }
+  summary.innerHTML = html;
+};
+
+/* ========== INIT ========== */
+renderProgress();
+updateSidebar();
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="The Micro-Matrix — interactive X-ray zoom into compact & spongy bone. Label the osteon (Haversian system), compare trabeculae. Single-file, no dependencies." />
+<title>The Micro-Matrix — Bone Histology (Osteon & Trabeculae)</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1" />
+<style>
+/* ============================================================
+   App 7.1 — The Micro-Matrix (bone microscopic anatomy)
+   Light-clinical palette (matches homeostasis / epithelial apps)
+   ============================================================ */
+:root{
+  --bg:#eef2f8; --card:#ffffff; --ink:#1B2A4A; --primary:#1B2A4A;
+  --accent:#2563b6; --accent-2:#3b82f6; --line:#d3ddec; --line-2:#e6edf6;
+  --muted:#5b6b86; --mute-2:#8798b4;
+  --ok:#1B7D46; --ok-soft:#e5f4ea; --warn:#b45309; --warn-soft:#fdf1e0;
+  --danger:#c0392b; --danger-soft:#fbe9e6;
+  /* bone tissue */
+  --bone:#f3ede0; --bone-2:#e6dcc6; --bone-line:#c9b98f; --canal:#b0533f;
+  --marrow:#c85a6b; --marrow-2:#e08494; --lamella:#efe7d4;
+  --radius:14px; --radius-s:10px;
+  --shadow:0 8px 26px rgba(27,42,74,.12);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:var(--sans); color:var(--ink); min-height:100vh; line-height:1.5;
+  background:
+    radial-gradient(900px 460px at 84% -10%,rgba(37,99,182,.10),transparent 60%),
+    radial-gradient(760px 460px at -6% 110%,rgba(37,99,182,.07),transparent 60%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+/* ---- header ---- */
+header.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:14px 24px;background:rgba(255,255,255,.82);backdrop-filter:blur(9px);
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;
+}
+.brand{display:flex;align-items:center;gap:13px;}
+.brand .logo{
+  width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent),#1e40af);box-shadow:0 4px 14px rgba(37,99,182,.35);
+}
+.brand h1{font-size:1.12rem;font-weight:800;letter-spacing:-.01em;}
+.brand p{font-size:.76rem;color:var(--muted);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.switch{display:flex;align-items:center;gap:9px;font-size:.8rem;color:var(--muted);cursor:pointer;user-select:none;font-weight:600;}
+.switch input{display:none;}
+.track{width:46px;height:25px;border-radius:20px;background:#c4d0e2;position:relative;transition:.25s;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.switch input:checked + .track{background:var(--accent);}
+.switch input:checked + .track::after{transform:translateX(21px);}
+.btn-link{
+  text-decoration:none;color:var(--muted);font-weight:700;font-size:.82rem;
+  border:1px solid var(--line);border-radius:9px;padding:8px 13px;background:#fff;
+}
+.btn-link:hover{color:var(--accent);border-color:var(--accent);}
+/* ---- layout ---- */
+.layout{
+  display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;
+  max-width:1440px;margin:0 auto;padding:20px 24px 26px;
+}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.panel h2{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:14px 16px 0;}
+.panel .body{padding:14px 16px 16px;}
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0;}
+/* ---- controls ---- */
+.ctl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+button.btn{
+  font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;
+  border:1px solid var(--line);background:#fff;color:var(--ink);
+  border-radius:9px;padding:9px 12px;transition:.15s;
+}
+button.btn:hover{border-color:var(--accent);color:var(--accent);}
+button.btn:disabled{opacity:.45;cursor:not-allowed;}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+button.btn.primary:hover{background:#1e4f97;color:#fff;}
+button.btn.ghost{background:var(--line-2);}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+.seg button{flex:1;border:0;border-radius:0;background:#fff;padding:9px 6px;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--muted);}
+.seg button.on{background:var(--accent);color:#fff;}
+.zoom-meter{font-size:.78rem;color:var(--muted);margin-top:10px;display:flex;justify-content:space-between;}
+.zoom-meter b{color:var(--ink);}
+/* ---- stage ---- */
+.stage-wrap{position:relative;}
+.stage{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#faf7f0;border:1px solid var(--line);}
+.stage svg{display:block;width:100%;height:auto;}
+.hotspots{position:absolute;inset:0;pointer-events:none;}
+.hot{
+  position:absolute;transform:translate(-50%,-50%);pointer-events:auto;
+  width:30px;height:30px;border-radius:50%;border:2.5px dashed var(--accent);
+  background:rgba(37,99,182,.10);cursor:pointer;display:grid;place-items:center;
+  color:var(--accent);font-weight:800;font-size:.9rem;transition:.15s;
+}
+.hot:hover{background:rgba(37,99,182,.22);}
+.hot.filled{border:2.5px solid var(--ok);background:var(--ok);color:#fff;cursor:default;width:auto;height:auto;padding:5px 10px;border-radius:20px;font-size:.72rem;white-space:nowrap;}
+.hot.armed{box-shadow:0 0 0 4px rgba(37,99,182,.25);}
+.hot.shake{animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translate(-50%,-50%);}20%{transform:translate(calc(-50% - 6px),-50%);}40%{transform:translate(calc(-50% + 6px),-50%);}60%{transform:translate(calc(-50% - 4px),-50%);}80%{transform:translate(calc(-50% + 4px),-50%);}}
+/* ---- label chips ---- */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.chip{
+  border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:7px 13px;
+  font-weight:700;font-size:.8rem;cursor:grab;user-select:none;transition:.15s;color:var(--ink);
+}
+.chip:hover{border-color:var(--accent);}
+.chip.armed{background:var(--accent);color:#fff;border-color:var(--accent);}
+.chip.done{opacity:.4;text-decoration:line-through;cursor:default;pointer-events:none;}
+/* ---- feedback ---- */
+.hintbox{margin-top:12px;border-radius:10px;padding:11px 13px;font-size:.86rem;line-height:1.45;display:none;border:1px solid var(--line);background:var(--line-2);}
+.hintbox.show{display:block;}
+.hintbox.ok{background:var(--ok-soft);border-color:#bfe4cd;color:#14532d;}
+.hintbox.no{background:var(--warn-soft);border-color:#f2d6a8;color:#7c4a06;}
+.hintbox b{display:block;margin-bottom:2px;}
+/* ---- info readouts ---- */
+.term{border-top:1px solid var(--line-2);padding:10px 0;font-size:.86rem;}
+.term:first-child{border-top:0;}
+.term b{color:var(--accent);}
+.pill{display:inline-block;font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:20px;background:var(--line-2);color:var(--muted);margin-left:6px;}
+.progress-line{font-size:.82rem;color:var(--muted);margin-top:6px;}
+.progress-line b{color:var(--ok);}
+/* stage: schematic (left) beside the real micrograph (right) */
+.stage-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+.stage-row .asset-slot{margin-top:0;align-self:stretch;}
+.stage-row .asset-figure img{max-height:none;}
+/* compare grid */
+.compare{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:stretch;}
+.compare .asset-slot{margin-top:0;}
+.compare .asset-figure img{max-height:none;}
+.compare figure{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#faf7f0;}
+.compare figcaption{padding:8px 10px;font-size:.78rem;color:var(--muted);background:#fff;border-top:1px solid var(--line-2);}
+.compare svg{display:block;width:100%;height:auto;}
+.compare h3{font-size:.9rem;padding:9px 10px 0;color:var(--ink);}
+/* asset slot */
+.asset-slot{margin-top:14px;border:2px dashed var(--line);border-radius:12px;background:repeating-linear-gradient(45deg,#f7f9fc,#f7f9fc 10px,#eef2f8 10px,#eef2f8 20px);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--mute-2);gap:6px;}
+.asset-slot .ico{font-size:1.6rem;}
+.asset-slot .cap{font-size:.78rem;font-weight:700;color:var(--muted);}
+.asset-slot .sub{font-size:.72rem;max-width:420px;}
+.asset-slot img{max-width:100%;border-radius:8px;display:block;}
+.asset-slot.loaded{border:1px solid var(--line);background:#fff;padding:12px;display:block;min-height:0;}
+.asset-figure{margin:0;text-align:center;}
+.asset-figure img{max-width:100%;max-height:380px;width:auto;display:inline-block;border-radius:10px;border:1px solid var(--line-2);}
+.asset-figure figcaption{margin-top:8px;font-size:.78rem;color:var(--muted);font-weight:600;}
+.eli5-note{margin-top:12px;background:#eef6ff;border:1px solid #cfe0f5;border-radius:10px;padding:11px 13px;font-size:.86rem;color:#1e3a5f;line-height:1.45;display:none;}
+.eli5-note.show{display:block;}
+.eli5-note b{color:var(--accent);}
+.footnote{max-width:1440px;margin:0 auto;padding:4px 24px 30px;color:var(--mute-2);font-size:.74rem;}
+@media(max-width:880px){.layout{grid-template-columns:1fr;}.compare{grid-template-columns:1fr;}.stage-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 4v-2M12 22v-2M4 12H2M22 12h-2"/></svg></div>
+    <div>
+      <h1>The Micro-Matrix</h1>
+      <p>Bone histology · osteon (Haversian system) &amp; trabeculae · A&amp;P I · Ch 7</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="switch" title="Switch between clinical wording and plain-language analogies">
+      <input type="checkbox" id="eli5Toggle" />
+      <span class="track"></span>
+      <span id="modeLabel">Professional</span>
+    </label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>X-Ray Zoom</h2>
+      <div class="body">
+        <div class="seg" id="zoomSeg">
+          <button data-z="0" class="on">Tissue</button>
+          <button data-z="1">Osteon field</button>
+          <button data-z="2">Single osteon</button>
+        </div>
+        <div class="ctl-row" style="margin-top:10px;">
+          <button class="btn" id="zoomOut">− Zoom out</button>
+          <button class="btn primary" id="zoomIn">Zoom in +</button>
+        </div>
+        <div class="zoom-meter"><span>Magnification</span><b id="magLabel">~1× (gross)</b></div>
+        <p class="progress-line" id="zoomHint" style="margin-top:8px;">Zoom in to the <b>single osteon</b> to start labeling.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="labelPanel">
+      <h2>Label the Osteon</h2>
+      <div class="body">
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:4px;">Click a tag, then click its target — or drag it onto the structure.</p>
+        <div class="chips" id="chips"></div>
+        <div class="progress-line">Labeled <b id="placedCount">0</b> / 6</div>
+        <div class="hintbox" id="hintbox"></div>
+        <div class="ctl-row" style="margin-top:12px;">
+          <button class="btn ghost" id="hintBtn">💡 Hint</button>
+          <button class="btn ghost" id="resetLabels">↺ Reset labels</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Structure Facts</h2>
+      <div class="body" id="factList"></div>
+    </section>
+  </aside>
+
+  <!-- ================= MAIN STAGE ================= -->
+  <div class="stack">
+    <section class="panel">
+      <h2 id="stageTitle">Compact Bone — Tissue View</h2>
+      <div class="body">
+        <div class="stage-row">
+          <div class="stage-wrap">
+            <div class="stage" id="stage">
+              <!-- SVG scenes injected by JS -->
+            </div>
+            <div class="hotspots" id="hotspots"></div>
+          </div>
+          <figure class="asset-slot" id="slot-micrograph"
+            data-img="assets/ch7-compact-bone-micrograph.png"
+            data-prompt="High-resolution light micrograph of a ground cross-section of compact bone, H&E-free, showing several complete osteons (Haversian systems) with central canals, concentric lamellae, and lacunae with canaliculi radiating outward; educational histology plate, clean white background, labeled-ready, 4k.">
+            <div class="ico">🔬</div>
+            <div class="cap">Real micrograph — compact bone ground section</div>
+            <div class="sub">Compare the schematic (left) with a true histology section.</div>
+          </figure>
+        </div>
+        <div class="eli5-note" id="eli5Note"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Compact vs Spongy — Side by Side</h2>
+      <div class="body">
+        <div class="compare">
+          <div>
+            <figure>
+              <h3>Compact (dense) bone</h3>
+              <svg viewBox="0 0 260 200" role="img" aria-label="Compact bone osteons">
+                <rect width="260" height="200" fill="#faf7f0"/>
+                <g id="cmpCompact"></g>
+              </svg>
+              <figcaption><b>Osteons</b> packed in rings around central canals. Solid, strong, weight-bearing. Little open space.</figcaption>
+            </figure>
+          </div>
+          <div>
+            <figure>
+              <h3>Spongy (cancellous) bone</h3>
+              <svg viewBox="0 0 260 200" role="img" aria-label="Spongy bone trabeculae">
+                <rect width="260" height="200" fill="#faf7f0"/>
+                <g id="cmpSpongy"></g>
+              </svg>
+              <figcaption><b>Trabeculae</b> — bony struts with open spaces holding <b>red marrow</b> (hematopoiesis). Light, found in epiphyses &amp; flat bones.</figcaption>
+            </figure>
+          </div>
+          <figure class="asset-slot" id="slot-sem"
+            data-img="assets/ch7-trabeculae-sem.png"
+            data-prompt="Scanning electron micrograph (SEM) of spongy/cancellous bone showing a 3-D lattice of trabeculae with large interconnected marrow spaces; grayscale, high depth of field, scale bar, educational, 4k.">
+            <div class="ico">🧬</div>
+            <div class="cap">Real SEM — trabecular lattice</div>
+            <div class="sub">The true 3-D strut network.</div>
+          </figure>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="footnote">Schematic teaching model — spacing and proportions of osteons, lamellae, and trabeculae are stylized for clarity, not to microscopic scale. Terminology follows Hole's Human A&amp;P (Ch 7).</div>
+
+<script>
+"use strict";
+/* ============================================================
+   State
+   ============================================================ */
+var State = {
+  zoom: 0,            // 0 tissue, 1 osteon field, 2 single osteon
+  eli5: false,
+  armed: null,        // currently selected label key (click-to-place)
+  placed: {},         // key -> true
+};
+
+/* Structure knowledge base (professional + ELI5 + fact) */
+var STRUCTURES = {
+  "central-canal": {
+    name:"Central (Haversian) canal",
+    pro:"The tube at the core of each osteon carrying blood vessels and nerves that supply the bone cells.",
+    eli5:"The straw in the middle — it delivers blood and food to the whole ring of cells.",
+    fact:"Runs along the long axis of the bone; connected side-to-side by perforating (Volkmann's) canals."
+  },
+  "lamellae": {
+    name:"Concentric lamellae",
+    pro:"Rings of calcified bone matrix (collagen + calcium salts) laid down in layers around the central canal.",
+    eli5:"The tree-ring layers — each ring is a sheet of hardened bone.",
+    fact:"Collagen fibers alternate direction between layers, giving the osteon its strength."
+  },
+  "lacuna": {
+    name:"Lacuna",
+    pro:"A small cavity between lamellae that houses a single osteocyte.",
+    eli5:"The tiny cave where a bone cell lives.",
+    fact:"Lacunae sit between the rings; 'lacuna' literally means 'little lake'."
+  },
+  "osteocyte": {
+    name:"Osteocyte",
+    pro:"A mature, spider-shaped bone cell that maintains the matrix; occupies a lacuna.",
+    eli5:"The bone cell itself — a little spider sitting in its cave.",
+    fact:"Formerly an osteoblast that became trapped in the matrix it built."
+  },
+  "canaliculi": {
+    name:"Canaliculi",
+    pro:"Hair-like channels connecting neighboring lacunae, letting osteocytes exchange nutrients and wastes.",
+    eli5:"Tiny tunnels linking the caves so buried cells can still get food.",
+    fact:"Because bone is solid, diffusion alone can't reach deep cells — canaliculi are the delivery routes."
+  },
+  "perforating-canal": {
+    name:"Perforating (Volkmann's) canal",
+    pro:"A channel running at right angles to central canals, connecting their blood and nerve supply and linking the periosteum inward.",
+    eli5:"The cross-street connecting the straws so blood can move between osteons.",
+    fact:"Runs perpendicular to (across) the central canals; not surrounded by concentric lamellae."
+  }
+};
+var LABEL_KEYS = ["central-canal","lamellae","lacuna","osteocyte","canaliculi","perforating-canal"];
+
+/* Hotspot positions on the single-osteon stage, as % of the stage box */
+var HOTSPOTS = {
+  "central-canal":     {x:50, y:50},
+  "lamellae":          {x:50, y:16},
+  "lacuna":            {x:70, y:34},
+  "osteocyte":         {x:30, y:66},
+  "canaliculi":        {x:64, y:70},
+  "perforating-canal": {x:11, y:50}
+};
+
+/* ============================================================
+   SVG scene builders
+   ============================================================ */
+function sceneTissue(){
+  /* whole femur with a highlight box over the compact-bone shaft */
+  return '<svg viewBox="0 0 600 460" role="img" aria-label="Whole long bone, compact bone highlighted">'
+    +'<rect width="600" height="460" fill="#faf7f0"/>'
+    +'<g transform="translate(300,230)">'
+      +'<path d="M-38,-190 q-30,-14 -30,-40 q0,-30 34,-30 q22,0 30,18 q10,-16 32,-16 q34,0 34,30 q0,28 -30,40 l6,360 q2,26 -26,26 q-24,0 -24,-24 l-8,-330 l-8,330 q0,24 -24,24 q-28,0 -26,-26 z" fill="#efe7d4" stroke="#c9b98f" stroke-width="3"/>'
+      +'<rect x="-20" y="-40" width="40" height="330" fill="#e6dcc6"/>'
+      +'<rect x="-9" y="-10" width="18" height="250" fill="#f6e9c9"/>'  /* medullary */
+    +'</g>'
+    +'<rect x="330" y="150" width="120" height="150" fill="none" stroke="#2563b6" stroke-width="3" stroke-dasharray="7 5" rx="6"/>'
+    +'<text x="390" y="140" text-anchor="middle" font-size="15" fill="#2563b6" font-weight="700">compact bone</text>'
+    +'<text x="300" y="30" text-anchor="middle" font-size="17" fill="#1B2A4A" font-weight="700">Long bone — click "Zoom in" on the shaft wall</text>'
+    +'</svg>';
+}
+function sceneOsteonField(){
+  /* several osteons packed; one boxed for further zoom */
+  var s='<svg viewBox="0 0 600 460" role="img" aria-label="Field of osteons in compact bone">'
+    +'<rect width="600" height="460" fill="#f3ede0"/>';
+  var centers=[[150,140],[330,120],[470,180],[130,320],[300,300],[470,340]];
+  centers.forEach(function(c,i){
+    s+='<g transform="translate('+c[0]+','+c[1]+')">';
+    for(var r=64;r>=18;r-=12){
+      s+='<circle r="'+r+'" fill="none" stroke="#d8c9a3" stroke-width="4"/>';
+    }
+    s+='<circle r="11" fill="#b0533f"/>';
+    s+='</g>';
+  });
+  s+='<rect x="240" y="222" width="160" height="160" fill="none" stroke="#2563b6" stroke-width="3" stroke-dasharray="7 5" rx="8"/>'
+    +'<text x="320" y="212" text-anchor="middle" font-size="14" fill="#2563b6" font-weight="700">one osteon → zoom in</text>'
+    +'<text x="300" y="34" text-anchor="middle" font-size="16" fill="#1B2A4A" font-weight="700">Osteons packed like cut logs</text>'
+    +'</svg>';
+  return s;
+}
+function sceneSingleOsteon(){
+  /* the labeling stage: one big osteon with all structures */
+  var cx=300, cy=230;
+  var s='<svg viewBox="0 0 600 460" role="img" aria-label="Single osteon for labeling">'
+    +'<rect width="600" height="460" fill="#f3ede0"/>';
+  /* perforating canal entering from left */
+  s+='<rect x="0" y="222" width="150" height="16" fill="#b0533f" opacity="0.85"/>';
+  /* concentric lamellae */
+  var rings=[150,128,106,84,62,40];
+  rings.forEach(function(r,i){
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+(i%2?"#efe7d4":"#e8dcc2")+'" stroke="#cdbb90" stroke-width="2"/>';
+  });
+  /* central canal */
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="24" fill="#b0533f"/>'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="24" fill="none" stroke="#8a3d2d" stroke-width="3"/>';
+  /* lacunae with osteocytes + canaliculi, arranged around rings */
+  var lac=[[70,34],[64,70],[30,66],[70,-34],[-64,-70],[-30,-66],[-70,34],[64,-70]];
+  /* draw lacunae at fixed angles/radii */
+  var placements=[
+    {a:-35,r:118},{a:35,r:96},{a:120,r:118},{a:-120,r:96},
+    {a:160,r:130},{a:-160,r:74},{a:70,r:74},{a:-70,r:130}
+  ];
+  placements.forEach(function(p){
+    var rad=p.a*Math.PI/180;
+    var lx=cx+Math.cos(rad)*p.r, ly=cy+Math.sin(rad)*p.r;
+    /* canaliculi: short lines toward and away */
+    for(var k=-1;k<=1;k++){
+      var a2=rad+k*0.28;
+      s+='<line x1="'+(cx+Math.cos(a2)*(p.r-14))+'" y1="'+(cy+Math.sin(a2)*(p.r-14))+'" x2="'+(cx+Math.cos(a2)*(p.r+16))+'" y2="'+(cy+Math.sin(a2)*(p.r+16))+'" stroke="#9c8a5f" stroke-width="1.4"/>';
+    }
+    s+='<ellipse cx="'+lx+'" cy="'+ly+'" rx="9" ry="6" transform="rotate('+p.a+' '+lx+' '+ly+')" fill="#5b4a2c"/>';
+  });
+  s+='</svg>';
+  return s;
+}
+
+/* compact & spongy mini-scenes for the compare panel */
+function miniCompact(){
+  var s='';var centers=[[70,60],[170,55],[120,140],[210,140]];
+  centers.forEach(function(c){
+    s+='<g transform="translate('+c[0]+','+c[1]+')">';
+    for(var r=40;r>=10;r-=8) s+='<circle r="'+r+'" fill="none" stroke="#d8c9a3" stroke-width="3"/>';
+    s+='<circle r="6" fill="#b0533f"/></g>';
+  });
+  return s;
+}
+function miniSpongy(){
+  /* trabecular struts with marrow spaces */
+  var s='<g stroke="#d8c9a3" stroke-width="10" stroke-linecap="round" fill="none">'
+    +'<path d="M30,40 L90,90 L60,150"/><path d="M90,90 L160,60 L210,110"/>'
+    +'<path d="M160,60 L150,150 L210,170"/><path d="M60,150 L150,150"/>'
+    +'<path d="M90,90 L120,150"/><path d="M210,110 L210,170"/>'
+    +'</g>';
+  /* red marrow dots in the spaces */
+  var dots=[[45,90],[120,110],[185,140],[80,130],[175,90]];
+  dots.forEach(function(d){ s+='<circle cx="'+d[0]+'" cy="'+d[1]+'" r="7" fill="#c85a6b" opacity="0.8"/>';});
+  return s;
+}
+
+/* ============================================================
+   Render
+   ============================================================ */
+var stage=document.getElementById("stage");
+var hotspots=document.getElementById("hotspots");
+var stageTitle=document.getElementById("stageTitle");
+var magLabel=document.getElementById("magLabel");
+var zoomHint=document.getElementById("zoomHint");
+var labelPanel=document.getElementById("labelPanel");
+var eli5Note=document.getElementById("eli5Note");
+
+function renderStage(){
+  if(State.zoom===0){ stage.innerHTML=sceneTissue(); stageTitle.textContent="Compact Bone — Tissue View"; magLabel.textContent="~1× (gross)"; }
+  else if(State.zoom===1){ stage.innerHTML=sceneOsteonField(); stageTitle.textContent="Osteon Field — ~40×"; magLabel.textContent="~40× (low power)"; }
+  else { stage.innerHTML=sceneSingleOsteon(); stageTitle.textContent="Single Osteon — ~400× · label it"; magLabel.textContent="~400× (high power)"; }
+  document.querySelectorAll("#zoomSeg button").forEach(function(b){ b.classList.toggle("on",+b.dataset.z===State.zoom); });
+  var labelable = State.zoom===2;
+  labelPanel.style.opacity = labelable ? "1":"0.5";
+  zoomHint.style.display = labelable ? "none":"block";
+  renderHotspots();
+  renderEli5();
+}
+
+function renderHotspots(){
+  hotspots.innerHTML="";
+  if(State.zoom!==2) return;
+  LABEL_KEYS.forEach(function(key){
+    var pos=HOTSPOTS[key];
+    var h=document.createElement("div");
+    h.className="hot"+(State.placed[key]?" filled":"")+(State.armed===key?" armed":"");
+    h.style.left=pos.x+"%"; h.style.top=pos.y+"%";
+    h.dataset.key=key;
+    h.textContent = State.placed[key] ? STRUCTURES[key].name : "?";
+    /* click to place armed chip */
+    h.addEventListener("click",function(){ if(!State.placed[key]) tryPlace(key); });
+    /* drag target */
+    h.addEventListener("dragover",function(e){ if(!State.placed[key]){e.preventDefault();} });
+    h.addEventListener("drop",function(e){ e.preventDefault(); var k=e.dataTransfer.getData("text/plain"); attempt(k,key); });
+    hotspots.appendChild(h);
+  });
+}
+
+function renderChips(){
+  var wrap=document.getElementById("chips"); wrap.innerHTML="";
+  LABEL_KEYS.forEach(function(key){
+    var c=document.createElement("div");
+    c.className="chip"+(State.placed[key]?" done":"")+(State.armed===key?" armed":"");
+    c.textContent=STRUCTURES[key].name;
+    c.draggable=!State.placed[key];
+    c.dataset.key=key;
+    c.addEventListener("click",function(){
+      if(State.placed[key]) return;
+      State.armed = State.armed===key ? null : key;
+      renderChips(); renderHotspots();
+    });
+    c.addEventListener("dragstart",function(e){ e.dataTransfer.setData("text/plain",key); });
+    wrap.appendChild(c);
+  });
+}
+
+function renderFacts(){
+  var list=document.getElementById("factList"); list.innerHTML="";
+  LABEL_KEYS.forEach(function(key){
+    var s=STRUCTURES[key];
+    var d=document.createElement("div");
+    d.className="term";
+    var placed=State.placed[key];
+    d.innerHTML='<b>'+s.name+'</b>'+(placed?'<span class="pill" style="background:var(--ok-soft);color:var(--ok)">✓ labeled</span>':'')
+      +'<div style="color:var(--muted);margin-top:3px;">'+(State.eli5?s.eli5:s.pro)+'</div>';
+    list.appendChild(d);
+  });
+}
+
+function renderEli5(){
+  if(State.zoom===2 && State.eli5){
+    eli5Note.className="eli5-note show";
+    eli5Note.innerHTML='<b>Think of it like a tree trunk:</b> the <b>central canal</b> is a straw down the middle, the <b>lamellae</b> are the growth-ring layers wrapped around it, each <b>lacuna</b> is a tiny cave holding one bone cell (<b>osteocyte</b>), and the <b>canaliculi</b> are little tunnels so even buried cells get fed. The <b>perforating canal</b> is the cross-street linking straws.';
+  } else if(State.zoom===2){
+    eli5Note.className="eli5-note show";
+    eli5Note.innerHTML='<b>Osteon (Haversian system):</b> the structural unit of compact bone — concentric lamellae of matrix around a central canal, with osteocytes in lacunae interconnected by canaliculi.';
+  } else {
+    eli5Note.className="eli5-note";
+  }
+}
+
+/* ============================================================
+   Labeling logic
+   ============================================================ */
+function tryPlace(targetKey){
+  if(!State.armed){ flash("no","Pick a tag first","Click one of the label tags below, then click the target you think it names."); return; }
+  attempt(State.armed, targetKey);
+}
+function attempt(chipKey, targetKey){
+  if(!chipKey || State.placed[targetKey]) return;
+  var correct = chipKey===targetKey;
+  if(correct){
+    State.placed[targetKey]=true; State.armed=null;
+    APTools.recordAnswer("bone-histology", true, {xp:12, questionId:"lbl-"+targetKey});
+    var s=STRUCTURES[targetKey];
+    flash("ok","✓ "+s.name, s.fact);
+    afterPlace();
+  } else {
+    APTools.recordAnswer("bone-histology", false, {questionId:"lbl-"+targetKey});
+    var el=hotspots.querySelector('[data-key="'+targetKey+'"]');
+    if(el){ el.classList.add("shake"); setTimeout(function(){el.classList.remove("shake");},400); }
+    flash("no","Not "+STRUCTURES[chipKey].name+" here", helpfulHint(chipKey,targetKey));
+  }
+}
+function afterPlace(){
+  renderChips(); renderHotspots(); renderFacts();
+  var n=Object.keys(State.placed).length;
+  document.getElementById("placedCount").textContent=n;
+  if(n===LABEL_KEYS.length){
+    flash("ok","🎉 Osteon fully labeled!","You identified all 6 structures of the Haversian system. Try the compact vs spongy comparison below, then take the quiz.");
+  }
+}
+function helpfulHint(chipKey, targetKey){
+  var tips={
+    "central-canal":"The central (Haversian) canal is the single big tube at the very center — look for the largest structure in the middle.",
+    "lamellae":"Concentric lamellae are the ring-shaped layers of matrix — the 'tree rings' wrapping around the canal.",
+    "lacuna":"A lacuna is a small cavity between the rings that holds a cell — the little cave, not the tunnels.",
+    "osteocyte":"The osteocyte is the spider-shaped cell that sits inside a lacuna.",
+    "canaliculi":"Canaliculi are the hair-like channels linking lacunae — the thin radiating lines, not the big central tube.",
+    "perforating-canal":"The perforating (Volkmann's) canal crosses at right angles from the side — look at the horizontal channel entering the edge."
+  };
+  return "That target is the "+STRUCTURES[targetKey].name.toLowerCase()+". "+tips[chipKey];
+}
+function flash(kind, head, body){
+  var hb=document.getElementById("hintbox");
+  hb.className="hintbox show "+kind;
+  hb.innerHTML="<b>"+head+"</b>"+body;
+}
+
+/* ============================================================
+   Controls
+   ============================================================ */
+document.getElementById("zoomIn").addEventListener("click",function(){ if(State.zoom<2){State.zoom++;renderStage();} });
+document.getElementById("zoomOut").addEventListener("click",function(){ if(State.zoom>0){State.zoom--;renderStage();} });
+document.querySelectorAll("#zoomSeg button").forEach(function(b){
+  b.addEventListener("click",function(){ State.zoom=+b.dataset.z; renderStage(); });
+});
+document.getElementById("resetLabels").addEventListener("click",function(){
+  State.placed={}; State.armed=null; document.getElementById("placedCount").textContent="0";
+  document.getElementById("hintbox").className="hintbox";
+  renderChips(); renderHotspots(); renderFacts();
+});
+document.getElementById("hintBtn").addEventListener("click",function(){
+  /* reveal the next unplaced structure's description */
+  var next=LABEL_KEYS.filter(function(k){return !State.placed[k];})[0];
+  if(!next){ flash("ok","All done","Every structure is labeled — nice work."); return; }
+  var s=STRUCTURES[next];
+  flash("no","Hint: find the "+s.name, s.pro);
+  State.armed=next; renderChips(); renderHotspots();
+});
+document.getElementById("eli5Toggle").addEventListener("change",function(e){
+  State.eli5=e.target.checked;
+  document.getElementById("modeLabel").textContent=e.target.checked?"ELI5 · Plain":"Professional";
+  renderFacts(); renderEli5();
+});
+
+/* try to load real images into asset slots if present */
+document.querySelectorAll(".asset-slot").forEach(function(slot){
+  var src=slot.dataset.img; if(!src) return;
+  var capText=(slot.querySelector(".cap")||{}).textContent||"";
+  var img=new Image();
+  img.alt=capText;
+  img.onload=function(){
+    slot.classList.add("loaded"); slot.innerHTML="";
+    var fig=document.createElement("figure"); fig.className="asset-figure"; fig.appendChild(img);
+    if(capText){ var c=document.createElement("figcaption"); c.textContent=capText; fig.appendChild(c); }
+    slot.appendChild(fig);
+  };
+  img.src=src;
+});
+
+/* ---- init ---- */
+document.getElementById("cmpCompact").innerHTML=miniCompact();
+document.getElementById("cmpSpongy").innerHTML=miniSpongy();
+renderStage();
+renderChips();
+renderFacts();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:8px auto 40px;padding:0 24px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.12);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Bone Histology</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"bone-histology", title:"Bone Histology", unit:"Ch 7 · Skeletal — Bones" });
+  APTools.mountHUD("#apHud","bone-histology");
+  var BANK=[
+    { id:"h1", bloom:"Remember", outcome:"Structural unit",
+      q:"The structural unit of compact bone is the:",
+      choices:["Osteon (Haversian system)","Trabecula","Sarcomere","Nephron"],
+      answer:0, why:"Compact bone is built from osteons — concentric lamellae of matrix around a central canal." },
+    { id:"h2", bloom:"Understand", outcome:"Central canal",
+      q:"What runs through the central (Haversian) canal of an osteon?",
+      choices:["Blood vessels and nerves","Red marrow only","Yellow marrow","Synovial fluid"],
+      answer:0, why:"The central canal carries the blood vessels and nerves that supply the osteon's cells." },
+    { id:"h3", bloom:"Remember", outcome:"Lacunae",
+      q:"Osteocytes are housed in small cavities called:",
+      choices:["Lacunae","Canaliculi","Lamellae","Trabeculae"],
+      answer:0, why:"A lacuna ('little lake') is the cavity that holds one osteocyte, sitting between lamellae." },
+    { id:"h4", bloom:"Understand", outcome:"Canaliculi function",
+      q:"Canaliculi are important because they:",
+      choices:["Connect lacunae so osteocytes can exchange nutrients and wastes","Store yellow marrow","Form the joint surface","Produce blood cells"],
+      answer:0, why:"Bone is solid, so buried cells can't rely on diffusion — canaliculi are the hair-like channels linking lacunae for exchange." },
+    { id:"h5", bloom:"Understand", outcome:"Perforating canal",
+      q:"Perforating (Volkmann's) canals differ from central canals in that they:",
+      choices:["Run at right angles, connecting adjacent central canals","Contain only osteocytes","Are found only in spongy bone","Store calcium salts"],
+      answer:0, why:"Perforating canals run perpendicular to central canals, linking their blood/nerve supply and connecting to the periosteum." },
+    { id:"h6", bloom:"Remember", outcome:"Lamellae",
+      q:"The concentric rings of calcified matrix around the central canal are the:",
+      choices:["Lamellae","Lacunae","Canaliculi","Osteons"],
+      answer:0, why:"Lamellae are the layered rings of bone matrix; alternating collagen fiber direction adds strength." },
+    { id:"h7", bloom:"Understand", outcome:"Spongy bone",
+      q:"Spongy (cancellous) bone is organized into a lattice of bony struts called:",
+      choices:["Trabeculae","Osteons","Sutures","Lamellae"],
+      answer:0, why:"Spongy bone has no osteons; it is made of trabeculae with open spaces, keeping bone light yet strong." },
+    { id:"h8", bloom:"Apply", outcome:"Hematopoiesis site",
+      q:"Blood cell formation (hematopoiesis) occurs mainly in the:",
+      choices:["Red marrow in the spaces of spongy bone","Central canals of osteons","Yellow marrow of the diaphysis","Articular cartilage"],
+      answer:0, why:"Red marrow fills the open spaces between trabeculae in spongy bone (epiphyses, flat bones), where blood cells are made." },
+    { id:"h9", bloom:"Understand", outcome:"Compact vs spongy",
+      q:"Compared with compact bone, spongy bone:",
+      choices:["Has open spaces and no true osteons","Is denser with no spaces","Has more central canals per area","Never contains marrow"],
+      answer:0, why:"Spongy bone trades density for open, marrow-filled spaces and lacks the packed osteon organization of compact bone." },
+    { id:"h10", bloom:"Remember", outcome:"Osteocyte identity",
+      q:"The mature bone cell that maintains the matrix from within a lacuna is the:",
+      choices:["Osteocyte","Osteoblast","Osteoclast","Chondrocyte"],
+      answer:0, why:"An osteoblast that becomes trapped in the matrix it secreted matures into an osteocyte, living in a lacuna." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"bone-histology", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

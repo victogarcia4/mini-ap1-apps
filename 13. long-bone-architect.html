@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="The Long Bone Architect — cross-section explorer of a long bone. Slide the cut through epiphysis, metaphysis and diaphysis; hover for functions; match structures to roles. Single-file, no dependencies." />
+<title>The Long Bone Architect — Gross Anatomy of a Long Bone</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1" />
+<style>
+/* ============================================================
+   App 7.2 — The Long Bone Architect (teal accent)
+   ============================================================ */
+:root{
+  --bg:#edf5f4; --card:#ffffff; --ink:#12312e; --primary:#0f766e;
+  --accent:#0f766e; --accent-2:#14b8a6; --line:#cfe1de; --line-2:#e3efed;
+  --muted:#4b6b66; --mute-2:#7d9b96;
+  --ok:#0f766e; --ok-soft:#d9f0ec; --warn:#b45309; --warn-soft:#fdf1e0;
+  --danger:#c0392b; --danger-soft:#fbe9e6;
+  --bone:#f3ede0; --bone-2:#e6dcc6; --bone-line:#c9b98f;
+  --cartilage:#bfe3ff; --red-marrow:#d05a6b; --yellow-marrow:#f2d98a; --compact:#e6dcc6; --periost:#c98a5b;
+  --radius:14px; --radius-s:10px;
+  --shadow:0 8px 26px rgba(15,60,55,.12);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:var(--sans); color:var(--ink); min-height:100vh; line-height:1.5;
+  background:
+    radial-gradient(900px 460px at 84% -10%,rgba(20,184,166,.12),transparent 60%),
+    radial-gradient(760px 460px at -6% 110%,rgba(15,118,110,.08),transparent 60%),
+    var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+header.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 24px;background:rgba(255,255,255,.82);backdrop-filter:blur(9px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;}
+.brand{display:flex;align-items:center;gap:13px;}
+.brand .logo{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#0b3f3a);box-shadow:0 4px 14px rgba(15,118,110,.35);}
+.brand h1{font-size:1.12rem;font-weight:800;letter-spacing:-.01em;}
+.brand p{font-size:.76rem;color:var(--muted);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.switch{display:flex;align-items:center;gap:9px;font-size:.8rem;color:var(--muted);cursor:pointer;user-select:none;font-weight:600;}
+.switch input{display:none;}
+.track{width:46px;height:25px;border-radius:20px;background:#bcd4d0;position:relative;transition:.25s;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.switch input:checked + .track{background:var(--accent);}
+.switch input:checked + .track::after{transform:translateX(21px);}
+.btn-link{text-decoration:none;color:var(--muted);font-weight:700;font-size:.82rem;border:1px solid var(--line);border-radius:9px;padding:8px 13px;background:#fff;}
+.btn-link:hover{color:var(--accent);border-color:var(--accent);}
+.layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px;max-width:1440px;margin:0 auto;padding:20px 24px 26px;}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.panel h2{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:14px 16px 0;}
+.panel .body{padding:14px 16px 16px;}
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0;}
+button.btn{font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 12px;transition:.15s;}
+button.btn:hover{border-color:var(--accent);color:var(--accent);}
+button.btn.ghost{background:var(--line-2);}
+.ctl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+/* femur explorer layout */
+.explorer{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:stretch;}
+.femur-col{position:relative;display:flex;flex-direction:column;align-items:center;}
+.femur-col svg{width:100%;height:auto;}
+.cut-slider{writing-mode:vertical-lr;direction:rtl;width:28px;height:auto;margin-top:8px;}
+.region-label{font-size:.78rem;font-weight:800;color:var(--accent);text-align:center;margin-top:8px;min-height:1.2em;}
+.xsec{border:1px solid var(--line);border-radius:12px;background:#faf7f0;overflow:hidden;}
+.xsec svg{display:block;width:100%;height:auto;}
+.xsec-cap{padding:10px 12px;font-size:.82rem;color:var(--muted);background:#fff;border-top:1px solid var(--line-2);}
+.xsec-cap b{color:var(--ink);}
+/* tooltip info */
+.infobox{margin-top:12px;border:1px solid var(--line);background:var(--line-2);border-radius:10px;padding:12px 14px;font-size:.88rem;line-height:1.5;min-height:74px;}
+.infobox b{color:var(--accent);}
+.hoverable{cursor:pointer;}
+.hoverable:hover{filter:brightness(1.06);}
+.hoverable.sel{outline:2px solid var(--accent);}
+/* shape classifier */
+.shape-bins{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px;}
+.bin{border:2px dashed var(--line);border-radius:10px;min-height:70px;padding:6px;text-align:center;font-size:.72rem;font-weight:800;color:var(--muted);display:flex;flex-direction:column;gap:4px;}
+.bin.over{border-color:var(--accent);background:var(--line-2);}
+.bin .drop{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;}
+.specimen-tray{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;}
+.spec{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;cursor:grab;user-select:none;}
+.spec.armed{background:var(--accent);color:#fff;border-color:var(--accent);}
+.spec.placed{font-size:.68rem;padding:3px 7px;cursor:default;}
+.spec.ok{background:var(--ok-soft);border-color:#a7d8cf;color:var(--ok);}
+.spec.bad{background:var(--danger-soft);border-color:#eebfb8;color:var(--danger);}
+/* function match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+.match-col h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;}
+.mitem{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 11px;font-size:.82rem;font-weight:600;cursor:pointer;margin-bottom:7px;transition:.15s;}
+.mitem:hover{border-color:var(--accent);}
+.mitem.armed{background:var(--accent);color:#fff;border-color:var(--accent);}
+.mitem.done{opacity:.45;pointer-events:none;text-decoration:line-through;}
+.hintbox{margin-top:12px;border-radius:10px;padding:11px 13px;font-size:.86rem;line-height:1.45;display:none;border:1px solid var(--line);background:var(--line-2);}
+.hintbox.show{display:block;}
+.hintbox.ok{background:var(--ok-soft);border-color:#a7d8cf;color:#0b3f39;}
+.hintbox.no{background:var(--warn-soft);border-color:#f2d6a8;color:#7c4a06;}
+.hintbox b{display:block;margin-bottom:2px;}
+.asset-slot{margin-top:14px;border:2px dashed var(--line);border-radius:12px;background:repeating-linear-gradient(45deg,#f6faf9,#f6faf9 10px,#edf5f4 10px,#edf5f4 20px);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;color:var(--mute-2);gap:6px;}
+.asset-slot .ico{font-size:1.6rem;}.asset-slot .cap{font-size:.78rem;font-weight:700;color:var(--muted);}.asset-slot .sub{font-size:.72rem;max-width:420px;}.asset-slot img{max-width:100%;border-radius:8px;}
+.asset-slot.loaded{border:1px solid var(--line);background:#fff;padding:12px;display:block;min-height:0;}
+.asset-figure{margin:0;text-align:center;}
+.asset-figure img{max-width:100%;max-height:400px;width:auto;display:inline-block;border-radius:10px;border:1px solid var(--line-2);}
+.asset-figure figcaption{margin-top:8px;font-size:.78rem;color:var(--muted);font-weight:600;}
+.progress-line{font-size:.82rem;color:var(--muted);margin-top:8px;}.progress-line b{color:var(--ok);}
+.footnote{max-width:1440px;margin:0 auto;padding:4px 24px 30px;color:var(--mute-2);font-size:.74rem;}
+@media(max-width:880px){.layout{grid-template-columns:1fr;}.match-grid{grid-template-columns:1fr;}.shape-bins{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M7 3c-1.7 0-3 1.3-3 3 0 1.3.8 2.4 2 2.8v6.4c-1.2.4-2 1.5-2 2.8 0 1.7 1.3 3 3 3s3-1.3 3-3c0-1.3-.8-2.4-2-2.8V8.8c1.2-.4 2-1.5 2-2.8 0-1.7-1.3-3-3-3z"/></svg></div>
+    <div>
+      <h1>The Long Bone Architect</h1>
+      <p>Gross anatomy · cross-section explorer · A&amp;P I · Ch 7</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Structure Explorer</h2>
+      <div class="body">
+        <p style="font-size:.82rem;color:var(--muted);">Click a labeled part of the femur (or a slice region) to read its <b>function</b>.</p>
+        <div class="infobox" id="infobox"><b>Tip:</b> hover or click the structures on the bone. Move the vertical slider to "cut" through the bone and watch the cross-section change.</div>
+      </div>
+    </section>
+  </aside>
+
+  <div class="stack">
+    <section class="panel">
+      <h2 id="stageTitle">Cross-Section Explorer — slide the cut</h2>
+      <div class="body">
+        <div class="explorer">
+          <div class="femur-col">
+            <svg viewBox="0 0 130 460" id="femurSVG" role="img" aria-label="Long bone with cut line"></svg>
+            <input class="cut-slider" type="range" id="cutSlider" min="0" max="100" value="55" aria-label="Cut position" />
+            <div class="region-label" id="regionLabel"></div>
+          </div>
+          <div>
+            <div class="xsec">
+              <svg viewBox="0 0 320 300" id="xsecSVG" role="img" aria-label="Cross section"></svg>
+              <div class="xsec-cap" id="xsecCap"></div>
+            </div>
+            <div class="asset-slot" id="slot-femur"
+              data-img="assets/ch7-femur-crosssection.png"
+              data-prompt="High-resolution 4k medical illustration of a human femur longitudinal cross-section on a clean white background, clearly showing proximal epiphysis with red spongy bone, epiphyseal line, diaphysis with a compact bone collar surrounding a medullary cavity filled with yellow marrow, periosteum and articular cartilage; labeled-ready, textbook style.">
+              <div class="ico">🦴</div>
+              <div class="cap">Photoreal render slot — femur longitudinal section</div>
+              <div class="sub">Drop <code>ch7-femur-crosssection.jpg</code> into <code>assets/img/</code> to replace this placeholder.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Bone-Shape Classifier</h2>
+      <div class="body">
+        <p style="font-size:.82rem;color:var(--muted);">Click a specimen, then click its shape bin (or drag it in).</p>
+        <div class="specimen-tray" id="specTray"></div>
+        <div class="shape-bins" id="shapeBins"></div>
+        <div class="progress-line">Sorted <b id="sortCount">0</b> / 7</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Function Match — link structure to its role</h2>
+      <div class="body">
+        <p style="font-size:.82rem;color:var(--muted);">Click a structure on the left, then click the function it performs.</p>
+        <div class="match-grid">
+          <div class="match-col"><h3>Structure</h3><div id="matchLeft"></div></div>
+          <div class="match-col"><h3>Function</h3><div id="matchRight"></div></div>
+        </div>
+        <div class="hintbox" id="matchHint"></div>
+        <div class="ctl-row"><button class="btn ghost" id="resetMatch">↺ Reset match</button></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="footnote">Schematic teaching model — proportions are stylized for clarity. Function text follows the Chapter 7 Long-Bone Structure Summary (Hole's Human A&amp;P).</div>
+
+<script>
+"use strict";
+var State={ eli5:false, cut:55, armedSpec:null, sorted:{}, armedStruct:null, matched:{} };
+
+/* ---- structure knowledge (function-focused) ---- */
+var PARTS={
+  "articular-cartilage":{name:"Articular cartilage",pro:"Hyaline cartilage covering the epiphysis where bones meet.",fn:"Reduces friction and absorbs shock at the joint (a living shock absorber).",eli5:"The rubbery cap on the bone end so joints glide instead of grind."},
+  "epiphysis":{name:"Epiphysis",pro:"The expanded end of a long bone; mostly spongy bone with a thin compact shell.",fn:"Houses red marrow (hematopoiesis) and forms joints with neighboring bones.",eli5:"The knobby end — spongy inside, makes blood, forms the joint."},
+  "epiphyseal-line":{name:"Epiphyseal line",fn:"Remnant of the growth plate (epiphyseal disc) — marks where lengthwise growth occurred.",pro:"A line of remodeled bone where the epiphyseal (growth) plate used to be.",eli5:"The scar left over from where the bone used to grow longer."},
+  "metaphysis":{name:"Metaphysis",fn:"Transition zone between epiphysis and diaphysis; contains the growth plate in children.",pro:"The flared region between the shaft and the end, holding the growth plate during development.",eli5:"The shoulder between the shaft and the knobby end — where growth happens in kids."},
+  "diaphysis":{name:"Diaphysis (shaft)",fn:"Provides rigidity and leverage; its compact-bone collar resists bending.",pro:"The tubular shaft: a thick collar of compact bone around the medullary cavity.",eli5:"The long straight tube — the strong handle of the bone."},
+  "medullary-cavity":{name:"Medullary cavity",fn:"Stores yellow marrow (fat); lightens the bone while keeping it strong.",pro:"The hollow center of the diaphysis, lined by endosteum and filled with yellow marrow.",eli5:"The hollow middle full of fatty (yellow) marrow — keeps the bone light."},
+  "compact-bone":{name:"Compact bone",fn:"Dense outer layer providing strength and protection; made of osteons.",pro:"Solid, dense bone forming the wall of the diaphysis and shell of the epiphyses.",eli5:"The hard outer shell that makes the bone strong."},
+  "periosteum":{name:"Periosteum",fn:"Protects the bone, anchors tendons/ligaments, and supplies cells for growth and repair (remodeling).",pro:"Tough fibrous membrane on the outer surface; its osteogenic layer holds osteoblasts and osteoclasts.",eli5:"The bone's skin — where muscles attach and new bone is built."},
+  "endosteum":{name:"Endosteum",fn:"Lines the medullary cavity and takes part in bone remodeling.",pro:"Thin membrane lining the inner medullary cavity, containing osteoblasts and osteoclasts.",eli5:"The inner lining that helps rebuild bone from inside."},
+  "nutrient-foramen":{name:"Nutrient foramen",fn:"A passageway that lets the nutrient artery enter to nourish the bone.",pro:"A perforating opening through which blood vessels enter and leave the bone.",eli5:"The little doorway where the blood supply gets in."}
+};
+
+/* ---- femur SVG with clickable labeled regions ---- */
+function buildFemur(){
+  var svg=document.getElementById("femurSVG");
+  svg.innerHTML=
+    '<defs></defs>'
+    /* whole bone silhouette */
+    +'<g>'
+    +'<path d="M40,26 q-22,-10 -22,-2 q0,16 20,22 l3,170 q-16,4 -16,20 q0,16 16,20 l3,160 q-14,4 -14,18 q0,14 18,14 q16,0 16,-16 l3,-176 l3,176 q0,16 16,16 q18,0 18,-14 q0,-14 -14,-18 l3,-160 q16,-4 16,-20 q0,-16 -16,-20 l3,-170 q20,-6 20,-22 q0,-8 -22,2 q-8,-14 -22,-14 q-14,0 -22,14 z" fill="#f0e8d6" stroke="#c9b98f" stroke-width="2"/>'
+    /* clickable region overlays (transparent) */
+    +'<rect class="hoverable" data-part="articular-cartilage" x="18" y="18" width="94" height="26" fill="#bfe3ff" opacity="0.55" rx="10"/>'
+    +'<rect class="hoverable" data-part="epiphysis" x="18" y="44" width="94" height="60" fill="#e08494" opacity="0.30"/>'
+    +'<rect class="hoverable" data-part="epiphyseal-line" x="20" y="104" width="90" height="8" fill="#8a5cff" opacity="0.6"/>'
+    +'<rect class="hoverable" data-part="metaphysis" x="22" y="112" width="86" height="30" fill="#14b8a6" opacity="0.22"/>'
+    +'<rect class="hoverable" data-part="diaphysis" x="30" y="142" width="70" height="176" fill="#c9b98f" opacity="0.18"/>'
+    +'<rect class="hoverable" data-part="medullary-cavity" x="52" y="150" width="26" height="160" fill="#f2d98a" opacity="0.55"/>'
+    +'<rect class="hoverable" data-part="metaphysis" x="22" y="318" width="86" height="26" fill="#14b8a6" opacity="0.22"/>'
+    +'<rect class="hoverable" data-part="epiphysis" x="18" y="344" width="94" height="70" fill="#e08494" opacity="0.30"/>'
+    +'<circle class="hoverable" data-part="nutrient-foramen" cx="96" cy="210" r="6" fill="#c0392b"/>'
+    +'<rect class="hoverable" data-part="periosteum" x="30" y="142" width="6" height="176" fill="#c98a5b" opacity="0.8"/>'
+    +'<rect class="hoverable" data-part="compact-bone" x="94" y="150" width="6" height="160" fill="#a08a55" opacity="0.7"/>'
+    /* cut line */
+    +'<line id="cutLine" x1="6" y1="255" x2="124" y2="255" stroke="#0f766e" stroke-width="3" stroke-dasharray="6 4"/>'
+    +'<polygon id="cutArrow" points="0,250 8,255 0,260" fill="#0f766e"/>'
+    +'</g>';
+  svg.querySelectorAll(".hoverable").forEach(function(r){
+    r.addEventListener("mouseenter",function(){ showPart(r.dataset.part); });
+    r.addEventListener("click",function(){ showPart(r.dataset.part,true); });
+  });
+}
+function showPart(key,lock){
+  var p=PARTS[key]; if(!p) return;
+  var box=document.getElementById("infobox");
+  box.innerHTML='<b>'+p.name+'</b><br>'+(State.eli5?p.eli5:(p.pro+' <span style="color:var(--accent)">'+p.fn+'</span>'));
+}
+
+/* ---- cross-section rendering by cut region ---- */
+function regionFor(v){
+  if(v<20) return "distal-epiphysis";
+  if(v<38) return "distal-metaphysis";
+  if(v<72) return "diaphysis";
+  if(v<88) return "proximal-metaphysis";
+  return "proximal-epiphysis";
+}
+function renderXsec(){
+  var v=State.cut, region=regionFor(v);
+  /* move cut line: slider 0=bottom(distal), 100=top(proximal); femur y 40..420 */
+  var y=420-(v/100)*380;
+  var line=document.getElementById("cutLine"), arr=document.getElementById("cutArrow");
+  if(line){ line.setAttribute("y1",y); line.setAttribute("y2",y); arr.setAttribute("points","0,"+(y-5)+" 8,"+y+" 0,"+(y+5)); }
+  var svg=document.getElementById("xsecSVG"), cap=document.getElementById("xsecCap"), label=document.getElementById("regionLabel");
+  var cx=160, cy=150;
+  var epi='<circle cx="'+cx+'" cy="'+cy+'" r="120" fill="#e6dcc6" stroke="#c9b98f" stroke-width="4"/>'
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="110" fill="#f7e2e6"/>'
+      /* trabeculae */
+      +trabeculae(cx,cy,100)
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="120" fill="none" stroke="#c98a5b" stroke-width="6" opacity="0.5"/>';
+  var dia='<circle cx="'+cx+'" cy="'+cy+'" r="120" fill="#c98a5b"/>'      /* periosteum ring */
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="114" fill="#e6dcc6"/>'         /* compact bone */
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="66" fill="#f2d98a"/>'          /* yellow marrow */
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="66" fill="none" stroke="#cbb26a" stroke-width="3"/>'
+      +osteonRings(cx,cy);
+  if(region==="diaphysis"){
+    svg.innerHTML=dia
+      +'<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dy="4" font-size="13" fill="#7a5a1a" font-weight="700">yellow marrow</text>'
+      +'<text x="'+cx+'" y="46" text-anchor="middle" font-size="12" fill="#8a6a3a">compact bone collar</text>';
+    cap.innerHTML='<b>Diaphysis (shaft):</b> a thick <b>compact-bone</b> collar (osteons) around a hollow <b>medullary cavity</b> of <b>yellow marrow</b>. Periosteum outside, endosteum lining the cavity.';
+    label.textContent="DIAPHYSIS";
+  } else if(region.indexOf("epiphysis")>-1){
+    var side=region.indexOf("proximal")>-1?"Proximal":"Distal";
+    svg.innerHTML='<path d="M40,150 a120,120 0 0 1 240,0 z" fill="#bfe3ff" opacity="0"/>'
+      +epi
+      +'<path d="M40,150 a120,120 0 0 1 240,0" fill="none" stroke="#7cc0f5" stroke-width="9"/>'
+      +'<text x="'+cx+'" y="40" text-anchor="middle" font-size="12" fill="#3f7fb0">articular cartilage</text>'
+      +'<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dy="4" font-size="13" fill="#a23c4d" font-weight="700">spongy bone + red marrow</text>';
+    cap.innerHTML='<b>'+side+' epiphysis:</b> mostly <b>spongy bone</b> (trabeculae) filled with <b>red marrow</b> for hematopoiesis, under a thin compact shell and a cap of <b>articular cartilage</b>.';
+    label.textContent=side.toUpperCase()+" EPIPHYSIS";
+  } else {
+    var side2=region.indexOf("proximal")>-1?"Proximal":"Distal";
+    svg.innerHTML='<circle cx="'+cx+'" cy="'+cy+'" r="120" fill="#e6dcc6" stroke="#c9b98f" stroke-width="4"/>'
+      +'<circle cx="'+cx+'" cy="'+cy+'" r="96" fill="#f7e2e6"/>'
+      +trabeculae(cx,cy,88)
+      +'<rect x="40" y="142" width="240" height="16" fill="#8a5cff" opacity="0.55"/>'
+      +'<text x="'+cx+'" y="132" text-anchor="middle" font-size="12" fill="#6a3fd0" font-weight="700">epiphyseal line</text>';
+    cap.innerHTML='<b>'+side2+' metaphysis:</b> the flared transition holding the <b>epiphyseal line</b> — remnant of the growth plate where the bone lengthened.';
+    label.textContent=side2.toUpperCase()+" METAPHYSIS";
+  }
+}
+function trabeculae(cx,cy,R){
+  var s='<g stroke="#d05a6b" stroke-width="4" opacity="0.55" stroke-linecap="round">';
+  for(var i=0;i<26;i++){
+    var a=Math.random()*6.28, r1=Math.random()*R, r2=r1+18+Math.random()*22, a2=a+(Math.random()-0.5);
+    s+='<line x1="'+(cx+Math.cos(a)*r1)+'" y1="'+(cy+Math.sin(a)*r1)+'" x2="'+(cx+Math.cos(a2)*r2)+'" y2="'+(cy+Math.sin(a2)*r2)+'"/>';
+  }
+  return s+'</g>';
+}
+function osteonRings(cx,cy){
+  var s='';var pts=[[cx-90,cy-40],[cx-88,cy+30],[cx-70,cy+80],[cx+80,cy-45],[cx+90,cy+30],[cx+60,cy+82],[cx,cy-95]];
+  pts.forEach(function(p){ for(var r=16;r>=4;r-=6) s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+r+'" fill="none" stroke="#cdbb90" stroke-width="2"/>'; s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="#b0533f"/>'; });
+  return s;
+}
+
+/* ---- bone-shape classifier ---- */
+var SPECIMENS=[
+  {id:"femur",name:"Femur",shape:"long"},{id:"humerus",name:"Humerus",shape:"long"},
+  {id:"carpals",name:"Carpals",shape:"short"},{id:"scapula",name:"Scapula",shape:"flat"},
+  {id:"sternum",name:"Sternum",shape:"flat"},{id:"vertebra",name:"Vertebra",shape:"irregular"},
+  {id:"patella",name:"Patella",shape:"sesamoid"}
+];
+var SHAPES=[["long","Long"],["short","Short"],["flat","Flat"],["irregular","Irregular"],["sesamoid","Sesamoid"]];
+function buildClassifier(){
+  var tray=document.getElementById("specTray"); tray.innerHTML="";
+  SPECIMENS.forEach(function(sp){
+    if(State.sorted[sp.id]) return;
+    var d=document.createElement("div");
+    d.className="spec"+(State.armedSpec===sp.id?" armed":"");
+    d.textContent=sp.name; d.dataset.id=sp.id; d.draggable=true;
+    d.addEventListener("click",function(){ State.armedSpec=State.armedSpec===sp.id?null:sp.id; buildClassifier(); });
+    d.addEventListener("dragstart",function(e){ e.dataTransfer.setData("text/plain",sp.id); });
+    tray.appendChild(d);
+  });
+  var bins=document.getElementById("shapeBins"); bins.innerHTML="";
+  SHAPES.forEach(function(sh){
+    var b=document.createElement("div"); b.className="bin"; b.dataset.shape=sh[0];
+    var placed=SPECIMENS.filter(function(s){return State.sorted[s.id]===sh[0];})
+      .map(function(s){return '<span class="spec placed ok">'+s.name+'</span>';}).join("");
+    b.innerHTML=sh[1]+'<div class="drop">'+placed+'</div>';
+    b.addEventListener("click",function(){ if(State.armedSpec) sortSpec(State.armedSpec,sh[0]); });
+    b.addEventListener("dragover",function(e){ e.preventDefault(); b.classList.add("over"); });
+    b.addEventListener("dragleave",function(){ b.classList.remove("over"); });
+    b.addEventListener("drop",function(e){ e.preventDefault(); b.classList.remove("over"); sortSpec(e.dataTransfer.getData("text/plain"),sh[0]); });
+    bins.appendChild(b);
+  });
+}
+function sortSpec(specId,shape){
+  var sp=SPECIMENS.filter(function(s){return s.id===specId;})[0]; if(!sp||State.sorted[specId])return;
+  var correct=sp.shape===shape;
+  APTools.recordAnswer("long-bone-anatomy",correct,{xp:8,questionId:"shape-"+specId});
+  if(correct){ State.sorted[specId]=shape; State.armedSpec=null; }
+  else { flashMatch("no","Not "+shape, sp.name+" is a "+labelFor(sp.shape)+" bone. "+shapeHint(sp.shape)); }
+  document.getElementById("sortCount").textContent=Object.keys(State.sorted).length;
+  buildClassifier();
+  if(Object.keys(State.sorted).length===SPECIMENS.length) flashMatch("ok","All specimens classified!","Great — you sorted every bone by shape.");
+}
+function labelFor(sh){ return {long:"long",short:"short",flat:"flat",irregular:"irregular",sesamoid:"sesamoid"}[sh]; }
+function shapeHint(sh){ return {long:"Longer than wide, with a shaft and two ends (femur, humerus).",short:"Cube-like, roughly equal dimensions (carpals, tarsals).",flat:"Thin and often curved for protection/attachment (sternum, scapula, ribs, skull).",irregular:"Complex shapes that don't fit other groups (vertebrae).",sesamoid:"Small bones formed within a tendon (patella)."}[sh]; }
+
+/* ---- function match ---- */
+var MATCH=[
+  {id:"m1",struct:"Articular cartilage",fn:"Reduces friction / shock absorber at the joint"},
+  {id:"m2",struct:"Red marrow (epiphysis)",fn:"Hematopoiesis — makes blood cells"},
+  {id:"m3",struct:"Yellow marrow (medullary cavity)",fn:"Stores fat, lightens the bone"},
+  {id:"m4",struct:"Periosteum",fn:"Muscle attachment + bone remodeling/repair"},
+  {id:"m5",struct:"Compact bone (diaphysis)",fn:"Rigidity & strength against bending"}
+];
+function buildMatch(){
+  var L=document.getElementById("matchLeft"), R=document.getElementById("matchRight");
+  L.innerHTML=""; R.innerHTML="";
+  MATCH.forEach(function(m){
+    var l=document.createElement("div"); l.className="mitem"+(State.matched[m.id]?" done":"")+(State.armedStruct===m.id?" armed":"");
+    l.textContent=m.struct; l.addEventListener("click",function(){ if(State.matched[m.id])return; State.armedStruct=State.armedStruct===m.id?null:m.id; buildMatch(); });
+    L.appendChild(l);
+  });
+  shuffle(MATCH.slice()).forEach(function(m){
+    var r=document.createElement("div"); r.className="mitem"+(State.matched[m.id]?" done":"");
+    r.textContent=m.fn; r.dataset.id=m.id;
+    r.addEventListener("click",function(){ if(State.matched[m.id])return; tryMatch(m.id); });
+    R.appendChild(r);
+  });
+}
+function tryMatch(fnId){
+  if(!State.armedStruct){ flashMatch("no","Pick a structure first","Click a structure on the left, then click its function."); return; }
+  var correct=State.armedStruct===fnId;
+  APTools.recordAnswer("long-bone-anatomy",correct,{xp:10,questionId:"match-"+fnId});
+  if(correct){ State.matched[fnId]=true; var m=MATCH.filter(function(x){return x.id===fnId;})[0]; flashMatch("ok","✓ Correct",m.struct+": "+m.fn+"."); State.armedStruct=null; buildMatch();
+    if(Object.keys(State.matched).length===MATCH.length) flashMatch("ok","🎉 All matched!","You linked every structure to its function.");
+  } else {
+    var picked=MATCH.filter(function(x){return x.id===State.armedStruct;})[0];
+    flashMatch("no","Not that one",picked.struct+" doesn't do that. Think about what "+picked.struct.toLowerCase()+" is for.");
+  }
+}
+function flashMatch(kind,head,body){ var hb=document.getElementById("matchHint"); hb.className="hintbox show "+kind; hb.innerHTML="<b>"+head+"</b>"+body; }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+
+/* ---- controls ---- */
+document.getElementById("cutSlider").addEventListener("input",function(e){ State.cut=+e.target.value; renderXsec(); });
+document.getElementById("resetMatch").addEventListener("click",function(){ State.matched={}; State.armedStruct=null; document.getElementById("matchHint").className="hintbox"; buildMatch(); });
+document.getElementById("eli5Toggle").addEventListener("change",function(e){ State.eli5=e.target.checked; document.getElementById("modeLabel").textContent=e.target.checked?"ELI5 · Plain":"Professional"; });
+document.querySelectorAll(".asset-slot").forEach(function(slot){ var src=slot.dataset.img; if(!src)return; var capText=(slot.querySelector(".cap")||{}).textContent||""; var img=new Image(); img.alt=capText; img.onload=function(){ slot.classList.add("loaded"); slot.innerHTML=""; var fig=document.createElement("figure"); fig.className="asset-figure"; fig.appendChild(img); if(capText){ var c=document.createElement("figcaption"); c.textContent=capText; fig.appendChild(c); } slot.appendChild(fig); }; img.src=src; });
+
+/* ---- init ---- */
+buildFemur();
+renderXsec();
+buildClassifier();
+buildMatch();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:8px auto 40px;padding:0 24px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.12);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Long Bone Anatomy</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"long-bone-anatomy", title:"Long Bone Anatomy", unit:"Ch 7 · Skeletal — Bones" });
+  APTools.mountHUD("#apHud","long-bone-anatomy");
+  var BANK=[
+    { id:"l1", bloom:"Remember", outcome:"Diaphysis",
+      q:"The tubular shaft of a long bone is the:",
+      choices:["Diaphysis","Epiphysis","Metaphysis","Periosteum"],
+      answer:0, why:"The diaphysis is the shaft — a compact-bone collar around the medullary cavity." },
+    { id:"l2", bloom:"Understand", outcome:"Medullary cavity",
+      q:"The medullary cavity of an adult long bone is filled mainly with:",
+      choices:["Yellow marrow (fat)","Red marrow","Articular cartilage","Compact bone"],
+      answer:0, why:"In adults the diaphyseal medullary cavity stores yellow (fatty) marrow." },
+    { id:"l3", bloom:"Understand", outcome:"Red marrow location",
+      q:"Red marrow (hematopoiesis) in an adult long bone is found in the:",
+      choices:["Spongy bone of the epiphyses","Medullary cavity of the shaft","Periosteum","Articular cartilage"],
+      answer:0, why:"Red marrow occupies the spaces of spongy bone in the epiphyses (and in flat bones)." },
+    { id:"l4", bloom:"Remember", outcome:"Articular cartilage",
+      q:"Articular cartilage covers the epiphysis to:",
+      choices:["Reduce friction and absorb shock at joints","Produce blood cells","Store fat","Anchor tendons"],
+      answer:0, why:"The hyaline articular cartilage is a shock absorber that lets joint surfaces glide with little friction." },
+    { id:"l5", bloom:"Understand", outcome:"Periosteum",
+      q:"The periosteum is important for all of these EXCEPT:",
+      choices:["Producing blood cells","Anchoring tendons and ligaments","Protecting the bone surface","Supplying osteoblasts for remodeling"],
+      answer:0, why:"Blood cell formation happens in red marrow, not the periosteum. The periosteum handles protection, attachment, and remodeling." },
+    { id:"l6", bloom:"Remember", outcome:"Epiphyseal line",
+      q:"The epiphyseal line is:",
+      choices:["A remnant of the growth (epiphyseal) plate","The joint cavity","A blood vessel","The outer bone membrane"],
+      answer:0, why:"After growth stops, the epiphyseal plate ossifies, leaving the epiphyseal line." },
+    { id:"l7", bloom:"Remember", outcome:"Bone shapes",
+      q:"Which is an example of a FLAT bone?",
+      choices:["Sternum","Femur","Carpal","Vertebra"],
+      answer:0, why:"The sternum (and scapula, ribs, most skull bones) are thin, often curved flat bones." },
+    { id:"l8", bloom:"Understand", outcome:"Bone shapes",
+      q:"The patella is classified as which bone shape?",
+      choices:["Sesamoid","Long","Irregular","Short"],
+      answer:0, why:"The patella is a sesamoid bone — it develops within a tendon (the quadriceps tendon)." },
+    { id:"l9", bloom:"Remember", outcome:"Endosteum",
+      q:"The thin membrane lining the medullary cavity is the:",
+      choices:["Endosteum","Periosteum","Epiphysis","Articular cartilage"],
+      answer:0, why:"The endosteum lines the internal medullary cavity and shares in bone remodeling." },
+    { id:"l10", bloom:"Apply", outcome:"Nutrient foramen",
+      q:"A bone's nutrient foramen functions to:",
+      choices:["Let blood vessels enter and leave the bone","Cushion the joint","Store calcium","Form the growth plate"],
+      answer:0, why:"The nutrient foramen is the passageway for the nutrient artery that nourishes the bone." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"long-bone-anatomy", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

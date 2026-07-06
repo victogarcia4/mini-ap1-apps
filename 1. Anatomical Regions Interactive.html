@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Anatomy — Regions, Planes, Directional Terms & Quadrants</title>
+  <link rel="stylesheet" href="assets/aptools.css?v=1">
+  <style>
+    :root {
+      --primary: #1B2A4A;
+      --primary-2: #263D68;
+      --secondary: #D6E4F0;
+      --panel: #F7FAFD;
+      --text: #172033;
+      --muted: #5A6579;
+      --border: #C3CEDD;
+      --accent: #0096FF;
+      --highlight-fill: rgba(0, 150, 255, 0.40);
+      --highlight-stroke: #0064B5;
+      --blue: #2D7DD2;
+      --red: #E4572E;
+      --green: #2A9D8F;
+      --purple: #7B61FF;
+      --amber: #F4A261;
+      --correct: #1F9D6B;
+      --wrong: #D64545;
+      --shadow: 0 14px 38px rgba(27, 42, 74, 0.12);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Inter, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(214, 228, 240, 0.75), transparent 34rem),
+        linear-gradient(180deg, #FFFFFF 0%, #EEF3F9 100%);
+      min-height: 100vh;
+    }
+
+    .app { width: min(1320px, 100%); margin: 0 auto; padding: 24px; }
+
+    header { margin-bottom: 16px; }
+    .title-block h1 {
+      margin: 0 0 6px; color: var(--primary);
+      font-size: clamp(1.5rem, 2.6vw, 2.3rem);
+      letter-spacing: -0.03em; line-height: 1.05;
+    }
+    .title-block p { margin: 0; color: var(--muted); max-width: 780px; line-height: 1.5; font-size: 0.98rem; }
+
+    /* Anatomical position banner */
+    .position-banner {
+      margin: 14px 0 18px;
+      display: flex; align-items: center; gap: 12px;
+      background: #fff; border: 1px solid var(--border); border-left: 5px solid var(--accent);
+      border-radius: 12px; padding: 12px 16px; box-shadow: var(--shadow);
+      line-height: 1.45;
+    }
+    .position-banner b { color: var(--primary); }
+    .position-banner span { color: var(--muted); }
+
+    /* Tab bar */
+    .tabbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .tabbar button {
+      font: inherit; font-weight: 700; border: 1px solid var(--border);
+      background: #fff; color: var(--muted); padding: 10px 18px;
+      border-radius: 999px; cursor: pointer; box-shadow: var(--shadow);
+      transition: background .2s ease, color .2s ease, transform .18s ease;
+    }
+    .tabbar button:hover { transform: translateY(-1px); }
+    .tabbar button[aria-selected="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .tabbar button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    .layout { display: grid; grid-template-columns: minmax(300px, 440px) 1fr; gap: 20px; align-items: start; }
+
+    .card {
+      background: rgba(255, 255, 255, 0.96); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .card:last-child { margin-bottom: 0; }
+    .card-head {
+      padding: 14px 18px; background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff; font-weight: 700; font-size: 1.02rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .card-head small { color: #DDEBFA; font-weight: 600; font-size: .82rem; }
+    .card-body { padding: 18px; }
+
+    /* Figure stage */
+    .stage {
+      position: relative; width: 100%; aspect-ratio: 218 / 479;
+      margin: 0 auto; max-width: 380px; background: #fff;
+    }
+    .stage img.silhouette {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: contain; user-select: none; -webkit-user-drag: none; pointer-events: none;
+    }
+    .stage svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+    .layer.hidden { display: none; }
+
+    /* Region shapes */
+    .region {
+      fill: transparent; stroke: transparent; stroke-width: 2;
+      pointer-events: auto; cursor: pointer;
+      transition: fill .18s ease, stroke .18s ease, stroke-width .18s ease;
+    }
+    .region:hover, .region:focus-visible {
+      fill: var(--highlight-fill); stroke: var(--highlight-stroke); stroke-width: 2.5; outline: none;
+    }
+    .region.selected { fill: rgba(0,150,255,0.28); stroke: var(--highlight-stroke); stroke-width: 2.5; }
+    .region.answer-correct { fill: rgba(31,157,107,0.45); stroke: var(--correct); stroke-width: 3; }
+    .region.answer-wrong { fill: rgba(214,69,69,0.42); stroke: var(--wrong); stroke-width: 3; }
+
+    /* Plane graphics */
+    .plane-group { opacity: 0; transition: opacity .4s cubic-bezier(.22,1,.36,1); }
+    .plane-group.visible { opacity: 1; }
+
+    /* Directional arrow groups */
+    .dir-group { opacity: 0; transition: opacity .25s ease; }
+    .dir-group.visible { opacity: 1; }
+    .dir-label { font: 700 9px "Segoe UI", sans-serif; }
+
+    /* Quadrant hotspots */
+    .quad-hotspot { fill: rgba(0,150,255,0.05); stroke: var(--primary); stroke-width: 1; stroke-dasharray: 4 3; pointer-events: auto; cursor: pointer; transition: fill .2s ease; }
+    .quad-hotspot:hover { fill: rgba(0,150,255,0.25); }
+    .quad-hotspot.active { fill: rgba(228,87,46,0.42); stroke: #B83018; stroke-width: 2; stroke-dasharray: none; }
+    .quad-text { font: 800 9px "Segoe UI", sans-serif; fill: var(--primary); pointer-events: none; }
+
+    .stage-caption { text-align: center; color: var(--muted); font-size: 0.82rem; margin-top: 8px; }
+
+    /* Info panel */
+    .info-empty { color: var(--muted); line-height: 1.55; }
+    .info-common { font-size: 1.3rem; color: var(--primary); font-weight: 800; letter-spacing: -0.02em; margin: 0 0 2px; }
+    .info-ta { font-style: italic; color: var(--accent); font-weight: 600; margin: 0 0 16px; font-size: 1.02rem; }
+    .info-section { margin-bottom: 16px; }
+    .info-section h3 { margin: 0 0 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .info-section p { margin: 0; line-height: 1.55; color: var(--text); }
+
+    .system-list, .organ-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .system-list li, .organ-list li {
+      background: var(--secondary); border: 1px solid var(--border); color: var(--primary);
+      border-radius: 999px; padding: 5px 12px; font-size: 0.86rem; font-weight: 600;
+    }
+
+    /* Region / plane / section button rows */
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn-row.stack { flex-direction: column; }
+    .pill-btn {
+      font: inherit; font-weight: 650; font-size: 0.9rem; text-align: left;
+      border: 1px solid var(--border); background: #fff; color: var(--primary);
+      border-radius: 10px; padding: 9px 12px; cursor: pointer;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+    .pill-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .pill-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .pill-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    /* Data rows */
+    .data-item { display: grid; grid-template-columns: 130px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(195,206,221,.6); font-size: .94rem; }
+    .data-item:last-child { border-bottom: 0; }
+    .data-item b { color: var(--primary); }
+    .data-item span { color: var(--muted); line-height: 1.4; }
+
+    /* Glossary (directional terms) */
+    .glossary { display: grid; gap: 8px; }
+    .term {
+      border: 1px solid var(--border); background: #fff; border-radius: 12px; padding: 11px 13px;
+      cursor: pointer; transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .term:hover, .term:focus-visible { border-color: var(--accent); transform: translateY(-1px); outline: none; }
+    .term.active { background: #ECF6FF; border-color: var(--accent); }
+    .term strong { display: block; color: var(--primary); margin-bottom: 3px; }
+    .term span { color: var(--muted); font-size: .92rem; line-height: 1.4; }
+
+    /* Cross-section preview */
+    .preview-box { border: 1px solid var(--border); border-radius: 14px; background: #fff; padding: 12px; display: grid; place-items: center; }
+    .preview-box svg { width: 100%; max-width: 200px; height: auto; }
+
+    /* Section illustrator */
+    .section-illus { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; margin-top: 10px; }
+    .section-illus svg { width: 100%; height: auto; }
+
+    /* Quadrant cards */
+    .quad-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .quad-card {
+      border: 1px solid var(--border); background: #fff; border-radius: 12px; padding: 11px; cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .quad-card:hover { border-color: var(--red); transform: translateY(-1px); }
+    .quad-card.active { background: #FFF1EF; border-color: var(--red); }
+    .quad-card strong { display: block; color: var(--primary); font-size: .92rem; margin-bottom: 4px; }
+    .quad-card small { color: var(--muted); line-height: 1.35; font-size: .82rem; }
+
+    .clinical-note { color: var(--muted); line-height: 1.45; font-size: .9rem; margin: 0 0 6px; }
+
+    /* Quiz */
+    .quiz-stats { display: flex; gap: 18px; margin-bottom: 14px; color: var(--muted); font-weight: 600; }
+    .quiz-stats b { color: var(--primary); }
+    .quiz-prompt { font-size: 1.1rem; line-height: 1.5; color: var(--primary); font-weight: 700; margin: 0 0 8px; }
+    .quiz-prompt .target-name { color: var(--accent); }
+    .quiz-feedback { min-height: 24px; font-weight: 700; margin: 8px 0 14px; }
+    .quiz-feedback.correct { color: var(--correct); }
+    .quiz-feedback.wrong { color: var(--wrong); }
+
+    .btn { font: inherit; font-weight: 700; border: 1px solid var(--border); background: #fff; color: var(--primary); border-radius: 12px; padding: 10px 16px; cursor: pointer; transition: background .18s ease, transform .18s ease; }
+    .btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn.secondary { background: var(--secondary); }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    .narration { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); color: var(--primary); line-height: 1.5; }
+
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } .stage { max-width: 320px; } .quad-cards { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0.001ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title-block">
+        <h1>Interactive Anatomy Explorer</h1>
+        <p>A study tool for regional anatomy, body planes and sections, directional terminology, and the abdominopelvic quadrants — all referenced to the standard anatomical position.</p>
+      </div>
+      <div class="position-banner">
+        <b>Anatomical Position:</b>
+        <span>The subject stands erect and faces forward, with feet parallel and flat, arms at the sides, and palms facing forward (supinated). Every directional term is defined relative to this reference posture — “left” and “right” always mean the subject’s left and right.</span>
+      </div>
+    </header>
+
+    <nav class="tabbar" role="tablist" aria-label="Study modes">
+      <button role="tab" id="tab-regions"    aria-selected="true"  aria-controls="panel-regions">Regions</button>
+      <button role="tab" id="tab-planes"     aria-selected="false" aria-controls="panel-planes">Planes &amp; Sections</button>
+      <button role="tab" id="tab-terms"      aria-selected="false" aria-controls="panel-terms">Directional Terms</button>
+      <button role="tab" id="tab-quadrants"  aria-selected="false" aria-controls="panel-quadrants">Abdominal Quadrants</button>
+      <button role="tab" id="tab-quiz"       aria-selected="false" aria-controls="panel-quiz">Quiz</button>
+    </nav>
+
+    <main class="layout">
+      <!-- ============ SHARED FIGURE STAGE ============ -->
+      <section class="card" aria-label="Interactive anatomical figure">
+        <div class="card-head"><span>Anterior View</span><small id="stageMode">Regions</small></div>
+        <div class="card-body">
+          <div class="stage">
+            <img class="silhouette" src="silluette.png"
+                 alt="Human body in the standard anatomical position, anterior view" />
+            <svg class="overlay" viewBox="0 0 218 479" preserveAspectRatio="xMidYMid meet"
+                 xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Anatomical overlays">
+              <defs>
+                <marker id="ahBlue" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="var(--blue)"/></marker>
+                <marker id="ahRed" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="var(--red)"/></marker>
+                <marker id="ahGreen" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="var(--green)"/></marker>
+                <marker id="ahPurple" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="var(--purple)"/></marker>
+              </defs>
+
+              <!-- REGION LAYER -->
+              <g class="layer" id="regionLayer">
+                <path class="region" data-region="cranial"   tabindex="0" role="button" aria-label="Cranial region, the head"
+                      d="M109 6 C124 6 134 20 134 40 C134 58 124 71 109 71 C94 71 84 58 84 40 C84 20 94 6 109 6 Z" />
+                <path class="region" data-region="cervical"  tabindex="0" role="button" aria-label="Cervical region, the neck"
+                      d="M98 66 C101 74 101 84 96 93 C104 96 114 96 122 93 C117 84 117 74 120 66 C114 72 104 72 98 66 Z" />
+                <path class="region" data-region="thoracic"  tabindex="0" role="button" aria-label="Thoracic cavity, the chest"
+                      d="M74 96 C88 90 130 90 144 96 C151 112 151 140 147 165 C130 173 88 173 71 165 C67 140 67 112 74 96 Z" />
+                <path class="region" data-region="abdominal" tabindex="0" role="button" aria-label="Abdominal region"
+                      d="M72 166 C88 173 130 173 146 166 C148 186 145 206 142 221 C128 227 90 227 76 221 C73 206 70 186 72 166 Z" />
+                <path class="region" data-region="pelvic"    tabindex="0" role="button" aria-label="Pelvic region"
+                      d="M76 222 C90 228 128 228 142 222 C145 237 143 257 135 269 C122 274 96 274 83 269 C75 257 73 237 76 222 Z" />
+                <path class="region" data-region="upper-limb" tabindex="0" role="button" aria-label="Left upper limb"
+                      d="M71 97 C58 101 50 117 46 141 C42 166 40 201 42 231 C43 251 40 262 38 271 C44 274 53 271 56 262 C61 236 66 201 70 171 C73 150 74 120 72 100 Z" />
+                <path class="region" data-region="upper-limb" tabindex="0" role="button" aria-label="Right upper limb"
+                      d="M147 97 C160 101 168 117 172 141 C176 166 178 201 176 231 C175 251 178 262 180 271 C174 274 165 271 162 262 C157 236 152 201 148 171 C145 150 144 120 146 100 Z" />
+                <path class="region" data-region="lower-limb" tabindex="0" role="button" aria-label="Left lower limb"
+                      d="M83 270 C80 305 82 360 86 402 C89 432 92 456 92 471 C97 474 105 474 107 469 C108 440 108 400 107 360 C107 322 108 292 108 271 C100 274 90 274 83 270 Z" />
+                <path class="region" data-region="lower-limb" tabindex="0" role="button" aria-label="Right lower limb"
+                      d="M135 270 C138 305 136 360 132 402 C129 432 126 456 126 471 C121 474 113 474 111 469 C110 440 110 400 111 360 C111 322 110 292 110 271 C118 274 128 274 135 270 Z" />
+              </g>
+
+              <!-- PLANE LAYER -->
+              <g class="layer hidden" id="planeLayer">
+                <g class="plane-group" id="plane-sagittal">
+                  <line x1="130" y1="8" x2="130" y2="474" stroke="var(--blue)" stroke-width="3"/>
+                  <rect x="127" y="8" width="6" height="466" fill="rgba(45,125,210,.28)"/>
+                </g>
+                <g class="plane-group" id="plane-midsagittal">
+                  <line x1="109" y1="4" x2="109" y2="476" stroke="var(--green)" stroke-width="3" stroke-dasharray="6 4"/>
+                  <rect x="106" y="4" width="6" height="472" fill="rgba(42,157,143,.26)"/>
+                </g>
+                <g class="plane-group" id="plane-coronal">
+                  <rect x="66" y="60" width="86" height="215" rx="14" fill="rgba(123,97,255,.20)" stroke="var(--purple)" stroke-width="2.5" stroke-dasharray="7 5"/>
+                  <text x="109" y="172" text-anchor="middle" class="dir-label" fill="var(--purple)" style="font-size:11px;">A / P</text>
+                </g>
+                <g class="plane-group" id="plane-transverse">
+                  <line x1="52" y1="217" x2="166" y2="217" stroke="var(--red)" stroke-width="3"/>
+                  <rect x="52" y="214" width="114" height="6" fill="rgba(228,87,46,.28)"/>
+                </g>
+                <g class="plane-group" id="plane-oblique">
+                  <line x1="70" y1="270" x2="150" y2="120" stroke="var(--amber)" stroke-width="3.5"/>
+                </g>
+              </g>
+
+              <!-- DIRECTIONAL ARROW LAYER -->
+              <g class="layer hidden" id="directionLayer">
+                <g class="dir-group" id="dir-superior">
+                  <line x1="182" y1="180" x2="182" y2="88" stroke="var(--blue)" stroke-width="3" marker-end="url(#ahBlue)"/>
+                  <line x1="182" y1="190" x2="182" y2="292" stroke="var(--blue)" stroke-width="3" marker-end="url(#ahBlue)"/>
+                  <text x="188" y="92" class="dir-label" fill="var(--blue)">Superior</text>
+                  <text x="188" y="296" class="dir-label" fill="var(--blue)">Inferior</text>
+                </g>
+                <g class="dir-group" id="dir-anterior">
+                  <circle cx="109" cy="180" r="9" fill="none" stroke="var(--red)" stroke-width="2.5"/>
+                  <circle cx="109" cy="180" r="2.4" fill="var(--red)"/>
+                  <text x="120" y="176" class="dir-label" fill="var(--red)">Anterior (toward you)</text>
+                  <line x1="109" y1="195" x2="109" y2="250" stroke="var(--red)" stroke-width="3" stroke-dasharray="5 4" marker-end="url(#ahRed)"/>
+                  <text x="114" y="248" class="dir-label" fill="var(--red)">Posterior (away)</text>
+                </g>
+                <g class="dir-group" id="dir-medial">
+                  <line x1="52" y1="176" x2="104" y2="176" stroke="var(--green)" stroke-width="3" marker-end="url(#ahGreen)"/>
+                  <line x1="104" y1="196" x2="52" y2="196" stroke="var(--green)" stroke-width="3" marker-end="url(#ahGreen)"/>
+                  <text x="30" y="172" class="dir-label" fill="var(--green)">Medial</text>
+                  <text x="30" y="210" class="dir-label" fill="var(--green)">Lateral</text>
+                </g>
+                <g class="dir-group" id="dir-proximal">
+                  <line x1="162" y1="180" x2="152" y2="118" stroke="var(--purple)" stroke-width="3" marker-end="url(#ahPurple)"/>
+                  <line x1="164" y1="188" x2="176" y2="256" stroke="var(--purple)" stroke-width="3" marker-end="url(#ahPurple)"/>
+                  <text x="120" y="112" class="dir-label" fill="var(--purple)">Proximal</text>
+                  <text x="168" y="270" class="dir-label" fill="var(--purple)">Distal</text>
+                </g>
+                <g class="dir-group" id="dir-superficial">
+                  <circle cx="109" cy="178" r="52" fill="none" stroke="var(--amber)" stroke-width="3" stroke-dasharray="8 6"/>
+                  <circle cx="109" cy="178" r="22" fill="none" stroke="var(--amber)" stroke-width="3"/>
+                  <text x="60" y="130" class="dir-label" fill="var(--amber)">Superficial</text>
+                  <text x="96" y="182" class="dir-label" fill="var(--amber)">Deep</text>
+                </g>
+              </g>
+
+              <!-- QUADRANT LAYER -->
+              <g class="layer hidden" id="quadrantLayer">
+                <line x1="109" y1="150" x2="109" y2="270" stroke="var(--primary)" stroke-width="1.4" stroke-dasharray="5 4" opacity=".7"/>
+                <line x1="72" y1="210" x2="146" y2="210" stroke="var(--primary)" stroke-width="1.4" stroke-dasharray="5 4" opacity=".7"/>
+                <rect class="quad-hotspot" id="hot-RUQ" data-quadrant="RUQ" x="74" y="150" width="35" height="60" rx="4"/>
+                <rect class="quad-hotspot" id="hot-LUQ" data-quadrant="LUQ" x="109" y="150" width="35" height="60" rx="4"/>
+                <rect class="quad-hotspot" id="hot-RLQ" data-quadrant="RLQ" x="74" y="210" width="35" height="60" rx="4"/>
+                <rect class="quad-hotspot" id="hot-LLQ" data-quadrant="LLQ" x="109" y="210" width="35" height="60" rx="4"/>
+                <text class="quad-text" x="83" y="184">RUQ</text>
+                <text class="quad-text" x="118" y="184">LUQ</text>
+                <text class="quad-text" x="83" y="244">RLQ</text>
+                <text class="quad-text" x="118" y="244">LLQ</text>
+              </g>
+            </svg>
+          </div>
+          <p class="stage-caption" id="stageCaption">Hover or tab to a region, then click to pin its details.</p>
+        </div>
+      </section>
+
+      <!-- ============ RIGHT-COLUMN PANELS ============ -->
+      <div>
+        <!-- REGIONS PANEL -->
+        <div id="panel-regions" role="tabpanel" aria-labelledby="tab-regions">
+          <section class="card">
+            <div class="card-head"><span>Anatomical Info Panel</span></div>
+            <div class="card-body" id="infoBody" aria-live="polite">
+              <p class="info-empty">Select a region on the figure to display its <strong>Terminologia Anatomica</strong> name, physiological function, and associated organs and systems.</p>
+            </div>
+            <div class="card-body" style="border-top:1px solid var(--border);">
+              <h3 class="info-section" style="margin-bottom:10px;">Region Index</h3>
+              <div class="btn-row" id="regionIndex"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- PLANES & SECTIONS PANEL -->
+        <div id="panel-planes" role="tabpanel" aria-labelledby="tab-planes" hidden>
+          <section class="card">
+            <div class="card-head"><span>Plane Selector</span></div>
+            <div class="card-body">
+              <div class="btn-row" id="planeButtons"></div>
+              <div class="narration" id="planeNarration">Select a plane to project it onto the figure.</div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-head"><span>Plane Data</span></div>
+            <div class="card-body">
+              <div class="data-item"><b>Selected plane</b><span id="planeName">—</span></div>
+              <div class="data-item"><b>Section type</b><span id="planeSection">—</span></div>
+              <div class="data-item"><b>Reference X,Y</b><span id="planeCoords">—</span></div>
+              <h3 class="info-section" style="margin:16px 0 8px;">Cross-Section Preview</h3>
+              <div class="preview-box"><svg id="previewSvg" viewBox="0 0 220 220" aria-label="Cross-section preview"></svg></div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-head"><span>Types of Section</span></div>
+            <div class="card-body">
+              <div class="btn-row" id="sectionButtons"></div>
+              <div class="section-illus">
+                <svg id="sectionSvg" viewBox="0 0 120 140" aria-label="Section illustration"></svg>
+                <div>
+                  <p class="info-common" id="sectionName" style="font-size:1.05rem;">—</p>
+                  <p class="info-section" style="margin:0;"><span id="sectionDesc" style="color:var(--text);line-height:1.5;">Select a section type.</span></p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- DIRECTIONAL TERMS PANEL -->
+        <div id="panel-terms" role="tabpanel" aria-labelledby="tab-terms" hidden>
+          <section class="card">
+            <div class="card-head"><span>Directional Terminology</span></div>
+            <div class="card-body">
+              <p class="clinical-note">Hover or focus a term to project its arrows onto the figure. All terms assume the anatomical position.</p>
+              <div class="glossary" id="glossary"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- QUADRANTS PANEL -->
+        <div id="panel-quadrants" role="tabpanel" aria-labelledby="tab-quadrants" hidden>
+          <section class="card">
+            <div class="card-head"><span>Abdominopelvic Quadrants</span></div>
+            <div class="card-body">
+              <p class="clinical-note"><b>Clinical note:</b> the four-quadrant scheme divides the abdomen with a vertical median line and a horizontal line through the umbilicus. Because the figure faces you, the patient’s <b>right</b> is on the <b>viewer’s left</b>.</p>
+              <div class="quad-cards" id="quadCards"></div>
+              <div class="card-body hidden" id="quadDetail" style="padding:14px 0 0;" aria-live="polite"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- QUIZ PANEL -->
+        <div id="panel-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+          <section class="card">
+            <div class="card-head"><span>Quiz — Regional Identification</span></div>
+            <div class="card-body" aria-live="polite">
+              <div class="quiz-stats">
+                <span>Score: <b id="quizScore">0</b></span>
+                <span>Question: <b id="quizCount">0</b></span>
+                <span>Streak: <b id="quizStreak">0</b></span>
+              </div>
+              <p class="quiz-prompt" id="quizPrompt">Click “Start Quiz” to begin.</p>
+              <p class="quiz-feedback" id="quizFeedback"></p>
+              <button class="btn primary" id="quizStartBtn">Start Quiz</button>
+              <button class="btn hidden" id="quizNextBtn">Next Question →</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    /* ===================== DATA ===================== */
+    const REGIONS = {
+      cranial:      { common: "Cranial Region (Head)", ta: "Regio Cranialis / Caput",
+        fn: "Houses and protects the brain and integrates all incoming sensory information (vision, hearing, smell, taste, equilibrium), issuing voluntary and autonomic motor commands in return.",
+        systems: ["Nervous system", "Special senses", "Skeletal (cranium)"] },
+      cervical:     { common: "Cervical Region (Neck)", ta: "Regio Cervicalis / Collum",
+        fn: "A flexible conduit linking head to trunk. Transmits the airway, esophagus, spinal cord, and great vessels while supporting and rotating the head.",
+        systems: ["Respiratory (larynx, trachea)", "Digestive (pharynx, esophagus)", "Endocrine (thyroid)", "Cardiovascular (carotid, jugular)"] },
+      thoracic:     { common: "Thoracic Cavity (Chest)", ta: "Cavitas Thoracis / Regio Thoracica",
+        fn: "Enclosed by the rib cage; protects the heart and lungs and mechanically drives pulmonary ventilation and systemic circulation.",
+        systems: ["Respiratory (lungs, pleura)", "Cardiovascular (heart, great vessels)", "Lymphatic (thymus, thoracic duct)"] },
+      abdominal:    { common: "Abdominal Region", ta: "Cavitas Abdominis / Regio Abdominalis",
+        fn: "The principal site of chemical and mechanical digestion, nutrient absorption, metabolic detoxification, and filtration of blood.",
+        systems: ["Digestive (stomach, intestines, liver, pancreas)", "Urinary (kidneys, ureters)", "Endocrine (adrenal glands)"] },
+      pelvic:       { common: "Pelvic Region", ta: "Cavitas Pelvis / Regio Pelvica",
+        fn: "Contains organs of waste storage and elimination and of reproduction, and transfers mechanical load between the trunk and lower limbs.",
+        systems: ["Urinary (bladder)", "Reproductive", "Digestive (rectum, sigmoid colon)"] },
+      "upper-limb": { common: "Upper Limb", ta: "Membrum Superius",
+        fn: "Provides a wide range of motion for reaching, grasping (prehension), and fine manipulation, coordinated through the shoulder, elbow, wrist, and hand.",
+        systems: ["Skeletal (humerus, radius, ulna, carpals)", "Muscular", "Nervous (brachial plexus)", "Cardiovascular (brachial artery)"] },
+      "lower-limb": { common: "Lower Limb", ta: "Membrum Inferius",
+        fn: "Bears body weight, produces bipedal locomotion, and maintains upright posture and dynamic balance through the hip, knee, ankle, and foot.",
+        systems: ["Skeletal (femur, tibia, fibula, tarsals)", "Muscular", "Nervous (lumbosacral plexus)", "Cardiovascular (femoral artery)"] }
+    };
+
+    const PLANES = {
+      sagittal:    { label: "Sagittal", section: "Divides the body into left and right portions.", coords: "X=130, Y=200",
+        narration: "Sagittal planes are vertical planes that separate the body into left and right parts. A sagittal cut does not have to pass exactly through the midline." },
+      midsagittal: { label: "Midsagittal (Median)", section: "Equal left and right halves at the midline.", coords: "X=109, Y=200",
+        narration: "The midsagittal (median) plane is a sagittal plane through the exact midline, creating equal left and right halves." },
+      coronal:     { label: "Coronal / Frontal", section: "Divides the body into anterior and posterior portions.", coords: "X=109, Y=200",
+        narration: "The coronal (frontal) plane is vertical and separates anterior (front) structures from posterior (back) structures." },
+      transverse:  { label: "Transverse / Horizontal", section: "Divides the body into superior and inferior portions.", coords: "X=109, Y=217",
+        narration: "The transverse (horizontal) plane is horizontal and separates superior (upper) portions from inferior (lower) portions." },
+      oblique:     { label: "Oblique", section: "Cuts the body at an angle other than vertical or horizontal.", coords: "X=109, Y=200",
+        narration: "An oblique plane passes through the body at an angle and is often used to expose structures not aligned to the primary planes." }
+    };
+
+    const SECTIONS = {
+      longitudinal: { name: "Longitudinal Section",
+        desc: "A cut made parallel to the long axis of an organ or structure, producing an elongated profile (e.g., a long-axis view of a bone or blood vessel).",
+        cut: { x1: 60, y1: 15, x2: 60, y2: 125 } },
+      cross:        { name: "Cross Section (Transverse)",
+        desc: "A cut made perpendicular to the long axis, producing a circular or oval profile (e.g., a disc-shaped slice through a limb).",
+        cut: { x1: 20, y1: 70, x2: 100, y2: 70 } },
+      oblique:      { name: "Oblique Section",
+        desc: "A cut made at any slanted angle between longitudinal and cross-sectional, giving a distorted, angled profile.",
+        cut: { x1: 25, y1: 118, x2: 98, y2: 25 } }
+    };
+
+    const TERMS = [
+      { key: "superior",    pair: "Superior / Inferior",     def: "Superior means toward the head; inferior means toward the feet." },
+      { key: "anterior",    pair: "Anterior / Posterior",    def: "Anterior (ventral) means toward the front; posterior (dorsal) means toward the back." },
+      { key: "medial",      pair: "Medial / Lateral",        def: "Medial means closer to the midline; lateral means farther from the midline." },
+      { key: "proximal",    pair: "Proximal / Distal",       def: "Proximal means closer to the trunk or point of attachment; distal means farther away." },
+      { key: "superficial", pair: "Superficial / Deep",      def: "Superficial means closer to the body surface; deep means farther inside." }
+    ];
+
+    const QUADRANTS = {
+      RUQ: { name: "Right Upper Quadrant", organs: ["Right lobe of liver", "Gallbladder", "Duodenum", "Head of pancreas", "Right kidney & adrenal", "Hepatic flexure of colon"] },
+      LUQ: { name: "Left Upper Quadrant",  organs: ["Stomach", "Spleen", "Left lobe of liver", "Body & tail of pancreas", "Left kidney & adrenal", "Splenic flexure of colon"] },
+      RLQ: { name: "Right Lower Quadrant", organs: ["Cecum", "Appendix", "Right ovary / testis region", "Right ureter", "Loops of small intestine"] },
+      LLQ: { name: "Left Lower Quadrant",  organs: ["Sigmoid colon", "Descending colon", "Left ovary / testis region", "Left ureter", "Loops of small intestine"] }
+    };
+
+    /* ===================== CONTROLLER ===================== */
+    const App = {
+      tab: "regions",
+      selected: null,
+      plane: "sagittal",
+      section: "longitudinal",
+      quiz: { score: 0, count: 0, streak: 0, target: null, answered: false },
+      selectedQuadrant: null,
+      el: {},
+
+      init() {
+        this.el = {
+          regions: Array.from(document.querySelectorAll(".region")),
+          regionLayer: document.getElementById("regionLayer"),
+          planeLayer: document.getElementById("planeLayer"),
+          directionLayer: document.getElementById("directionLayer"),
+          quadrantLayer: document.getElementById("quadrantLayer"),
+          stageMode: document.getElementById("stageMode"),
+          stageCaption: document.getElementById("stageCaption"),
+          infoBody: document.getElementById("infoBody"),
+          regionIndex: document.getElementById("regionIndex"),
+          planeButtons: document.getElementById("planeButtons"),
+          planeName: document.getElementById("planeName"),
+          planeSection: document.getElementById("planeSection"),
+          planeCoords: document.getElementById("planeCoords"),
+          planeNarration: document.getElementById("planeNarration"),
+          previewSvg: document.getElementById("previewSvg"),
+          sectionButtons: document.getElementById("sectionButtons"),
+          sectionSvg: document.getElementById("sectionSvg"),
+          sectionName: document.getElementById("sectionName"),
+          sectionDesc: document.getElementById("sectionDesc"),
+          glossary: document.getElementById("glossary"),
+          quadCards: document.getElementById("quadCards"),
+          quadDetail: document.getElementById("quadDetail"),
+          quizScore: document.getElementById("quizScore"),
+          quizCount: document.getElementById("quizCount"),
+          quizStreak: document.getElementById("quizStreak"),
+          quizPrompt: document.getElementById("quizPrompt"),
+          quizFeedback: document.getElementById("quizFeedback"),
+          quizStartBtn: document.getElementById("quizStartBtn"),
+          quizNextBtn: document.getElementById("quizNextBtn")
+        };
+        this.bindRegions();
+        this.buildRegionIndex();
+        this.buildPlaneButtons();
+        this.buildSectionButtons();
+        this.buildGlossary();
+        this.buildQuadrants();
+        this.bindQuadHotspots();
+        this.bindTabs();
+        this.bindQuiz();
+        this.selectPlane("sagittal");
+        this.selectSection("longitudinal");
+        this.setTab("regions");
+      },
+
+      /* ---- Tabs ---- */
+      bindTabs() {
+        [["tab-regions","regions"],["tab-planes","planes"],["tab-terms","terms"],
+         ["tab-quadrants","quadrants"],["tab-quiz","quiz"]].forEach(([id, name]) => {
+          document.getElementById(id).addEventListener("click", () => this.setTab(name));
+        });
+      },
+
+      setTab(name) {
+        this.tab = name;
+        document.querySelectorAll('[role="tab"]').forEach(t =>
+          t.setAttribute("aria-selected", String(t.id === "tab-" + name)));
+        document.querySelectorAll('[role="tabpanel"]').forEach(p =>
+          p.hidden = (p.id !== "panel-" + name));
+
+        // choose which overlay layer is active
+        const layerFor = { regions: "regionLayer", quiz: "regionLayer", planes: "planeLayer",
+                           terms: "directionLayer", quadrants: "quadrantLayer" };
+        ["regionLayer","planeLayer","directionLayer","quadrantLayer"].forEach(l =>
+          this.el[l].classList.toggle("hidden", this.el[l].id !== layerFor[name]));
+
+        this.clearRegionStates();
+        const captions = {
+          regions: "Hover or tab to a region, then click to pin its details.",
+          planes: "The selected plane is projected onto the figure.",
+          terms: "Hover a term in the panel to project its arrows here.",
+          quadrants: "Click a quadrant on the figure or a card to see its organs.",
+          quiz: "Read the prompt, then click the matching region."
+        };
+        const modeLabel = { regions:"Regions", planes:"Planes", terms:"Directional Terms", quadrants:"Quadrants", quiz:"Quiz" };
+        this.el.stageMode.textContent = modeLabel[name];
+        this.el.stageCaption.textContent = captions[name];
+
+        if (name === "regions" && this.selected) this.selectRegion(this.selected);
+        if (name === "planes") this.selectPlane(this.plane);
+        if (name === "quiz") this.resetQuiz();
+      },
+
+      /* ---- Regions ---- */
+      bindRegions() {
+        this.el.regions.forEach(path => {
+          const id = path.dataset.region;
+          path.addEventListener("click", () => this.onRegionActivate(id));
+          path.addEventListener("keydown", e => {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.onRegionActivate(id); }
+          });
+        });
+      },
+      onRegionActivate(id) {
+        if (this.tab === "quiz") this.answerQuiz(id);
+        else if (this.tab === "regions") this.selectRegion(id);
+      },
+      selectRegion(id) {
+        this.selected = id;
+        this.el.regions.forEach(p => p.classList.toggle("selected", p.dataset.region === id));
+        Array.from(this.el.regionIndex.children).forEach(b => b.classList.toggle("active", b.dataset.region === id));
+        const r = REGIONS[id];
+        this.el.infoBody.innerHTML = `
+          <p class="info-common">${r.common}</p>
+          <p class="info-ta">${r.ta}</p>
+          <div class="info-section"><h3>Physiological Function</h3><p>${r.fn}</p></div>
+          <div class="info-section"><h3>Associated Organs / Systems</h3>
+            <ul class="system-list">${r.systems.map(s => `<li>${s}</li>`).join("")}</ul></div>`;
+      },
+      buildRegionIndex() {
+        const seen = new Set();
+        this.el.regions.forEach(p => {
+          const id = p.dataset.region;
+          if (seen.has(id)) return;
+          seen.add(id);
+          const b = document.createElement("button");
+          b.className = "pill-btn"; b.textContent = REGIONS[id].common; b.dataset.region = id;
+          b.addEventListener("click", () => this.selectRegion(id));
+          this.el.regionIndex.appendChild(b);
+        });
+      },
+      clearRegionStates() {
+        this.el.regions.forEach(p => p.classList.remove("selected","answer-correct","answer-wrong"));
+      },
+
+      /* ---- Planes ---- */
+      buildPlaneButtons() {
+        Object.entries(PLANES).forEach(([key, p]) => {
+          const b = document.createElement("button");
+          b.className = "pill-btn"; b.textContent = p.label; b.dataset.plane = key;
+          b.addEventListener("click", () => this.selectPlane(key));
+          this.el.planeButtons.appendChild(b);
+        });
+      },
+      selectPlane(key) {
+        this.plane = key;
+        const p = PLANES[key];
+        document.querySelectorAll("#planeLayer .plane-group").forEach(g =>
+          g.classList.toggle("visible", g.id === "plane-" + key));
+        Array.from(this.el.planeButtons.children).forEach(b =>
+          b.classList.toggle("active", b.dataset.plane === key));
+        this.el.planeName.textContent = p.label;
+        this.el.planeSection.textContent = p.section;
+        this.el.planeCoords.textContent = p.coords;
+        this.el.planeNarration.textContent = p.narration;
+        this.renderPreview(key);
+      },
+      renderPreview(key) {
+        const frame = `<rect x="1" y="1" width="218" height="218" rx="16" fill="#fff" stroke="var(--border)"/>`;
+        let shape;
+        if (key === "sagittal")
+          shape = `<ellipse cx="110" cy="104" rx="58" ry="84" fill="#D6E4F0" stroke="var(--primary)" stroke-width="3"/><line x1="130" y1="30" x2="130" y2="178" stroke="var(--blue)" stroke-width="10" opacity=".65"/>`;
+        else if (key === "midsagittal")
+          shape = `<ellipse cx="110" cy="104" rx="58" ry="84" fill="#DDF4EF" stroke="var(--primary)" stroke-width="3"/><line x1="110" y1="24" x2="110" y2="184" stroke="var(--green)" stroke-width="10" opacity=".8"/>`;
+        else if (key === "coronal")
+          shape = `<ellipse cx="110" cy="104" rx="68" ry="84" fill="#F0EDFF" stroke="var(--primary)" stroke-width="3"/><rect x="100" y="24" width="20" height="160" rx="10" fill="var(--purple)" opacity=".55"/><text x="110" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="var(--primary)">A/P</text>`;
+        else if (key === "transverse")
+          shape = `<ellipse cx="110" cy="106" rx="78" ry="56" fill="#FFF1EF" stroke="var(--primary)" stroke-width="3"/><line x1="34" y1="106" x2="186" y2="106" stroke="var(--red)" stroke-width="12" opacity=".7"/>`;
+        else
+          shape = `<ellipse cx="110" cy="104" rx="62" ry="84" fill="#FFF6E9" stroke="var(--primary)" stroke-width="3"/><line x1="60" y1="172" x2="160" y2="40" stroke="var(--amber)" stroke-width="12" opacity=".75"/>`;
+        this.el.previewSvg.innerHTML = `${frame}${shape}<text x="110" y="208" text-anchor="middle" font-size="14" font-weight="800" fill="var(--primary)">${PLANES[key].label}</text>`;
+      },
+
+      /* ---- Sections ---- */
+      buildSectionButtons() {
+        Object.entries(SECTIONS).forEach(([key, s]) => {
+          const b = document.createElement("button");
+          b.className = "pill-btn"; b.textContent = s.name.split(" ")[0]; b.dataset.section = key;
+          b.addEventListener("click", () => this.selectSection(key));
+          this.el.sectionButtons.appendChild(b);
+        });
+      },
+      selectSection(key) {
+        this.section = key;
+        const s = SECTIONS[key];
+        Array.from(this.el.sectionButtons.children).forEach(b =>
+          b.classList.toggle("active", b.dataset.section === key));
+        // draw a cylinder (long structure) + the cut plane
+        const c = s.cut;
+        this.el.sectionSvg.innerHTML = `
+          <ellipse cx="60" cy="18" rx="26" ry="9" fill="#F4C7A7" stroke="var(--primary)" stroke-width="2"/>
+          <path d="M34 18 L34 122 A26 9 0 0 0 86 122 L86 18" fill="#F7D3B8" stroke="var(--primary)" stroke-width="2"/>
+          <line x1="${c.x1}" y1="${c.y1}" x2="${c.x2}" y2="${c.y2}" stroke="var(--accent)" stroke-width="4" stroke-dasharray="7 4"/>`;
+        this.el.sectionName.textContent = s.name;
+        this.el.sectionDesc.textContent = s.desc;
+      },
+
+      /* ---- Directional terms ---- */
+      buildGlossary() {
+        TERMS.forEach(t => {
+          const el = document.createElement("div");
+          el.className = "term"; el.tabIndex = 0;
+          el.innerHTML = `<strong>${t.pair}</strong><span>${t.def}</span>`;
+          const show = () => this.showDirection(t.key, el);
+          const hide = () => this.hideDirection();
+          el.addEventListener("mouseenter", show);
+          el.addEventListener("mouseleave", hide);
+          el.addEventListener("focus", show);
+          el.addEventListener("blur", hide);
+          this.el.glossary.appendChild(el);
+        });
+      },
+      showDirection(key, el) {
+        this.hideDirection();
+        const g = document.getElementById("dir-" + key);
+        if (g) g.classList.add("visible");
+        el.classList.add("active");
+      },
+      hideDirection() {
+        document.querySelectorAll(".dir-group").forEach(g => g.classList.remove("visible"));
+        document.querySelectorAll(".term").forEach(t => t.classList.remove("active"));
+      },
+
+      /* ---- Quadrants ---- */
+      buildQuadrants() {
+        Object.entries(QUADRANTS).forEach(([key, q]) => {
+          const c = document.createElement("div");
+          c.className = "quad-card"; c.dataset.quadrant = key;
+          c.innerHTML = `<strong>${key}: ${q.name}</strong><small>${q.organs.slice(0,3).join(", ")}…</small>`;
+          c.addEventListener("click", () => this.selectQuadrant(key));
+          this.el.quadCards.appendChild(c);
+        });
+      },
+      bindQuadHotspots() {
+        document.querySelectorAll(".quad-hotspot").forEach(h =>
+          h.addEventListener("click", () => this.selectQuadrant(h.dataset.quadrant)));
+      },
+      selectQuadrant(key) {
+        this.selectedQuadrant = this.selectedQuadrant === key ? null : key;
+        document.querySelectorAll(".quad-hotspot, .quad-card").forEach(el =>
+          el.classList.toggle("active", el.dataset.quadrant === this.selectedQuadrant));
+        if (this.selectedQuadrant) {
+          const q = QUADRANTS[key];
+          this.el.quadDetail.classList.remove("hidden");
+          this.el.quadDetail.innerHTML =
+            `<p class="info-common" style="font-size:1.05rem;">${key}: ${q.name}</p>
+             <ul class="organ-list">${q.organs.map(o => `<li>${o}</li>`).join("")}</ul>`;
+        } else {
+          this.el.quadDetail.classList.add("hidden");
+        }
+      },
+
+      /* ---- Quiz ---- */
+      bindQuiz() {
+        this.el.quizStartBtn.addEventListener("click", () => {
+          this.el.quizStartBtn.classList.add("hidden"); this.nextQuestion();
+        });
+        this.el.quizNextBtn.addEventListener("click", () => this.nextQuestion());
+      },
+      resetQuiz() {
+        this.quiz = { score: 0, count: 0, streak: 0, target: null, answered: false };
+        this.updateQuizStats();
+        this.el.quizPrompt.textContent = 'Click “Start Quiz” to begin.';
+        this.el.quizFeedback.textContent = ""; this.el.quizFeedback.className = "quiz-feedback";
+        this.el.quizStartBtn.classList.remove("hidden");
+        this.el.quizNextBtn.classList.add("hidden");
+      },
+      nextQuestion() {
+        this.clearRegionStates();
+        this.el.quizFeedback.textContent = ""; this.el.quizFeedback.className = "quiz-feedback";
+        this.el.quizNextBtn.classList.add("hidden");
+        const ids = Object.keys(REGIONS);
+        let pick;
+        do { pick = ids[Math.floor(Math.random() * ids.length)]; }
+        while (ids.length > 1 && pick === this.quiz.target);
+        this.quiz.target = pick; this.quiz.answered = false;
+        this.el.quizPrompt.innerHTML = `Click on the <span class="target-name">${REGIONS[pick].common}</span>.`;
+      },
+      answerQuiz(id) {
+        if (this.quiz.answered || !this.quiz.target) return;
+        this.quiz.answered = true; this.quiz.count++;
+        const correct = id === this.quiz.target;
+        if (correct) {
+          this.quiz.score++; this.quiz.streak++;
+          this.el.quizFeedback.textContent = "✓ Correct!";
+          this.el.quizFeedback.className = "quiz-feedback correct";
+        } else {
+          this.quiz.streak = 0;
+          this.el.quizFeedback.textContent = `✗ That was the ${REGIONS[id].common}. Correct answer highlighted in green.`;
+          this.el.quizFeedback.className = "quiz-feedback wrong";
+        }
+        this.el.regions.forEach(p => {
+          if (p.dataset.region === this.quiz.target) p.classList.add("answer-correct");
+          if (!correct && p.dataset.region === id) p.classList.add("answer-wrong");
+        });
+        this.updateQuizStats();
+        this.el.quizNextBtn.classList.remove("hidden");
+        this.el.quizNextBtn.focus();
+      },
+      updateQuizStats() {
+        this.el.quizScore.textContent = this.quiz.score;
+        this.el.quizCount.textContent = this.quiz.count;
+        this.el.quizStreak.textContent = this.quiz.streak;
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => App.init());
+  </script>
+
+  <!-- ============ APTools study block ============ -->
+  <style>
+  .ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  .ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+  .ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+  .ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+  .ap-hub-link:hover{border-color:#2563b6;}
+  .ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+  </style>
+  <section class="ap-study-section">
+    <div class="ap-study-card">
+      <div class="ap-study-head">
+        <h2>Test Yourself — Regions, Planes &amp; Terms</h2>
+        <div id="apHud"></div>
+        <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+      </div>
+      <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+      <div id="apQuiz"></div>
+    </div>
+  </section>
+  <script src="assets/aptools.js?v=1"></script>
+  <script>
+  (function(){
+    APTools.init({ id:"anatomical-regions", title:"Anatomical Regions & Terms", unit:"Unit 1" });
+    APTools.mountHUD("#apHud","anatomical-regions");
+    var BANK=[
+      { id:"a1", bloom:"Apply", outcome:"Use directional terms",
+        q:"The wrist is ______ to the elbow.",
+        choices:["Distal","Proximal","Superior","Medial"],
+        answer:0, why:"Distal = farther from the trunk/point of attachment. The wrist is farther down the arm than the elbow, so it is distal." },
+      { id:"a2", bloom:"Apply", outcome:"Use directional terms",
+        q:"The nose is ______ to the ears.",
+        choices:["Medial","Lateral","Distal","Inferior"],
+        answer:0, why:"Medial = toward the midline. The nose sits on the midline, closer to it than the ears, so it is medial to them." },
+      { id:"a3", bloom:"Remember", outcome:"Identify planes",
+        q:"A SAGITTAL plane divides the body into:",
+        choices:["Left and right portions","Anterior and posterior portions","Superior and inferior portions","Equal quadrants"],
+        answer:0, why:"A sagittal (vertical) plane divides the body into left and right; a midsagittal plane makes equal halves." },
+      { id:"a4", bloom:"Remember", outcome:"Identify planes",
+        q:"The plane dividing the body into anterior (front) and posterior (back) portions is the:",
+        choices:["Frontal (coronal) plane","Transverse plane","Sagittal plane","Oblique plane"],
+        answer:0, why:"The frontal/coronal plane is vertical and separates front from back." },
+      { id:"a5", bloom:"Understand", outcome:"Identify planes",
+        q:"A TRANSVERSE (horizontal) plane produces:",
+        choices:["Superior and inferior sections","Left and right sections","Anterior and posterior sections","Proximal and distal sections"],
+        answer:0, why:"A transverse/cross-sectional plane divides the body into upper (superior) and lower (inferior) parts." },
+      { id:"a6", bloom:"Remember", outcome:"Anatomical position",
+        q:"In correct ANATOMICAL POSITION, the palms are:",
+        choices:["Facing forward (supinated)","Facing backward","Facing the thighs","Turned inward"],
+        answer:0, why:"Anatomical position: standing erect, feet forward, head up, arms at sides with palms facing anteriorly." },
+      { id:"a7", bloom:"Understand", outcome:"Body cavities",
+        q:"The heart and lungs are housed in the:",
+        choices:["Thoracic cavity","Abdominal cavity","Cranial cavity","Pelvic cavity"],
+        answer:0, why:"The thoracic (chest) cavity contains the heart, lungs, and other structures, separated from the abdomen by the diaphragm." },
+      { id:"a8", bloom:"Apply", outcome:"Abdominopelvic regions",
+        q:"The stomach is located mainly in which abdominopelvic quadrant?",
+        choices:["Left upper quadrant (LUQ)","Right lower quadrant (RLQ)","Left lower quadrant (LLQ)","Right upper quadrant (RUQ)"],
+        answer:0, why:"Most of the stomach lies in the LUQ; the appendix, by contrast, is a classic RLQ landmark." },
+      { id:"a9", bloom:"Apply", outcome:"Use directional terms",
+        q:"The spinal cord is ______ to the sternum (breastbone).",
+        choices:["Posterior (dorsal)","Anterior (ventral)","Superior","Lateral"],
+        answer:0, why:"The spinal cord runs along the back, so it is posterior/dorsal relative to the anterior sternum." }
+    ];
+    APTools.mountQuiz({ container:"#apQuiz", moduleId:"anatomical-regions", bank:BANK, length:8 });
+  })();
+  </script>
+</body>
+</html>

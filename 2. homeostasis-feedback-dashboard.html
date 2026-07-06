@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homeostasis & Feedback Loops — Interactive Dashboard</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<style>
+  :root{
+    --primary:#1B2A4A;      /* slate navy */
+    --primary-soft:#27395f;
+    --secondary:#D6E4F0;    /* pale blue */
+    --bg:#eef3f9;
+    --panel:#ffffff;
+    --ink:#1B2A4A;
+    --muted:#5b6b86;
+    --line:#c9d7ea;
+    --neg:#1B7D46;          /* green — negative-feedback stability */
+    --neg-arrow:#2563b6;    /* blue arrows for negative feedback */
+    --pos:#C0392B;          /* red — positive-feedback amplification */
+    --shadow:0 6px 20px rgba(27,42,74,.10);
+    --shadow-sm:0 2px 8px rgba(27,42,74,.08);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(160deg,#eef3f9,#e2ebf6);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  header.topbar{
+    background:var(--primary);
+    color:#fff;
+    padding:18px 26px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    box-shadow:var(--shadow);
+  }
+  .brand{display:flex;align-items:center;gap:14px;}
+  .brand .logo{
+    width:42px;height:42px;border-radius:11px;
+    background:linear-gradient(135deg,#2f6fd6,#1B7D46);
+    display:grid;place-items:center;flex:none;
+  }
+  .brand h1{font-size:1.15rem;margin:0;font-weight:650;letter-spacing:.2px;}
+  .brand p{margin:2px 0 0;font-size:.78rem;color:var(--secondary);opacity:.9;}
+  .topbar-right{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+
+  /* toggle switch */
+  .switch{display:flex;align-items:center;gap:9px;font-size:.82rem;color:var(--secondary);cursor:pointer;user-select:none;}
+  .switch input{display:none;}
+  .track{width:44px;height:24px;border-radius:20px;background:#3a4d73;position:relative;transition:.25s;flex:none;}
+  .track::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.25s;}
+  .switch input:checked + .track{background:#4a9d6b;}
+  .switch input:checked + .track::after{transform:translateX(20px);}
+
+  .layout{
+    display:grid;
+    grid-template-columns:290px minmax(0,1fr) 290px;
+    gap:20px;
+    padding:20px;
+    max-width:1440px;margin:0 auto;
+  }
+  @media (max-width:1080px){ .layout{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--panel);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;
+  }
+  .card h2{
+    font-size:.82rem;text-transform:uppercase;letter-spacing:1.1px;
+    color:var(--muted);margin:0 0 14px;font-weight:700;
+  }
+
+  /* ---- Controls ---- */
+  .loop-toggle{display:flex;background:var(--secondary);border-radius:11px;padding:4px;margin-bottom:18px;}
+  .loop-toggle button{
+    flex:1;border:none;background:transparent;padding:10px 8px;border-radius:8px;
+    font-weight:650;font-size:.86rem;color:var(--primary);cursor:pointer;transition:.2s;
+  }
+  .loop-toggle button.active[data-loop="neg"]{background:var(--neg-arrow);color:#fff;box-shadow:var(--shadow-sm);}
+  .loop-toggle button.active[data-loop="pos"]{background:var(--pos);color:#fff;box-shadow:var(--shadow-sm);}
+
+  .field{margin-bottom:16px;}
+  .field label{display:flex;justify-content:space-between;font-size:.8rem;font-weight:600;margin-bottom:7px;color:var(--primary);}
+  .field label .val{color:var(--neg-arrow);font-variant-numeric:tabular-nums;font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;
+    background:var(--secondary);outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--primary);border:3px solid #fff;box-shadow:var(--shadow-sm);cursor:pointer;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px;height:16px;border-radius:50%;background:var(--primary);border:3px solid #fff;cursor:pointer;
+  }
+  input[type=range]:disabled{opacity:.4;cursor:not-allowed;}
+
+  .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px;}
+  .btn{
+    border:none;border-radius:9px;padding:11px 10px;font-weight:650;font-size:.85rem;
+    cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .btn.primary{background:var(--primary);color:#fff;grid-column:span 2;}
+  .btn.primary:hover{background:var(--primary-soft);}
+  .btn.ghost{background:var(--secondary);color:var(--primary);}
+  .btn.ghost:hover{background:#c3d6ec;}
+  .btn:active{transform:translateY(1px);}
+
+  /* ---- Center visualization ---- */
+  .viz-stack{display:flex;flex-direction:column;gap:20px;}
+  .diagram-wrap{position:relative;display:flex;justify-content:center;}
+  svg{display:block;max-width:100%;}
+  .node-circle{transition:.25s;}
+  .node-label{font-size:12px;font-weight:700;fill:#fff;text-anchor:middle;pointer-events:none;}
+  .node-sub{font-size:9.5px;fill:var(--secondary);text-anchor:middle;pointer-events:none;}
+  .node.active .node-circle{filter:drop-shadow(0 0 10px currentColor);}
+  .center-badge{font-size:13px;font-weight:800;text-anchor:middle;fill:var(--primary);}
+  .center-sub{font-size:10px;text-anchor:middle;fill:var(--muted);}
+
+  .flow-arc{fill:none;stroke-linecap:round;transition:stroke-width .3s,opacity .3s;}
+  .flow-arc.flow{stroke-dasharray:6 9;animation:flow 1s linear infinite;}
+  @keyframes flow{to{stroke-dashoffset:-30;}}
+  .paused .flow-arc.flow{animation-play-state:paused;}
+
+  .chart-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.76rem;color:var(--muted);margin-top:6px;}
+  .chart-legend span{display:flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:4px;border-radius:2px;display:inline-block;}
+  .swatch.dash{background:repeating-linear-gradient(90deg,var(--muted) 0 5px,transparent 5px 9px);height:2px;}
+
+  /* ---- Data panel ---- */
+  .stat{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);}
+  .stat:last-of-type{border-bottom:none;}
+  .stat .k{font-size:.8rem;color:var(--muted);}
+  .stat .v{font-size:1.05rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--primary);}
+  .badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:.75rem;font-weight:700;color:#fff;}
+  .badge.neg{background:var(--neg-arrow);}
+  .badge.pos{background:var(--pos);}
+
+  .phase-box{
+    margin-top:14px;background:var(--secondary);border-radius:11px;padding:14px;
+    border-left:5px solid var(--neg-arrow);
+  }
+  .phase-box.pos{border-left-color:var(--pos);}
+  .phase-tag{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;}
+  .phase-num{font-size:.72rem;color:var(--neg-arrow);font-weight:700;}
+  .phase-box.pos .phase-num{color:var(--pos);}
+  .phase-text{font-size:.94rem;font-weight:600;margin-top:4px;line-height:1.35;color:var(--primary);}
+
+  .info{
+    margin-top:16px;font-size:.8rem;line-height:1.5;color:var(--muted);
+    background:#f5f8fc;border-radius:10px;padding:12px 14px;
+  }
+  .info b{color:var(--primary);}
+  footer.note{
+    text-align:center;font-size:.72rem;color:var(--muted);padding:6px 20px 24px;
+  }
+  .delta-up{color:var(--pos)!important;}
+  .delta-ok{color:var(--neg)!important;}
+</style>
+</head>
+<body class="paused">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12h3l2-7 4 14 2-7h5"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Homeostasis &amp; Feedback Loops</h1>
+      <p>Interactive physiology dashboard — negative &amp; positive feedback (BIOL 2401, Ch. 1)</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div id="apHud" style="color:#c9d7ea;"></div>
+    <label class="switch">
+      <input type="checkbox" id="eli5">
+      <span class="track"></span>
+      <span>Explain Like I'm 5</span>
+    </label>
+    <a href="index.html" class="btn ghost" style="text-decoration:none;padding:9px 14px;">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ============ CONTROLS ============ -->
+  <aside class="card">
+    <h2>Controls</h2>
+
+    <div class="loop-toggle" id="loopToggle">
+      <button data-loop="neg" class="active">Negative</button>
+      <button data-loop="pos">Positive</button>
+    </div>
+
+    <div class="field">
+      <label>Stimulus intensity <span class="val" id="stimVal">50</span></label>
+      <input type="range" id="stim" min="0" max="100" value="50">
+    </div>
+    <div class="field">
+      <label>Set point <span class="val" id="spVal">50</span></label>
+      <input type="range" id="setpoint" min="30" max="70" value="50">
+    </div>
+    <div class="field">
+      <label>Sensor sensitivity <span class="val" id="sensVal">1.0</span></label>
+      <input type="range" id="sens" min="0.1" max="2.0" step="0.1" value="1.0">
+    </div>
+
+    <div class="predict" id="predictBox" style="margin-bottom:14px;padding:12px 14px;border-radius:11px;background:#fff7e6;border-left:4px solid #e0a800;font-size:.83rem;line-height:1.45;">
+      <b>Predict first:</b> after the stimulus, will the variable…
+      <div style="display:flex;gap:8px;margin-top:9px;">
+        <button class="btn ghost" data-predict="return" style="flex:1;">Return to set point</button>
+        <button class="btn ghost" data-predict="runaway" style="flex:1;">Run away</button>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn primary" id="playBtn">▶ Play</button>
+      <button class="btn ghost" id="stepBtn">⏭ Step</button>
+      <button class="btn ghost" id="resetBtn">↺ Reset</button>
+    </div>
+
+    <div class="info" id="controlInfo">
+      Push the <b>stimulus</b> to knock the regulated variable off its set point,
+      then watch the loop respond. Negative feedback <b>corrects</b>; positive feedback <b>amplifies</b>.
+    </div>
+  </aside>
+
+  <!-- ============ VISUALIZATION ============ -->
+  <main class="viz-stack">
+    <section class="card">
+      <h2 id="diagramTitle">Feedback Loop — 5 Components</h2>
+      <div class="diagram-wrap">
+        <svg id="loopSvg" viewBox="0 0 420 420" width="420" height="420" aria-label="Feedback loop diagram"></svg>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Regulated Variable vs. Set Point</h2>
+      <svg id="chartSvg" viewBox="0 0 600 260" width="100%" height="260" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="chart-legend">
+        <span><i class="swatch" id="waveSwatch" style="background:var(--neg)"></i> Regulated variable</span>
+        <span><i class="swatch dash"></i> Set point</span>
+        <span id="waveHint">Damped oscillation → returns to set point</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ DATA PANEL ============ -->
+  <aside class="card">
+    <h2>Live Data Panel</h2>
+    <div class="stat"><span class="k">Loop type</span><span><span class="badge neg" id="loopBadge">Negative</span></span></div>
+    <div class="stat"><span class="k">Set point</span><span class="v" id="dSetpoint">50.0</span></div>
+    <div class="stat"><span class="k">Current value</span><span class="v" id="dValue">50.0</span></div>
+    <div class="stat"><span class="k">Deviation (Δ)</span><span class="v" id="dDelta">0.0</span></div>
+    <div class="stat"><span class="k">Sensor gain</span><span class="v" id="dSensor">1.00</span></div>
+    <div class="stat"><span class="k">Effector gain</span><span class="v" id="dEffector">1.00</span></div>
+    <div class="stat"><span class="k">Iteration</span><span class="v" id="dIter">0</span></div>
+
+    <div class="phase-box" id="phaseBox">
+      <div style="display:flex;justify-content:space-between;">
+        <span class="phase-tag">Active phase</span>
+        <span class="phase-num" id="phaseNum">1 / 5</span>
+      </div>
+      <div class="phase-text" id="phaseText">Stimulus: variable pushed off set point</div>
+    </div>
+
+    <div class="info" id="conceptInfo"></div>
+  </aside>
+</div>
+
+<section class="card" style="max-width:1440px;margin:0 auto 24px;">
+  <h2>Test Yourself — Feedback Loops</h2>
+  <p style="font-size:.86rem;color:var(--muted);margin:-6px 0 16px;line-height:1.5;">
+    A scored, spaced-repetition check. Questions you miss come back first next time. Your mastery updates live in the header.
+  </p>
+  <div id="apQuiz"></div>
+</section>
+
+<footer class="note">
+  Educational simulation. Negative feedback maintains most homeostatic processes (thermoregulation, blood pressure);
+  positive feedback amplifies a change until an external event ends it (childbirth/oxytocin, blood clotting).
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   STATE
+============================================================ */
+const state = {
+  loop: "neg",          // "neg" | "pos"
+  eli5: false,
+  stimulus: 50,         // 0..100
+  setpoint: 50,         // 30..70
+  sensor: 1.0,          // 0.1..2.0  -> correction/growth strength
+  value: 50,            // regulated variable 0..100
+  velocity: 0,
+  phase: 0,             // 0..4 (which of 5 components is active)
+  iteration: 0,
+  playing: false,
+  history: [],          // rolling values for chart
+  stopped: false        // positive feedback hit a boundary ("something stops it")
+};
+const N_HISTORY = 220;
+const DT = 0.12;
+
+/* effector gain is derived from sensor sensitivity (they work together) */
+function effectorGain(){ return +(0.5 + state.sensor * 0.5).toFixed(2); }
+
+/* ============================================================
+   LABELS  (scientific vs ELI5, per loop type)
+============================================================ */
+const NODES = ["Stimulus","Sensor","Control\nCenter","Effector","Response"];
+const NODE_SUB = ["receptor input","receptor","integrator","organ/gland","output"];
+
+const ELI5_NODES = {
+  neg: ["Room warms","Thermostat\nfeels it","Thermostat\ndecides","AC turns on","Room cools"],
+  pos: ["Snowball\nstarts","Grabs\nsnow","Hill keeps\nit going","Rolls faster","HUGE\nsnowball"]
+};
+const ELI5_SUB = {
+  neg: ["too hot","senses heat","\"too hot!\"","cooling","comfy again"],
+  pos: ["tiny push","picks up more","downhill","bigger & faster","until it stops"]
+};
+
+const PHASES = {
+  neg: [
+    "Stimulus: variable pushed off set point",
+    "Sensor (receptor) detects the deviation",
+    "Control center compares value to set point",
+    "Effector engaged — opposes the change",
+    "Response: variable returns toward set point"
+  ],
+  pos: [
+    "Stimulus: an initial deviation appears",
+    "Sensor (receptor) detects the deviation",
+    "Control center reinforces the signal",
+    "Effector engaged — enhances the change",
+    "Response: variable driven further away"
+  ]
+};
+const PHASES_ELI5 = {
+  neg: [
+    "The room gets hot",
+    "The thermostat feels the heat",
+    "Thermostat thinks: \"too hot!\"",
+    "The air conditioner switches ON",
+    "The room cools back to comfy"
+  ],
+  pos: [
+    "A little snowball starts to roll",
+    "It grabs some snow along the way",
+    "The downhill slope keeps it going",
+    "It rolls faster and grabs even more",
+    "It becomes HUGE until something stops it"
+  ]
+};
+
+const CONCEPTS = {
+  neg: "<b>Negative feedback</b> returns a variable <b>toward</b> the set point — the response opposes the stimulus. This keeps conditions stable (dynamic equilibrium). Examples: body temperature, blood pressure, blood glucose.",
+  pos: "<b>Positive feedback</b> pushes a variable <b>further from</b> the set point — the response amplifies the stimulus. It runs away until an outside event ends it. Examples: oxytocin in childbirth, blood clotting."
+};
+
+/* ============================================================
+   BUILD CIRCULAR DIAGRAM (5 nodes + arcs)
+============================================================ */
+const svg = document.getElementById("loopSvg");
+const SVGNS = "http://www.w3.org/2000/svg";
+const CX = 210, CY = 210, R = 150, NODE_R = 40;
+const ANGLES = [-90, -18, 54, 126, 198];  // top, then clockwise
+let nodeEls = [], arcEls = [];
+
+function polar(angleDeg, r){
+  const a = angleDeg * Math.PI/180;
+  return [CX + r*Math.cos(a), CY + r*Math.sin(a)];
+}
+
+function buildDiagram(){
+  svg.innerHTML = "";
+  // arrowhead marker
+  const defs = document.createElementNS(SVGNS,"defs");
+  defs.innerHTML = `
+    <marker id="arrowN" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--neg-arrow)"/>
+    </marker>
+    <marker id="arrowP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--pos)"/>
+    </marker>`;
+  svg.appendChild(defs);
+
+  // arcs between consecutive nodes (clockwise)
+  arcEls = [];
+  for(let i=0;i<5;i++){
+    const a1 = ANGLES[i] + 17;
+    const a2 = ANGLES[(i+1)%5] - 17 + (i===4 ? 360 : 0);
+    const [x1,y1] = polar(a1, R);
+    const [x2,y2] = polar(a2, R);
+    const path = document.createElementNS(SVGNS,"path");
+    path.setAttribute("d", `M ${x1} ${y1} A ${R} ${R} 0 0 1 ${x2} ${y2}`);
+    path.setAttribute("class","flow-arc");
+    svg.appendChild(path);
+    arcEls.push(path);
+  }
+
+  // center label
+  const cLabel = document.createElementNS(SVGNS,"text");
+  cLabel.setAttribute("x",CX); cLabel.setAttribute("y",CY-6);
+  cLabel.setAttribute("class","center-badge"); cLabel.setAttribute("id","centerBadge");
+  cLabel.textContent = "SET POINT";
+  const cSub = document.createElementNS(SVGNS,"text");
+  cSub.setAttribute("x",CX); cSub.setAttribute("y",CY+14);
+  cSub.setAttribute("class","center-sub"); cSub.setAttribute("id","centerSub");
+  cSub.textContent = "50.0";
+  svg.appendChild(cLabel); svg.appendChild(cSub);
+
+  // nodes
+  nodeEls = [];
+  for(let i=0;i<5;i++){
+    const [x,y] = polar(ANGLES[i], R);
+    const g = document.createElementNS(SVGNS,"g");
+    g.setAttribute("class","node");
+    const c = document.createElementNS(SVGNS,"circle");
+    c.setAttribute("cx",x); c.setAttribute("cy",y); c.setAttribute("r",NODE_R);
+    c.setAttribute("class","node-circle");
+    g.appendChild(c);
+    // multi-line label
+    const lbl = document.createElementNS(SVGNS,"text");
+    lbl.setAttribute("x",x); lbl.setAttribute("y",y-2);
+    lbl.setAttribute("class","node-label");
+    const sub = document.createElementNS(SVGNS,"text");
+    sub.setAttribute("x",x); sub.setAttribute("y",y+15);
+    sub.setAttribute("class","node-sub");
+    g.appendChild(lbl); g.appendChild(sub);
+    svg.appendChild(g);
+    nodeEls.push({g,c,lbl,sub,x,y});
+  }
+  refreshDiagramLabels();
+  paintDiagram();
+}
+
+function setMultiline(textEl, str, cx, baseY){
+  textEl.textContent = "";
+  const lines = str.split("\n");
+  const startY = baseY - (lines.length-1)*6;
+  lines.forEach((ln,idx)=>{
+    const t = document.createElementNS(SVGNS,"tspan");
+    t.setAttribute("x",cx);
+    t.setAttribute("y", startY + idx*12);
+    t.textContent = ln;
+    textEl.appendChild(t);
+  });
+}
+
+function refreshDiagramLabels(){
+  const labels = state.eli5 ? ELI5_NODES[state.loop] : NODES;
+  const subs   = state.eli5 ? ELI5_SUB[state.loop]   : NODE_SUB;
+  nodeEls.forEach((n,i)=>{
+    setMultiline(n.lbl, labels[i], n.x, n.y-2);
+    n.sub.textContent = subs[i];
+  });
+}
+
+function paintDiagram(){
+  const col = state.loop === "neg" ? "var(--neg-arrow)" : "var(--pos)";
+  const marker = state.loop === "neg" ? "url(#arrowN)" : "url(#arrowP)";
+  // arc thickness grows with iteration for positive feedback
+  const growth = state.loop === "pos" ? Math.min(state.iteration,6) : 0;
+  arcEls.forEach((arc,i)=>{
+    arc.setAttribute("stroke", col);
+    arc.setAttribute("marker-end", marker);
+    const base = state.loop === "pos" ? 3 + growth*1.1 : 3.2;
+    arc.setAttribute("stroke-width", base);
+    const incoming = (state.phase - 1 + 5) % 5; // arc feeding the active node
+    const isActive = state.playing || (i === incoming);
+    arc.classList.toggle("flow", state.playing || i === incoming);
+    arc.setAttribute("opacity", (state.playing || i === incoming) ? 1 : 0.35);
+  });
+  nodeEls.forEach((n,i)=>{
+    n.g.classList.toggle("active", i === state.phase);
+    n.c.setAttribute("fill", i === state.phase ? col : "var(--primary)");
+    n.g.style.color = col;
+    n.c.setAttribute("r", i === state.phase ? NODE_R+3 : NODE_R);
+  });
+  const cb = document.getElementById("centerBadge");
+  const cs = document.getElementById("centerSub");
+  if(cb){ cb.textContent = "SET POINT"; cs.textContent = state.setpoint.toFixed(1); }
+}
+
+/* ============================================================
+   CHART
+============================================================ */
+const chart = document.getElementById("chartSvg");
+const CW=600, CH=260, PADL=40, PADR=15, PADT=15, PADB=25;
+const PLOTW = CW-PADL-PADR, PLOTH = CH-PADT-PADB;
+const yOf = v => PADT + (1 - v/100)*PLOTH;
+const xOf = i => PADL + (i/(N_HISTORY-1))*PLOTW;
+
+function buildChartStatic(){
+  let g = "";
+  // horizontal gridlines + y labels (0..100 step 20)
+  for(let v=0; v<=100; v+=20){
+    const y = yOf(v);
+    g += `<line x1="${PADL}" y1="${y}" x2="${CW-PADR}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`;
+    g += `<text x="${PADL-8}" y="${y+3}" font-size="9" fill="var(--muted)" text-anchor="end">${v}</text>`;
+  }
+  // vertical gridlines
+  for(let k=0;k<=4;k++){
+    const x = PADL + (k/4)*PLOTW;
+    g += `<line x1="${x}" y1="${PADT}" x2="${x}" y2="${CH-PADB}" stroke="var(--line)" stroke-width="1" opacity=".55"/>`;
+  }
+  chart.innerHTML = g +
+    `<line id="spLine" stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="6 5"/>` +
+    `<text id="spLabel" font-size="9" fill="var(--muted)"></text>` +
+    `<polyline id="wave" fill="none" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>` +
+    `<circle id="head" r="4.5" fill="#fff" stroke-width="2.5"/>`;
+}
+
+function drawChart(){
+  const col = state.loop === "neg" ? "var(--neg)" : "var(--pos)";
+  const spY = yOf(state.setpoint);
+  document.getElementById("spLine").setAttribute("x1",PADL);
+  document.getElementById("spLine").setAttribute("x2",CW-PADR);
+  document.getElementById("spLine").setAttribute("y1",spY);
+  document.getElementById("spLine").setAttribute("y2",spY);
+  const spLabel = document.getElementById("spLabel");
+  spLabel.setAttribute("x",CW-PADR); spLabel.setAttribute("y",spY-4);
+  spLabel.setAttribute("text-anchor","end");
+  spLabel.textContent = "set point "+state.setpoint.toFixed(0);
+
+  const wave = document.getElementById("wave");
+  wave.setAttribute("stroke",col);
+  const pts = state.history.map((v,i)=>`${xOf(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(" ");
+  wave.setAttribute("points",pts);
+
+  const head = document.getElementById("head");
+  head.setAttribute("stroke",col);
+  if(state.history.length){
+    const i = state.history.length-1;
+    head.setAttribute("cx",xOf(i));
+    head.setAttribute("cy",yOf(state.history[i]));
+    head.setAttribute("opacity",1);
+  } else head.setAttribute("opacity",0);
+}
+
+/* ============================================================
+   SIMULATION
+============================================================ */
+function seedFromStimulus(){
+  // stimulus displaces the variable off the set point to start the loop
+  const disp = (state.stimulus/100) * 32;   // magnitude
+  if(state.loop === "neg"){
+    state.value = state.setpoint + disp;     // pushed above -> will be corrected back
+  } else {
+    // small seed above set point so growth has a direction
+    state.value = state.setpoint + Math.max(2, disp*0.25);
+  }
+  state.velocity = 0;
+  state.stopped = false;
+}
+
+function tick(){
+  const dev = state.value - state.setpoint;
+  if(state.loop === "neg"){
+    // damped harmonic oscillator: restoring force + damping
+    const k = state.sensor * 1.4;            // sensor sensitivity -> stiffness
+    const damping = effectorGain() * 1.1;    // effector -> damping
+    const acc = -k*dev - damping*state.velocity;
+    state.velocity += acc*DT;
+    state.value += state.velocity*DT;
+  } else {
+    // positive feedback: force grows with deviation (runaway)
+    if(!state.stopped){
+      const growth = state.sensor * 0.9;
+      const acc = growth * dev;
+      state.velocity += acc*DT;
+      state.value += state.velocity*DT;
+    }
+  }
+  // clamp to 0..100; positive feedback "stops" at a boundary
+  if(state.value >= 100){ state.value=100; if(state.loop==="pos"){state.stopped=true;state.velocity=0;} }
+  if(state.value <= 0){ state.value=0; if(state.loop==="pos"){state.stopped=true;state.velocity=0;} }
+
+  state.history.push(state.value);
+  if(state.history.length > N_HISTORY) state.history.shift();
+}
+
+/* ============================================================
+   PHASE / LOOP ANIMATION
+============================================================ */
+let rafId=null, lastT=0, phaseAcc=0;
+const PHASE_MS = 480;
+
+function frame(t){
+  if(!lastT) lastT=t;
+  const dt = t-lastT; lastT=t;
+  // run a few sim steps per frame for smoothness
+  for(let s=0;s<2;s++) tick();
+  phaseAcc += dt;
+  if(phaseAcc >= PHASE_MS){
+    phaseAcc = 0;
+    state.phase = (state.phase+1)%5;
+    if(state.phase===0) state.iteration++;
+  }
+  render();
+  rafId = requestAnimationFrame(frame);
+}
+
+function play(){
+  if(state.playing) return;
+  state.playing = true;
+  document.body.classList.remove("paused");
+  document.getElementById("playBtn").textContent = "⏸ Pause";
+  lastT=0;
+  rafId = requestAnimationFrame(frame);
+}
+function pause(){
+  state.playing = false;
+  document.body.classList.add("paused");
+  document.getElementById("playBtn").textContent = "▶ Play";
+  if(rafId) cancelAnimationFrame(rafId);
+  render();
+}
+function step(){
+  if(state.playing) pause();
+  // advance exactly one component/phase and simulate that slice
+  for(let s=0;s<6;s++) tick();
+  state.phase = (state.phase+1)%5;
+  if(state.phase===0) state.iteration++;
+  render();
+}
+function reset(){
+  pause();
+  state.phase=0; state.iteration=0; state.velocity=0;
+  state.history=[];
+  state.value = state.setpoint;
+  state.history.push(state.value);
+  seedFromStimulus();
+  state.history=[state.value];
+  render();
+}
+
+/* ============================================================
+   RENDER (panel + diagram + chart)
+============================================================ */
+function render(){
+  // data panel
+  const badge = document.getElementById("loopBadge");
+  badge.textContent = state.loop==="neg" ? "Negative" : "Positive";
+  badge.className = "badge " + state.loop;
+  document.getElementById("dSetpoint").textContent = state.setpoint.toFixed(1);
+  document.getElementById("dValue").textContent = state.value.toFixed(1);
+  const delta = state.value - state.setpoint;
+  const dEl = document.getElementById("dDelta");
+  dEl.textContent = (delta>=0?"+":"") + delta.toFixed(1);
+  dEl.className = "v " + (Math.abs(delta)<1.5 ? "delta-ok" : (state.loop==="pos"?"delta-up":""));
+  document.getElementById("dSensor").textContent = state.sensor.toFixed(2);
+  document.getElementById("dEffector").textContent = effectorGain().toFixed(2);
+  document.getElementById("dIter").textContent = state.iteration;
+
+  // phase readout
+  const phaseArr = state.eli5 ? PHASES_ELI5[state.loop] : PHASES[state.loop];
+  let phaseText = phaseArr[state.phase];
+  if(state.loop==="pos" && state.stopped){
+    phaseText = state.eli5 ? "The snowball crashed — something stopped it!" : "Boundary reached — an external event ends the loop";
+  }
+  document.getElementById("phaseText").textContent = phaseText;
+  document.getElementById("phaseNum").textContent = (state.phase+1)+" / 5";
+  document.getElementById("phaseBox").className = "phase-box " + state.loop;
+
+  document.getElementById("conceptInfo").innerHTML = CONCEPTS[state.loop];
+  document.getElementById("waveHint").textContent =
+    state.loop==="neg" ? "Damped oscillation → returns to set point"
+                       : "Amplifying wave → runs away from set point";
+  document.getElementById("waveSwatch").style.background =
+    state.loop==="neg" ? "var(--neg)" : "var(--pos)";
+
+  paintDiagram();
+  drawChart();
+}
+
+/* ============================================================
+   WIRING
+============================================================ */
+document.getElementById("loopToggle").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  [...e.currentTarget.children].forEach(c=>c.classList.remove("active"));
+  b.classList.add("active");
+  state.loop = b.dataset.loop;
+  document.getElementById("diagramTitle").textContent =
+    (state.loop==="neg"?"Negative":"Positive") + " Feedback — 5 Components";
+  refreshDiagramLabels();
+  reset();
+});
+
+document.getElementById("stim").addEventListener("input", e=>{
+  state.stimulus = +e.target.value;
+  document.getElementById("stimVal").textContent = state.stimulus;
+  reset();
+});
+document.getElementById("setpoint").addEventListener("input", e=>{
+  state.setpoint = +e.target.value;
+  document.getElementById("spVal").textContent = state.setpoint;
+  reset();
+});
+document.getElementById("sens").addEventListener("input", e=>{
+  state.sensor = +e.target.value;
+  document.getElementById("sensVal").textContent = state.sensor.toFixed(1);
+  render();
+});
+document.getElementById("eli5").addEventListener("change", e=>{
+  state.eli5 = e.target.checked;
+  refreshDiagramLabels();
+  render();
+});
+document.getElementById("playBtn").addEventListener("click", ()=> state.playing ? pause() : play());
+document.getElementById("stepBtn").addEventListener("click", step);
+document.getElementById("resetBtn").addEventListener("click", reset);
+
+/* keyboard: space = play/pause */
+document.addEventListener("keydown", e=>{
+  if(e.code==="Space" && e.target.tagName!=="INPUT"){ e.preventDefault(); state.playing?pause():play(); }
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+buildDiagram();
+buildChartStatic();
+reset();
+</script>
+
+<!-- ============================================================
+     APTools integration: HUD, predict-then-reveal, scored quiz
+============================================================ -->
+<script src="assets/aptools.js?v=1"></script>
+<script>
+"use strict";
+APTools.init({ id:"homeostasis", title:"Homeostasis & Feedback", unit:"Unit 2" });
+APTools.mountHUD("#apHud", "homeostasis");
+
+/* ---- Predict-then-reveal -------------------------------------------
+   Student commits a prediction; when they Play we compare it to the loop
+   type (negative -> returns, positive -> runs away) and give feedback.   */
+(function(){
+  var box = document.getElementById("predictBox");
+  var predicted = null;
+  box.querySelectorAll("[data-predict]").forEach(function(b){
+    b.addEventListener("click", function(){
+      predicted = b.dataset.predict;
+      box.querySelectorAll("[data-predict]").forEach(function(x){ x.style.outline=""; });
+      b.style.outline = "3px solid #e0a800";
+    });
+  });
+  var playBtn = document.getElementById("playBtn");
+  playBtn.addEventListener("click", function(){
+    if(predicted === null) return;
+    var truth = (state.loop === "neg") ? "return" : "runaway";
+    var right = predicted === truth;
+    box.innerHTML = '<b>'+(right?"✓ Good prediction!":"✗ Not this time.")+'</b> '+
+      (state.loop==="neg"
+        ? "Negative feedback opposes the change, so the variable is corrected back toward its set point."
+        : "Positive feedback amplifies the change, so the variable runs away until an outside event stops it.");
+    box.style.background = right ? "#eef8f2" : "#fdf1f0";
+    box.style.borderLeftColor = right ? "#1B7D46" : "#C0392B";
+    predicted = null;
+  }, true);
+})();
+
+/* ---- Question bank (tagged with learning outcome + Bloom level) ----- */
+var HOMEO_BANK = [
+  { id:"h1", bloom:"Remember", outcome:"Define homeostasis & feedback",
+    q:"Which type of feedback maintains a variable near its set point?",
+    choices:["Negative feedback","Positive feedback","Feedforward only","No feedback"],
+    answer:0, why:"Negative feedback opposes deviations, returning the variable toward the set point — the basis of most homeostatic control." },
+  { id:"h2", bloom:"Understand", outcome:"Contrast negative vs positive feedback",
+    q:"Positive feedback differs from negative feedback because it:",
+    choices:["Amplifies the original change","Reduces the original change","Has no set point sensor","Always causes disease"],
+    answer:0, why:"Positive feedback pushes the variable further from the start, amplifying the change until an external event ends the cycle." },
+  { id:"h3", bloom:"Apply", outcome:"Identify examples",
+    q:"Oxytocin driving uterine contractions during childbirth is an example of:",
+    choices:["Positive feedback","Negative feedback","Isotonic balance","A reflex arc only"],
+    answer:0, why:"Contractions push the baby, stretching the cervix, releasing more oxytocin — an amplifying loop that ends only at birth." },
+  { id:"h4", bloom:"Understand", outcome:"Order loop components",
+    q:"In a feedback loop, what detects the change in the regulated variable?",
+    choices:["Receptor / sensor","Effector","Control center only","Response"],
+    answer:0, why:"The receptor (sensor) detects the stimulus and sends input to the control center, which signals the effector." },
+  { id:"h5", bloom:"Apply", outcome:"Identify examples",
+    q:"Body temperature returning to 37 °C after a fever breaks is driven mainly by:",
+    choices:["Negative feedback","Positive feedback","Osmosis","Active transport"],
+    answer:0, why:"Thermoregulation is a classic negative-feedback system: deviation from 37 °C triggers corrective cooling or warming." },
+  { id:"h6", bloom:"Understand", outcome:"Order loop components",
+    q:"Which component carries out the response that changes the variable?",
+    choices:["Effector","Sensor","Set point","Stimulus"],
+    answer:0, why:"The effector (e.g., a muscle or gland) produces the response that moves the variable back toward set point." },
+  { id:"h7", bloom:"Analyze", outcome:"Predict loop behavior",
+    q:"If a negative-feedback loop's sensor gain is increased too much, the most likely result is:",
+    choices:["Oscillation / overcorrection","Immediate runaway amplification","Loss of the set point","No effect at all"],
+    answer:0, why:"Very high gain overshoots the set point on each correction, producing oscillations rather than smooth stabilization." },
+  { id:"h8", bloom:"Apply", outcome:"Identify examples",
+    q:"Blood clotting, where each activated platelet recruits more platelets, is:",
+    choices:["Positive feedback","Negative feedback","A buffer system","Simple diffusion"],
+    answer:0, why:"Clotting is a self-amplifying positive-feedback cascade that stops when the vessel breach is sealed." },
+  { id:"h9", bloom:"Remember", outcome:"Define homeostasis & feedback",
+    q:"The 'set point' in a homeostatic system is best described as:",
+    choices:["The target value the body regulates around","The maximum survivable value","The sensor's location","The effector's output"],
+    answer:0, why:"The set point is the normal target value; the system works to keep the regulated variable close to it." },
+  { id:"h10", bloom:"Analyze", outcome:"Predict loop behavior",
+    q:"Positive feedback is described as 'inherently unstable' because, without an outside stop, it:",
+    choices:["Drives the variable ever further from start","Settles at the set point","Reverses into negative feedback","Cancels the stimulus"],
+    answer:0, why:"Each cycle amplifies the change, so the variable keeps moving away until an external event terminates the loop." }
+];
+
+APTools.mountQuiz({ container:"#apQuiz", moduleId:"homeostasis", bank:HOMEO_BANK, length:8 });
+</script>
+</body>
+</html>

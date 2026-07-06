@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resting Membrane Potential &amp; Na⁺/K⁺ ATPase — Interactive Dashboard</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<style>
+  :root{
+    /* Palette — slate / blue medical UI */
+    --bg:#0f172a;            /* slate-900 */
+    --panel:#1e293b;         /* slate-800 */
+    --panel-2:#273449;       /* slate-750-ish */
+    --panel-3:#334155;       /* slate-700 */
+    --line:#3b4a63;
+    --text:#e2e8f0;          /* slate-200 */
+    --muted:#94a3b8;         /* slate-400 */
+    --blue:#3b82f6;
+    --blue-soft:#60a5fa;
+    /* Ion / actor colors */
+    --na:#f5c518;            /* sodium yellow */
+    --k:#a855f7;             /* potassium purple */
+    --atp:#22c55e;           /* ATP green */
+    --needle:#ef4444;        /* voltage needle red */
+    --warn:#f97316;
+    --danger:#ef4444;
+    --ok:#22c55e;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+    --radius:16px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 20% -10%,#16233d 0%,var(--bg) 60%);
+    color:var(--text);
+    min-height:100vh;
+    padding:20px;
+    line-height:1.45;
+  }
+
+  /* ---------- Header ---------- */
+  header.app{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;margin-bottom:18px;
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand .logo{
+    width:46px;height:46px;border-radius:12px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--blue),#8b5cf6);
+    display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow);
+  }
+  .brand h1{font-size:20px;margin:0;letter-spacing:.2px}
+  .brand p{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+  .header-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+  button,.toggle-btn{
+    font:inherit;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel);color:var(--text);
+    padding:10px 16px;border-radius:10px;transition:.15s;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  button:hover{border-color:var(--blue);background:var(--panel-2)}
+  button:active{transform:translateY(1px)}
+  .btn-primary{background:linear-gradient(135deg,var(--blue),#6366f1);border-color:transparent;font-weight:600}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-warn{background:linear-gradient(135deg,#f59e0b,#ef4444);border-color:transparent;font-weight:600;color:#fff}
+  .btn-ghost.active{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+
+  /* ---------- Layout ---------- */
+  .dashboard{
+    display:grid;
+    grid-template-columns: 1.7fr 1fr;
+    grid-template-areas:
+      "stage    data"
+      "controls data";
+    gap:16px;
+  }
+  @media(max-width:1080px){
+    .dashboard{grid-template-columns:1fr;grid-template-areas:"stage" "controls" "data";}
+  }
+
+  .card{
+    background:linear-gradient(180deg,var(--panel),#1a2536);
+    border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:16px;
+  }
+  .card h2{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700}
+
+  #stage{grid-area:stage}
+  #controls{grid-area:controls}
+  #data{grid-area:data}
+
+  /* ---------- Stage (SVG + meter) ---------- */
+  .stage-grid{display:grid;grid-template-columns:1fr 210px;gap:14px}
+  @media(max-width:640px){.stage-grid{grid-template-columns:1fr}}
+  .svg-wrap{background:#0b1424;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  svg{display:block;width:100%;height:auto}
+
+  .meter-col{display:flex;flex-direction:column;gap:12px}
+  .rmp-readout{
+    text-align:center;background:#0b1424;border:1px solid var(--line);border-radius:12px;padding:12px 8px;
+  }
+  .rmp-readout .val{font-size:34px;font-weight:800;color:var(--needle);line-height:1;font-variant-numeric:tabular-nums}
+  .rmp-readout .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+
+  /* ---------- Controls ---------- */
+  .control{margin-bottom:16px}
+  .control:last-child{margin-bottom:0}
+  .control .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .control label{font-size:13px;font-weight:600}
+  .control .chip{font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;background:var(--panel-3);padding:2px 9px;border-radius:20px}
+  input[type=range]{width:100%;-webkit-appearance:none;height:8px;border-radius:8px;background:var(--panel-3);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--blue-soft);border:3px solid #0b1424;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--blue-soft);border:3px solid #0b1424;cursor:pointer}
+  input[type=range].na::-webkit-slider-thumb{background:var(--na)}
+  input[type=range].na::-moz-range-thumb{background:var(--na)}
+  input[type=range].k::-webkit-slider-thumb{background:var(--k)}
+  input[type=range].k::-moz-range-thumb{background:var(--k)}
+  input[type=range].atp::-webkit-slider-thumb{background:var(--atp)}
+  input[type=range].atp::-moz-range-thumb{background:var(--atp)}
+  .scale-hint{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:3px}
+
+  /* toggle switch */
+  .switch-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+  .switch{position:relative;width:46px;height:26px;flex:0 0 auto}
+  .switch input{opacity:0;width:0;height:0}
+  .slider-sw{position:absolute;inset:0;background:var(--panel-3);border-radius:20px;transition:.2s;cursor:pointer}
+  .slider-sw:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+  .switch input:checked + .slider-sw{background:var(--ok)}
+  .switch input:checked + .slider-sw:before{transform:translateX(20px)}
+  .switch-label{display:flex;flex-direction:column}
+  .switch-label small{color:var(--muted);font-size:11px}
+
+  .btn-row{display:flex;gap:10px;margin-top:14px}
+  .btn-row button{flex:1;justify-content:center}
+
+  /* ---------- Data panel ---------- */
+  .metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .metric{background:#0b1424;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .metric .m-lbl{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .metric .m-val{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:3px}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .dot.na{background:var(--na)} .dot.k{background:var(--k)} .dot.atp{background:var(--atp)} .dot.v{background:var(--needle)}
+
+  .divider{height:1px;background:var(--line);margin:16px 0}
+
+  /* Nernst box */
+  .nernst{background:#0b1424;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13px}
+  .nernst .eq{font-family:"Cambria Math",Georgia,serif;font-size:14px;margin:6px 0;overflow-x:auto;white-space:nowrap}
+  .nernst .eq .res{font-weight:800}
+  .nernst .k-res{color:var(--k)} .nernst .na-res{color:var(--na)}
+  .nernst .lead{color:var(--muted);font-size:12px}
+
+  /* bar charts */
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .chart{background:#0b1424;border:1px solid var(--line);border-radius:10px;padding:10px}
+  .chart h3{margin:0 0 8px;font-size:12px;text-align:center;color:var(--muted);letter-spacing:.5px}
+  .bars{display:flex;align-items:flex-end;justify-content:space-around;height:130px;gap:14px}
+  .bar-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;flex:1}
+  .bar{width:100%;border-radius:6px 6px 0 0;transition:height .35s cubic-bezier(.3,.8,.3,1);position:relative;min-height:2px}
+  .bar .bv{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+  .bar-col .bx{font-size:11px;color:var(--muted);margin-top:6px}
+
+  /* clinical alert */
+  .alert{border-radius:12px;padding:12px 14px;font-size:13px;display:flex;gap:10px;align-items:flex-start;border:1px solid}
+  .alert .ico{font-size:18px;line-height:1}
+  .alert.ok{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.5);color:#bbf7d0}
+  .alert.warn{background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.55);color:#fed7aa}
+  .alert.danger{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.6);color:#fecaca}
+  .alert b{display:block;margin-bottom:2px}
+
+  /* ELI5 banner */
+  #eli5{display:none;background:linear-gradient(135deg,rgba(59,130,246,.18),rgba(168,85,247,.18));
+    border:1px dashed var(--blue-soft);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14.5px}
+  #eli5.show{display:block}
+  #eli5 .t{font-weight:800;margin-bottom:4px;color:var(--blue-soft)}
+  body.eli5-on .sci-only{display:none}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+
+  footer.note{color:var(--muted);font-size:11.5px;margin-top:16px;text-align:center}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="brand">
+    <div class="logo">⚡</div>
+    <div>
+      <h1>Resting Membrane Potential &amp; the Na⁺/K⁺ ATPase Pump</h1>
+      <p>Interactive physiology simulation — leak channels, the electrogenic pump &amp; the Nernst equation</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button id="eli5Btn" class="btn-ghost">🧸 Explain like I'm 5</button>
+    <button id="resetBtn" class="btn-primary">↺ Reset to baseline</button>
+  </div>
+</header>
+
+<div id="eli5">
+  <div class="t">🧸 The simple version</div>
+  The cell is like a tiny <b>battery with a minus sign inside</b>. Little doors let potassium (purple) sneak
+  <b>out</b>, which makes the inside more negative. A pump keeps recharging the battery by pushing
+  <b>3 sodiums out</b> and pulling <b>2 potassiums in</b>, using food energy (<b>ATP</b>, green) as fuel.
+  Add too much potassium outside and the battery gets weaker (dangerous!). Take too much away and it gets stronger.
+</div>
+
+<div class="dashboard">
+
+  <!-- ================= STAGE ================= -->
+  <section class="card" id="stage">
+    <h2>Live Cell Simulation</h2>
+    <div class="stage-grid">
+      <div>
+        <div class="svg-wrap">
+          <svg id="cell" viewBox="0 0 700 470" preserveAspectRatio="xMidYMid meet" aria-label="Neuron membrane simulation">
+            <defs>
+              <linearGradient id="ecf" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#12263f"/><stop offset="1" stop-color="#0f2036"/>
+              </linearGradient>
+              <linearGradient id="icf" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1a1730"/><stop offset="1" stop-color="#141126"/>
+              </linearGradient>
+              <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stop-color="#fff" stop-opacity=".9"/>
+                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <!-- compartments -->
+            <rect x="0" y="0" width="700" height="205" fill="url(#ecf)"/>
+            <rect x="0" y="265" width="700" height="205" fill="url(#icf)"/>
+
+            <!-- compartment labels -->
+            <text x="16" y="28" fill="#8ea6c8" font-size="14" font-weight="700" letter-spacing="1">EXTRACELLULAR FLUID (ECF)</text>
+            <text x="16" y="46" fill="#5f7799" font-size="11">outside the cell · high Na⁺ · low K⁺</text>
+            <text x="16" y="455" fill="#a58ac8" font-size="14" font-weight="700" letter-spacing="1">INTRACELLULAR FLUID (ICF)</text>
+            <text x="16" y="437" fill="#7f6aa8" font-size="11">inside the cell · low Na⁺ · high K⁺ · negative</text>
+
+            <!-- ===== phospholipid bilayer ===== -->
+            <g id="bilayer"></g>
+
+            <!-- ===== channels / pump (drawn by JS labels below) ===== -->
+            <g id="proteins">
+              <!-- K+ leak channel -->
+              <g transform="translate(150,205)">
+                <rect x="-20" y="0" width="40" height="60" rx="9" fill="#2a2140" stroke="#a855f7" stroke-width="2"/>
+                <rect x="-6" y="0" width="12" height="60" fill="#0b1424"/>
+                <text x="0" y="-8" text-anchor="middle" fill="#c99bf5" font-size="11" font-weight="700">K⁺ leak</text>
+              </g>
+              <!-- second K+ leak channel (K+ dominant) -->
+              <g transform="translate(270,205)">
+                <rect x="-20" y="0" width="40" height="60" rx="9" fill="#2a2140" stroke="#a855f7" stroke-width="2"/>
+                <rect x="-6" y="0" width="12" height="60" fill="#0b1424"/>
+                <text x="0" y="-8" text-anchor="middle" fill="#c99bf5" font-size="11" font-weight="700">K⁺ leak</text>
+              </g>
+              <!-- Na+ leak channel -->
+              <g transform="translate(390,205)">
+                <rect x="-18" y="0" width="36" height="60" rx="9" fill="#3a3320" stroke="#f5c518" stroke-width="2"/>
+                <rect x="-5" y="0" width="10" height="60" fill="#0b1424"/>
+                <text x="0" y="-8" text-anchor="middle" fill="#f5d768" font-size="11" font-weight="700">Na⁺ leak</text>
+              </g>
+              <!-- Na/K ATPase pump -->
+              <g transform="translate(540,205)">
+                <rect x="-34" y="-4" width="68" height="68" rx="12" fill="#173021" stroke="#22c55e" stroke-width="2.5"/>
+                <rect x="-9" y="-4" width="18" height="68" fill="#0b1424"/>
+                <text x="0" y="-12" text-anchor="middle" fill="#7ee2a0" font-size="11" font-weight="800">Na⁺/K⁺ ATPase</text>
+                <text x="0" y="80" text-anchor="middle" fill="#7ee2a0" font-size="10">3 Na⁺ out · 2 K⁺ in</text>
+              </g>
+            </g>
+
+            <!-- moving ions get injected here -->
+            <g id="ions"></g>
+
+            <!-- charge indicators -->
+            <g id="charges"></g>
+          </svg>
+        </div>
+
+        <div class="legend">
+          <span><span class="dot na"></span> Na⁺ (sodium)</span>
+          <span><span class="dot k"></span> K⁺ (potassium)</span>
+          <span><span class="dot atp"></span> ATP → ADP + Pᵢ</span>
+          <span class="sci-only">Membrane potential shown at right ▸</span>
+        </div>
+      </div>
+
+      <!-- Voltage meter -->
+      <div class="meter-col">
+        <div class="svg-wrap">
+          <svg id="meter" viewBox="0 0 210 170" aria-label="Voltage meter">
+            <!-- gauge arc -->
+            <path d="M 20 150 A 85 85 0 0 1 190 150" fill="none" stroke="#0b1424" stroke-width="16"/>
+            <!-- colored zones: hyperpolarized(blue) - normal(green) - depolarized(red) -->
+            <path id="zoneHyper" d="" fill="none" stroke="#3b82f6" stroke-width="16" stroke-linecap="butt"/>
+            <path id="zoneNorm"  d="" fill="none" stroke="#22c55e" stroke-width="16" stroke-linecap="butt"/>
+            <path id="zoneDepol" d="" fill="none" stroke="#ef4444" stroke-width="16" stroke-linecap="butt"/>
+            <!-- ticks -->
+            <g id="meterTicks" fill="#8ea6c8" font-size="9" text-anchor="middle"></g>
+            <!-- needle -->
+            <line id="needle" x1="105" y1="150" x2="105" y2="72" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="105" cy="150" r="7" fill="#ef4444"/>
+            <circle cx="105" cy="150" r="3" fill="#0b1424"/>
+            <text x="105" y="120" text-anchor="middle" fill="#8ea6c8" font-size="9">mV</text>
+          </svg>
+        </div>
+        <div class="rmp-readout">
+          <div class="val" id="rmpBig">−70</div>
+          <div class="lbl">Membrane Potential (Vm)</div>
+        </div>
+        <div class="rmp-readout" style="padding:10px">
+          <div style="font-size:13px;color:var(--muted)" id="stateWord">Resting / Polarized</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTROLS ================= -->
+  <section class="card" id="controls">
+    <h2>Controls</h2>
+
+    <div class="control">
+      <div class="row"><label>[Na⁺] Extracellular</label><span class="chip"><span id="naoV">145</span> mM</span></div>
+      <input type="range" class="na" id="nao" min="120" max="160" step="1" value="145">
+      <div class="scale-hint"><span>120</span><span>normal ≈145</span><span>160</span></div>
+    </div>
+
+    <div class="control">
+      <div class="row"><label>[K⁺] Extracellular</label><span class="chip"><span id="koV">4.0</span> mM</span></div>
+      <input type="range" class="k" id="ko" min="2.0" max="7.0" step="0.1" value="4.0">
+      <div class="scale-hint"><span>2.0 (hypo)</span><span>normal ≈4</span><span>7.0 (hyper)</span></div>
+    </div>
+
+    <div class="control">
+      <div class="row"><label>Na⁺/K⁺ Pump Rate</label><span class="chip"><span id="pumpV">5</span> cyc/s</span></div>
+      <input type="range" class="atp" id="pump" min="0" max="10" step="1" value="5">
+      <div class="scale-hint"><span>0 (poisoned)</span><span>5</span><span>10 (max)</span></div>
+    </div>
+
+    <div class="switch-row">
+      <div class="switch-label"><span>K⁺ leak channels</span><small>dominant driver of RMP</small></div>
+      <label class="switch"><input type="checkbox" id="kLeak" checked><span class="slider-sw"></span></label>
+    </div>
+    <div class="switch-row">
+      <div class="switch-label"><span>Na⁺ leak channels</span><small>small inward leak</small></div>
+      <label class="switch"><input type="checkbox" id="naLeak" checked><span class="slider-sw"></span></label>
+    </div>
+
+    <div class="btn-row">
+      <button id="stimBtn" class="btn-warn">⚡ Stimulus</button>
+      <button id="resetBtn2">↺ Reset</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--muted);margin:10px 0 0" class="sci-only">
+      <b>Stimulus</b> opens a transient Na⁺ inrush to test excitability — watch Vm spike, then leak/pump restore rest.
+    </p>
+  </section>
+
+  <!-- ================= DATA PANEL ================= -->
+  <aside class="card" id="data">
+    <h2>Data Panel</h2>
+
+    <div id="alertBox" class="alert ok">
+      <span class="ico">✔</span>
+      <div><b>Normokalemia</b><span id="alertMsg">Serum K⁺ within normal range (3.5–5.0 mM). Stable resting potential.</span></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="metric-grid">
+      <div class="metric"><div class="m-lbl"><span class="dot v"></span>RMP</div><div class="m-val" id="mRmp">−70 mV</div></div>
+      <div class="metric"><div class="m-lbl"><span class="dot k"></span>E<tspan>K</tspan> (Nernst)</div><div class="m-val" id="mEk">−94 mV</div></div>
+      <div class="metric"><div class="m-lbl"><span class="dot na"></span>E<tspan>Na</tspan> (Nernst)</div><div class="m-val" id="mEna">+60 mV</div></div>
+      <div class="metric"><div class="m-lbl"><span class="dot atp"></span>Pump rate</div><div class="m-val" id="mPump">5 /s</div></div>
+      <div class="metric"><div class="m-lbl"><span class="dot na"></span>[Na⁺] ECF / ICF</div><div class="m-val" id="mNa">145 / 15</div></div>
+      <div class="metric"><div class="m-lbl"><span class="dot k"></span>[K⁺] ECF / ICF</div><div class="m-val" id="mK">4.0 / 140</div></div>
+      <div class="metric"><div class="m-lbl"><span class="dot atp"></span>ATP consumed</div><div class="m-val" id="mAtp">0</div></div>
+      <div class="metric"><div class="m-lbl"><span class="dot v"></span>Pump ≈ Vm</div><div class="m-val" id="mPumpV">−4 mV</div></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="nernst">
+      <div class="lead">Nernst equation &nbsp; E<sub>ion</sub> = (61 / z) · log₁₀([out]/[in])</div>
+      <div class="eq k-res">E<sub>K</sub> = 61 · log₁₀(<span id="nqKo">4.0</span>/<span id="nqKi">140</span>) = <span class="res" id="nqEk">−94</span> mV</div>
+      <div class="eq na-res">E<sub>Na</sub> = 61 · log₁₀(<span id="nqNao">145</span>/<span id="nqNai">15</span>) = <span class="res" id="nqEna">+60</span> mV</div>
+      <div class="lead" style="margin-top:6px">Vm sits near E<sub>K</sub> because K⁺ permeability dominates; the electrogenic pump adds ≈ −4 mV.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="charts">
+      <div class="chart">
+        <h3>[Na⁺] mM</h3>
+        <div class="bars">
+          <div class="bar-col"><div class="bar" id="barNaEcf" style="background:linear-gradient(180deg,#f5c518,#b8930a)"><span class="bv" id="bvNaEcf">145</span></div><div class="bx">ECF</div></div>
+          <div class="bar-col"><div class="bar" id="barNaIcf" style="background:linear-gradient(180deg,#f5c518,#b8930a)"><span class="bv" id="bvNaIcf">15</span></div><div class="bx">ICF</div></div>
+        </div>
+      </div>
+      <div class="chart">
+        <h3>[K⁺] mM</h3>
+        <div class="bars">
+          <div class="bar-col"><div class="bar" id="barKEcf" style="background:linear-gradient(180deg,#a855f7,#7127b0)"><span class="bv" id="bvKEcf">4</span></div><div class="bx">ECF</div></div>
+          <div class="bar-col"><div class="bar" id="barKIcf" style="background:linear-gradient(180deg,#a855f7,#7127b0)"><span class="bv" id="bvKIcf">140</span></div><div class="bx">ICF</div></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer class="note">
+  Educational simulation. Vm computed with a Goldman–Hodgkin–Katz (GHK) style diffusion term plus an electrogenic
+  pump component; Nernst potentials use the 61 mV/decade approximation at 37 °C. Not for clinical use.
+</footer>
+
+<script>
+"use strict";
+(function(){
+  /* ================= constants & state ================= */
+  const BASE = { nao:145, nai:15, ko:4.0, ki:140, pump:5, kLeak:true, naLeak:true };
+  const state = Object.assign({}, BASE);
+  state.atpConsumed = 0;
+  state.stim = 0;          // transient depolarizing offset (mV), decays
+  let lastRmp = -70;
+
+  // Permeability ratio: P_Na / P_K chosen so baseline diffusion ≈ -66 mV,
+  // pump adds ≈ -4 mV -> resting ≈ -70 mV.
+  const P_K = 1.0, P_NA = 0.0528;
+
+  /* ================= physiology math ================= */
+  function nernst(out, inn){ return 61 * Math.log10(out/inn); }  // z = +1 for Na,K
+
+  function computeVm(){
+    const eK = nernst(state.ko, state.ki);
+    const eNa = nernst(state.nao, state.nai);
+
+    const pk = state.kLeak ? P_K : 0;
+    const pna = state.naLeak ? P_NA : 0;
+
+    let diffusion;
+    if(pk === 0 && pna === 0){
+      diffusion = 0; // no leak conductance -> undefined; treat as ~0
+    } else if(pk === 0){
+      diffusion = eNa;                 // only Na leak -> heads to E_Na
+    } else if(pna === 0){
+      diffusion = eK;                  // only K leak -> heads to E_K
+    } else {
+      const num = pk*state.ko + pna*state.nao;
+      const den = pk*state.ki + pna*state.nai;
+      diffusion = 61 * Math.log10(num/den);
+    }
+
+    // electrogenic pump: ~ -0.8 mV per cycle/s (baseline rate 5 -> -4 mV)
+    const pumpV = state.kLeak ? -0.8 * state.pump : 0; // pump can't hold charge without K conductance context
+    const vm = diffusion + pumpV + state.stim;
+    return { vm, eK, eNa, pumpV, diffusion };
+  }
+
+  /* ================= voltage meter ================= */
+  const VMIN = -90, VMAX = 30, VRANGE = VMAX - VMIN;
+  const cx = 105, cy = 150, R = 85;
+  function angForV(v){
+    v = Math.max(VMIN, Math.min(VMAX, v));
+    // 180deg (left) at VMIN -> 0deg (right) at VMAX
+    const frac = (v - VMIN) / VRANGE;
+    return Math.PI - frac * Math.PI;
+  }
+  function polar(ang, r){ return [cx + r*Math.cos(ang), cy - r*Math.sin(ang)]; }
+  function arcPath(v1, v2, r){
+    const a1 = angForV(v1), a2 = angForV(v2);
+    const [x1,y1] = polar(a1,r), [x2,y2] = polar(a2,r);
+    const large = 0; const sweep = 1; // going clockwise as v increases
+    return `M ${x1} ${y1} A ${r} ${r} 0 ${large} ${sweep} ${x2} ${y2}`;
+  }
+  // zones
+  document.getElementById('zoneHyper').setAttribute('d', arcPath(-90,-75,R));
+  document.getElementById('zoneNorm').setAttribute('d', arcPath(-75,-55,R));
+  document.getElementById('zoneDepol').setAttribute('d', arcPath(-55,30,R));
+  // ticks
+  (function(){
+    const g = document.getElementById('meterTicks');
+    [-90,-60,-30,0,30].forEach(v=>{
+      const [x,y] = polar(angForV(v), R-22);
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',x); t.setAttribute('y',y+3); t.textContent = v>0?('+'+v):v;
+      g.appendChild(t);
+    });
+  })();
+  function setNeedle(v){
+    const a = angForV(v);
+    const [x,y] = polar(a, R-14);
+    const nd = document.getElementById('needle');
+    nd.setAttribute('x2', x); nd.setAttribute('y2', y);
+  }
+
+  /* ================= bilayer drawing ================= */
+  (function drawBilayer(){
+    const g = document.getElementById('bilayer');
+    const topY = 205, botY = 265;
+    for(let x=8; x<700; x+=17){
+      // skip where proteins sit
+      // heads
+      const mk = (yy)=>{
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',x); c.setAttribute('cy',yy); c.setAttribute('r',5.5);
+        c.setAttribute('fill','#46567a'); c.setAttribute('opacity','.85');
+        g.appendChild(c);
+        const tail = document.createElementNS('http://www.w3.org/2000/svg','line');
+        tail.setAttribute('x1',x); tail.setAttribute('x2',x);
+        tail.setAttribute('y1', yy===topY? topY+5 : botY-5);
+        tail.setAttribute('y2', 235);
+        tail.setAttribute('stroke','#2f3c58'); tail.setAttribute('stroke-width','2');
+        g.appendChild(tail);
+      };
+      mk(topY); mk(botY);
+    }
+  })();
+
+  /* ================= particle system ================= */
+  const NS = 'http://www.w3.org/2000/svg';
+  const ionsG = document.getElementById('ions');
+  const particles = [];
+  const CH = { kLeak1:150, kLeak2:270, naLeak:390, pump:540 };
+  const TOP_OUT = 150, TOP_IN = 320; // y for outside(top) and inside(bottom) of membrane path region
+
+  function makeIon(color, r){
+    const c = document.createElementNS(NS,'circle');
+    c.setAttribute('r', r||7);
+    c.setAttribute('fill', color);
+    c.setAttribute('stroke','rgba(255,255,255,.55)');
+    c.setAttribute('stroke-width','1');
+    ionsG.appendChild(c);
+    return c;
+  }
+  function spawn(opts){
+    const el = makeIon(opts.color, opts.r);
+    if(opts.label){
+      el.setAttribute('r', opts.r||8);
+    }
+    particles.push({
+      el, sx:opts.sx, sy:opts.sy, ex:opts.ex, ey:opts.ey,
+      t:0, speed:opts.speed||0.9, curve:opts.curve||0, onDone:opts.onDone
+    });
+  }
+  function updateParticles(dt){
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.t += p.speed*dt;
+      if(p.t>=1){
+        p.el.remove(); particles.splice(i,1);
+        if(p.onDone) p.onDone();
+        continue;
+      }
+      const e = p.t;
+      const x = p.sx + (p.ex-p.sx)*e + p.curve*Math.sin(e*Math.PI);
+      const y = p.sy + (p.ey-p.sy)*e;
+      p.el.setAttribute('cx', x);
+      p.el.setAttribute('cy', y);
+      p.el.setAttribute('opacity', e<0.1? e*10 : (e>0.9? (1-e)*10 : 1));
+    }
+  }
+
+  // spawn helpers -------------------------------------------------
+  function kOut(x){ // potassium leaves cell (inside -> outside)
+    spawn({color:getCss('--k'), sx:x+(Math.random()*10-5), sy:TOP_IN, ex:x+(Math.random()*20-10), ey:40+Math.random()*90, speed:0.55, curve:(Math.random()*30-15)});
+  }
+  function naIn(x){ // sodium enters (outside -> inside)
+    spawn({color:getCss('--na'), sx:x+(Math.random()*10-5), sy:TOP_OUT, ex:x+(Math.random()*20-10), ey:360+Math.random()*70, speed:0.5, curve:(Math.random()*30-15)});
+  }
+  function pumpCycle(){
+    const x = CH.pump;
+    // 3 Na out
+    for(let i=0;i<3;i++) spawn({color:getCss('--na'), r:7, sx:x-6+i*6, sy:TOP_IN, ex:x-30+i*22, ey:60+Math.random()*70, speed:0.5, curve:(i-1)*18});
+    // 2 K in
+    for(let i=0;i<2;i++) spawn({color:getCss('--k'), r:7, sx:x-4+i*8, sy:TOP_OUT, ex:x-14+i*20, ey:360+Math.random()*60, speed:0.5, curve:(i*2-1)*16});
+    // ATP -> ADP + Pi
+    const atp = spawn({color:getCss('--atp'), r:8, sx:x+30, sy:360, ex:x+8, ey:250, speed:0.7, onDone:()=>{
+      // split: ADP + Pi drift away
+      spawn({color:getCss('--atp'), r:5, sx:x+8, sy:250, ex:x+40, ey:360, speed:0.8});
+      spawn({color:'#86efac', r:4, sx:x+8, sy:250, ex:x-20, ey:360, speed:0.8});
+    }});
+    state.atpConsumed++;
+  }
+  function getCss(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  /* ================= spawn timing ================= */
+  let acc = { k:0, na:0, pump:0 };
+  function spawnTick(dt){
+    // K+ leak — dominant, frequent, mostly outward
+    if(state.kLeak){
+      acc.k += dt * 4.5;
+      while(acc.k>=1){ acc.k-=1; Math.random()<0.5? kOut(CH.kLeak1): kOut(CH.kLeak2); }
+    } else acc.k = 0;
+
+    // Na+ leak — rare inward
+    if(state.naLeak){
+      acc.na += dt * 1.2;
+      while(acc.na>=1){ acc.na-=1; naIn(CH.naLeak); }
+    } else acc.na = 0;
+
+    // Pump — rate driven
+    if(state.pump>0){
+      acc.pump += dt * (state.pump/3.0);
+      while(acc.pump>=1){ acc.pump-=1; pumpCycle(); }
+    } else acc.pump = 0;
+
+    // stimulus inrush of Na
+    if(state.stim < -0.5 || state.stim > 0.5){
+      if(Math.random()<0.6) naIn(CH.naLeak+ (Math.random()*40-20));
+    }
+  }
+
+  /* ================= charge indicators ================= */
+  (function drawCharges(){
+    const g = document.getElementById('charges');
+    for(let i=0;i<9;i++){
+      const t = document.createElementNS(NS,'text');
+      t.setAttribute('x', 70+i*70); t.setAttribute('y', 300);
+      t.setAttribute('fill','#a58ac8'); t.setAttribute('font-size','15'); t.setAttribute('font-weight','800');
+      t.setAttribute('opacity','.5'); t.setAttribute('class','chargeMark'); t.textContent='−';
+      g.appendChild(t);
+    }
+  })();
+  function updateCharges(vm){
+    // more negative -> more visible minus signs
+    const marks = document.querySelectorAll('.chargeMark');
+    const intensity = Math.max(0, Math.min(1, (-vm)/90));
+    marks.forEach((m,i)=>{
+      m.textContent = vm < 0 ? '−' : '+';
+      m.setAttribute('fill', vm<0? '#a58ac8':'#f5c518');
+      m.setAttribute('opacity', String(0.25 + intensity*0.6));
+    });
+  }
+
+  /* ================= UI refs ================= */
+  const $ = id=>document.getElementById(id);
+  const naoS=$('nao'), koS=$('ko'), pumpS=$('pump'), kLeakS=$('kLeak'), naLeakS=$('naLeak');
+
+  /* ================= render / readouts ================= */
+  function fmt(v, dp){ const s=(v>=0?'+':'−')+Math.abs(v).toFixed(dp||0); return s; }
+  function fmtV(v){ return (v<0?'−':'')+Math.abs(Math.round(v)); }
+
+  function updateBars(){
+    // scale: Na max ~160, K max ~140
+    const H=110;
+    const setBar=(barId,valId,val,max)=>{
+      const h = Math.max(2, (val/max)*H);
+      $(barId).style.height = h+'px';
+      $(valId).textContent = (Math.round(val*10)/10);
+    };
+    setBar('barNaEcf','bvNaEcf', state.nao, 160);
+    setBar('barNaIcf','bvNaIcf', state.nai, 160);
+    setBar('barKEcf','bvKEcf', state.ko, 145);
+    setBar('barKIcf','bvKIcf', state.ki, 145);
+  }
+
+  function updateAlert(){
+    const box=$('alertBox'), msg=$('alertMsg');
+    const ko = state.ko;
+    let cls='ok', ico='✔', title='Normokalemia', text='Serum K⁺ within normal range. Stable resting potential.';
+    if(ko < 3.0){
+      cls='warn'; ico='⚠'; title='HYPOKALEMIA (K⁺ < 3.0 mM)';
+      text='Membrane hyperpolarizes → cells harder to excite. Risk of muscle weakness, cramps, cardiac arrhythmia (U waves).';
+    } else if(ko > 5.5){
+      cls='danger'; ico='⛔'; title='HYPERKALEMIA (K⁺ > 5.5 mM)';
+      text='Membrane depolarizes → Na⁺ channels inactivate, excitability lost. Risk of peaked T waves, fatal arrhythmia / cardiac arrest.';
+    } else if(ko < 3.5){
+      cls='warn'; ico='⚠'; title='Low-normal K⁺'; text='Trending toward hypokalemia. Monitor for hyperpolarization.';
+    } else if(ko > 5.0){
+      cls='warn'; ico='⚠'; title='High-normal K⁺'; text='Trending toward hyperkalemia. Monitor cardiac excitability.';
+    }
+    box.className='alert '+cls;
+    box.querySelector('.ico').textContent=ico;
+    box.querySelector('b').textContent=title;
+    msg.textContent=text;
+  }
+
+  function render(){
+    const r = computeVm();
+    // meter (smooth toward target)
+    lastRmp += (r.vm - lastRmp) * 0.25;
+    setNeedle(lastRmp);
+    updateCharges(lastRmp);
+
+    $('rmpBig').textContent = fmtV(lastRmp);
+    // state word
+    let word='Resting / Polarized';
+    if(lastRmp > -55 && lastRmp < 10) word='Depolarized ▲';
+    else if(lastRmp >= 10) word='Excited / Firing ⚡';
+    else if(lastRmp < -75) word='Hyperpolarized ▼';
+    $('stateWord').textContent = word;
+    $('stateWord').style.color = lastRmp>-55? getCss('--danger') : (lastRmp<-75? getCss('--blue-soft') : getCss('--muted'));
+
+    // data panel
+    $('mRmp').textContent = fmtV(r.vm)+' mV';
+    $('mEk').textContent = fmt(r.eK,0)+' mV';
+    $('mEna').textContent = fmt(r.eNa,0)+' mV';
+    $('mPump').textContent = state.pump+' /s';
+    $('mNa').textContent = state.nao+' / '+state.nai;
+    $('mK').textContent = state.ko.toFixed(1)+' / '+state.ki;
+    $('mAtp').textContent = state.atpConsumed.toLocaleString();
+    $('mPumpV').textContent = fmt(r.pumpV,0)+' mV';
+
+    // nernst breakdown
+    $('nqKo').textContent = state.ko.toFixed(1); $('nqKi').textContent = state.ki;
+    $('nqEk').textContent = fmt(r.eK,0);
+    $('nqNao').textContent = state.nao; $('nqNai').textContent = state.nai;
+    $('nqEna').textContent = fmt(r.eNa,0);
+
+    updateAlert();
+  }
+
+  /* ================= animation loop ================= */
+  let prev = performance.now();
+  function loop(now){
+    let dt = (now - prev)/1000; prev = now;
+    dt = Math.min(dt, 0.05);
+    // decay stimulus
+    if(Math.abs(state.stim) > 0.05){ state.stim *= Math.pow(0.02, dt); } else state.stim = 0;
+    spawnTick(dt);
+    updateParticles(dt);
+    render();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  /* ================= events ================= */
+  naoS.oninput = ()=>{ state.nao = +naoS.value; $('naoV').textContent = state.nao; updateBars(); };
+  koS.oninput  = ()=>{ state.ko  = +koS.value;  $('koV').textContent = state.ko.toFixed(1); updateBars(); };
+  pumpS.oninput= ()=>{ state.pump= +pumpS.value; $('pumpV').textContent = state.pump; };
+  kLeakS.onchange = ()=>{ state.kLeak = kLeakS.checked; };
+  naLeakS.onchange= ()=>{ state.naLeak = naLeakS.checked; };
+
+  $('stimBtn').onclick = ()=>{ state.stim = 95; }; // strong transient depolarization
+
+  function reset(){
+    Object.assign(state, BASE); state.atpConsumed = 0; state.stim = 0;
+    naoS.value=BASE.nao; koS.value=BASE.ko; pumpS.value=BASE.pump;
+    kLeakS.checked=true; naLeakS.checked=true;
+    $('naoV').textContent=BASE.nao; $('koV').textContent=BASE.ko.toFixed(1); $('pumpV').textContent=BASE.pump;
+    lastRmp = -70; updateBars();
+  }
+  $('resetBtn').onclick = reset;
+  $('resetBtn2').onclick = reset;
+
+  // ELI5 toggle
+  const eli5Btn=$('eli5Btn'), eli5=$('eli5');
+  eli5Btn.onclick = ()=>{
+    const on = !document.body.classList.contains('eli5-on');
+    document.body.classList.toggle('eli5-on', on);
+    eli5.classList.toggle('show', on);
+    eli5Btn.classList.toggle('btn-ghost'); eli5Btn.classList.toggle('active');
+    eli5Btn.textContent = on ? '🔬 Show the science' : '🧸 Explain like I\'m 5';
+  };
+
+  // init
+  updateBars();
+})();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Resting Membrane Potential</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"resting-potential", title:"Resting Membrane Potential", unit:"Unit 3" });
+  APTools.mountHUD("#apHud","resting-potential");
+  var BANK=[
+    { id:"r1", bloom:"Remember", outcome:"State typical RMP",
+      q:"The resting membrane potential of a typical neuron is approximately:",
+      choices:["−70 mV","0 mV","+30 mV","−150 mV"],
+      answer:0, why:"A typical neuron rests near −70 mV, meaning the inside is about 70 mV more negative than the outside." },
+    { id:"r2", bloom:"Understand", outcome:"Polarity",
+      q:"At rest, the inside of the cell relative to the outside is:",
+      choices:["Negative","Positive","Neutral","Alternating"],
+      answer:0, why:"The resting cell is polarized with a NET negative charge inside relative to outside." },
+    { id:"r3", bloom:"Understand", outcome:"Permeability",
+      q:"The resting membrane is MOST permeable to which ion, setting the RMP close to its equilibrium?",
+      choices:["K⁺ (potassium)","Na⁺ (sodium)","Ca²⁺ (calcium)","Cl⁻ (chloride)"],
+      answer:0, why:"At rest, numerous K⁺ leak channels make the membrane most permeable to K⁺, pulling RMP toward K⁺'s equilibrium (~−90 mV)." },
+    { id:"r4", bloom:"Understand", outcome:"Na/K pump role",
+      q:"The Na⁺/K⁺ ATPase contributes to the RMP by:",
+      choices:["Maintaining the Na⁺ and K⁺ gradients (3 Na⁺ out / 2 K⁺ in)","Letting ions leak freely","Adding chloride to the cell","Generating action potentials directly"],
+      answer:0, why:"The pump keeps Na⁺ high outside and K⁺ high inside; it is also slightly electrogenic (net + charge out per cycle)." },
+    { id:"r5", bloom:"Apply", outcome:"Define depolarization",
+      q:"If the membrane potential moves from −70 mV to −55 mV, the cell has:",
+      choices:["Depolarized","Hyperpolarized","Repolarized fully","Stayed at rest"],
+      answer:0, why:"Becoming LESS negative (toward 0) is depolarization; −55 mV is often the threshold for an action potential." },
+    { id:"r6", bloom:"Analyze", outcome:"Predict effects",
+      q:"Opening more K⁺ channels (increasing K⁺ efflux) would make the membrane potential:",
+      choices:["More negative (hyperpolarize)","More positive","Reach 0 mV","Unchanged"],
+      answer:0, why:"K⁺ leaving carries positive charge out, making the inside more negative — hyperpolarization." },
+    { id:"r7", bloom:"Understand", outcome:"Equilibrium potential",
+      q:"An ion's equilibrium (Nernst) potential is the voltage at which:",
+      choices:["The electrical and chemical forces on that ion balance","The ion stops existing","ATP is maximal","All channels close"],
+      answer:0, why:"At the equilibrium potential, the electrical gradient exactly opposes the concentration gradient, so there is no net flux of that ion." },
+    { id:"r8", bloom:"Analyze", outcome:"Gradients",
+      q:"The steep Na⁺ gradient (high outside) represents:",
+      choices:["Stored potential energy for excitability","A pump malfunction","An isotonic state","The equilibrium potential of K⁺"],
+      answer:0, why:"The Na⁺ gradient is potential energy; opening Na⁺ channels lets Na⁺ rush in to depolarize the cell during signaling." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"resting-potential", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

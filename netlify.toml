@@ -1,0 +1,20 @@
+[build]
+  publish = "."          # serve root as-is (no build step)
+
+# HTML pages — always revalidate so updates are instant
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Shared assets (JS, CSS, images) — long cache since they're versioned
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Public folder media
+[[headers]]
+  for = "/public/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

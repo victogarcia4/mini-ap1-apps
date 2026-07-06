@@ -1,0 +1,70 @@
+/* =============================================================================
+   APTools shared component styles — quiz engine, HUD, results card.
+   Uses neutral tokens with fallbacks so it blends into each app's palette.
+   ========================================================================== */
+.ap-quiz {
+  --ap-navy: #1B2A4A;
+  --ap-muted: #5b6b86;
+  --ap-line: #c9d7ea;
+  --ap-ok: #1B7D46;
+  --ap-no: #C0392B;
+  --ap-accent: #2563b6;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ap-navy);
+}
+
+/* top bar: counter + meter + badges */
+.ap-quiz-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.ap-quiz-count { font-size: .78rem; font-weight: 700; color: var(--ap-muted); text-transform: uppercase; letter-spacing: .6px; }
+.ap-quiz-meter { flex: 1; min-width: 120px; height: 7px; border-radius: 6px; background: #e3ecf7; overflow: hidden; }
+.ap-quiz-meter-fill { height: 100%; background: linear-gradient(90deg, var(--ap-accent), var(--ap-ok)); transition: width .3s ease; }
+.ap-quiz-badges { display: flex; gap: 6px; }
+.ap-tag { font-size: .72rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #eef3f9; color: var(--ap-muted); }
+.ap-tag.streak { background: #fff2e0; color: #b5651d; }
+
+.ap-quiz-q { font-size: 1.08rem; font-weight: 650; line-height: 1.45; margin: 6px 0 16px; }
+
+.ap-quiz-choices { display: grid; gap: 10px; }
+.ap-choice {
+  text-align: left; font: inherit; font-size: .96rem; padding: 13px 15px;
+  border: 1.5px solid var(--ap-line); border-radius: 11px; background: #fff;
+  color: var(--ap-navy); cursor: pointer; transition: .15s;
+}
+.ap-choice:hover:not(:disabled) { border-color: var(--ap-accent); background: #f5f9ff; transform: translateY(-1px); }
+.ap-choice:disabled { cursor: default; opacity: .95; }
+.ap-choice.correct { border-color: var(--ap-ok); background: #e7f6ee; color: #10502c; font-weight: 650; }
+.ap-choice.wrong { border-color: var(--ap-no); background: #fbeceb; color: #7d2019; }
+
+.ap-quiz-feedback { margin-top: 16px; border-radius: 12px; padding: 15px 17px; border-left: 5px solid var(--ap-muted); background: #f7fafd; }
+.ap-quiz-feedback.ok { border-left-color: var(--ap-ok); background: #eef8f2; }
+.ap-quiz-feedback.no { border-left-color: var(--ap-no); background: #fdf1f0; }
+.ap-fb-head { font-weight: 800; font-size: .95rem; margin-bottom: 6px; }
+.ap-quiz-feedback.ok .ap-fb-head { color: var(--ap-ok); }
+.ap-quiz-feedback.no .ap-fb-head { color: var(--ap-no); }
+.ap-fb-why { font-size: .92rem; line-height: 1.5; color: #263346; }
+.ap-fb-outcome { margin-top: 8px; font-size: .76rem; color: var(--ap-muted); font-style: italic; }
+.ap-next {
+  margin-top: 14px; font: inherit; font-weight: 700; font-size: .9rem; cursor: pointer;
+  border: none; border-radius: 9px; padding: 10px 18px; background: var(--ap-navy); color: #fff;
+}
+.ap-next:hover { background: #27395f; }
+
+/* results screen */
+.ap-result { text-align: center; padding: 18px 10px; }
+.ap-result-score { font-size: 2.6rem; font-weight: 800; color: var(--ap-navy); }
+.ap-result-pct { font-size: 1.1rem; font-weight: 700; color: var(--ap-ok); margin-top: -4px; }
+.ap-result-msg { margin: 12px auto 4px; max-width: 420px; line-height: 1.5; color: #263346; }
+.ap-result-sub { font-size: .82rem; color: var(--ap-muted); }
+.ap-result-btns { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+.ap-again, .ap-export {
+  font: inherit; font-weight: 700; font-size: .9rem; cursor: pointer; border-radius: 9px;
+  padding: 11px 18px; border: 1.5px solid var(--ap-line); background: #fff; color: var(--ap-navy);
+}
+.ap-again { background: var(--ap-navy); color: #fff; border-color: var(--ap-navy); }
+.ap-again:hover { background: #27395f; }
+.ap-export:hover { border-color: var(--ap-accent); color: var(--ap-accent); }
+
+/* HUD widget */
+.ap-hud { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.ap-hud-item { font-size: .78rem; color: var(--ap-muted); }
+.ap-hud-item b { color: var(--ap-navy); font-size: .95rem; }

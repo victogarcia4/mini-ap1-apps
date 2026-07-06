@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epithelial Tissue Dashboard | Structure & Function</title>
+    <link rel="stylesheet" href="assets/aptools.css?v=1">
+    <style>
+        :root {
+            /* Medical UI Palette */
+            --bg-dark: #1e293b;
+            --slate: #2c3e50;
+            --blue: #3498db;
+            --blue-hover: #2980b9;
+            --light-blue: #ebf5fb;
+            --pink-cell: #F5D5D5;
+            --purple-nucleus: #4a235a;
+            --gray-basement: #7f8c8d;
+            --text-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-radius: 8px;
+            --success: #27ae60;
+            --danger: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--slate);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--blue);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #f1f5f9;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            border-right: 1px solid #cbd5e1;
+        }
+
+        .panel {
+            padding: 1.5rem;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .panel h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--slate);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Controls */
+        .control-group {
+            margin-bottom: 1rem;
+        }
+        
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #cbd5e1;
+            font-size: 0.95rem;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.primary {
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        button.primary:hover { background-color: var(--blue-hover); }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .type-btn {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+            background-color: #e2e8f0;
+            border: 1px solid #cbd5e1;
+            color: var(--slate);
+            font-weight: 500;
+        }
+
+        .type-btn.active {
+            background-color: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+        /* Stats & Data */
+        .data-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .data-card h3 {
+            font-size: 1rem;
+            color: var(--blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .data-card p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .metric:last-child { border: none; margin: 0; padding: 0; }
+        .metric-label { font-weight: 600; color: var(--text-muted); }
+        .metric-value { font-weight: 600; }
+
+        /* Diffusion Meter */
+        .meter-container {
+            width: 100%;
+            height: 12px;
+            background-color: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--danger) 0%, #f1c40f 50%, var(--success) 100%);
+            transition: width 0.5s ease-out;
+        }
+
+        /* ELI5 Toggle */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--slate);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Main Canvas Area */
+        .canvas-area {
+            position: relative;
+            background: radial-gradient(circle at center, #34495e 0%, #1e293b 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        #tissue-canvas {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            max-height: 100%;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* SVG Inner Styling */
+        .cell-body {
+            fill: var(--pink-cell);
+            stroke: #d7b5b5;
+            stroke-width: 2;
+        }
+        
+        .nucleus {
+            fill: var(--purple-nucleus);
+        }
+
+        .basement-membrane {
+            fill: var(--gray-basement);
+        }
+        
+        .connective-tissue {
+            fill: #ecf0f1;
+            opacity: 0.15;
+        }
+
+        .cilia {
+            stroke: #F5D5D5;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+        }
+
+        .microvilli {
+            fill: none;
+            stroke: var(--pink-cell);
+            stroke-width: 3;
+            stroke-linejoin: round;
+        }
+
+        .particle {
+            fill: #00d2d3;
+            filter: drop-shadow(0px 0px 4px rgba(0, 210, 211, 0.8));
+        }
+
+        /* Legend */
+        .canvas-legend {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .legend-item:last-child { margin: 0; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+
+        @media (max-width: 768px) {
+            .dashboard-container { grid-template-columns: 1fr; flex-direction: column; overflow-y: auto;}
+            .sidebar { border-right: none; border-bottom: 1px solid #cbd5e1; max-height: 400px; }
+            .canvas-area { min-height: 500px; }
+            body { overflow: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>Histology Interactive: Epithelial Tissues</h1>
+            <div class="subtitle">Structure dictates function. Understand Fick's Law in Action.</div>
+        </div>
+        <button class="primary" style="width: auto; padding: 0.5rem 1rem;" onclick="resetApp()">Reset Simulation</button>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <!-- Left Sidebar: Controls & Data -->
+        <div class="sidebar">
+            <div class="panel">
+                <h2>Select Location <span style="font-size:0.8rem;font-weight:400;color:var(--text-muted)">Contextual</span></h2>
+                <select id="location-select" onchange="handleLocationChange(this.value)">
+                    <option value="alveoli">Alveoli (Lungs)</option>
+                    <option value="kidney">Kidney Tubules</option>
+                    <option value="intestine">Small Intestine</option>
+                    <option value="skin">Epidermis (Skin)</option>
+                    <option value="trachea">Trachea (Windpipe)</option>
+                    <option value="bladder">Urinary Bladder</option>
+                    <option value="sweat">Sweat Gland Ducts</option>
+                    <option value="urethra">Male Urethra</option>
+                </select>
+            </div>
+
+            <div class="panel">
+                <h2>Tissue Type</h2>
+                <div class="type-grid" id="type-buttons">
+                    <!-- Buttons generated dynamically -->
+                </div>
+            </div>
+
+            <div class="panel" style="flex: 1;">
+                <h2>
+                    Physiological Profile
+                    <div class="toggle-container">
+                        <label class="switch">
+                            <input type="checkbox" id="eli5-toggle" onchange="updateDataPanel()">
+                            <span class="slider"></span>
+                        </label>
+                        <span style="font-size: 0.8rem">ELI5</span>
+                    </div>
+                </h2>
+                
+                <div class="data-card">
+                    <h3 id="info-title">Simple Squamous</h3>
+                    <p id="info-desc">Loading description...</p>
+                    <div class="metric mt-2">
+                        <span class="metric-label">Avg. Thickness</span>
+                        <span class="metric-value" id="info-thick">0.5 μm</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Primary Function</span>
+                        <span class="metric-value" id="info-func">Diffusion</span>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <h3>Diffusion Efficiency (Fick's Law)</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">
+                        Rate of diffusion is inversely proportional to membrane thickness ($Rate \propto 1/Thickness$).
+                    </p>
+                    <div class="meter-container">
+                        <div class="meter-fill" id="diffusion-meter"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 4px; color: var(--text-muted);">
+                        <span>Low (Barrier)</span>
+                        <span>High (Exchange)</span>
+                    </div>
+                    <button class="primary" id="animation-btn" onclick="toggleAnimation()">Start O₂ Diffusion Animation</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Area: SVG Canvas -->
+        <div class="canvas-area">
+            <svg id="tissue-canvas" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+                <!-- Static Background Gradients (Optional) -->
+                <defs>
+                    <radialGradient id="nucGrad" cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#8e44ad"/>
+                        <stop offset="100%" stop-color="#4a235a"/>
+                    </radialGradient>
+                </defs>
+
+                <!-- Dynamic Tissue Group -->
+                <g id="tissue-group"></g>
+                
+                <!-- Particle Animation Group -->
+                <g id="particle-group"></g>
+            </svg>
+
+            <div class="canvas-legend">
+                <div class="legend-item"><div class="legend-color" style="background: var(--pink-cell)"></div> Cell Body</div>
+                <div class="legend-item"><div class="legend-color" style="background: var(--purple-nucleus)"></div> Nucleus</div>
+                <div class="legend-item"><div class="legend-color" style="background: var(--gray-basement)"></div> Basement Membrane</div>
+                <div class="legend-item"><div class="legend-color" style="background: #00d2d3"></div> Oxygen (O₂) Molecule</div>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+/**
+ * EPITHELIAL TISSUE DASHBOARD - MEDICAL UI SIMULATION
+ * Created for A&P Education. Demonstrates the correlation between morphological 
+ * structure (thickness/layers) and physiological function (Fick's law of diffusion).
+ * * Author: Victor Garcia (Context)
+ */
+
+// --- 1. DATA MODEL ---
+const TISSUE_DB = {
+    simpleSquamous: {
+        id: "simpleSquamous", name: "Simple Squamous",
+        thickness: 0.5, func: "Rapid Diffusion & Filtration",
+        location: "alveoli", locationName: "Alveoli (Lungs), Capillaries",
+        clinical: "A single layer of thin, flattened cells. Minimizes distance for rapid passive transport of gases and fluids.",
+        eli5: "Like a single sheet of tissue paper. It's so thin that oxygen easily slips right through it into your blood.",
+        svgThickness: 30 // relative pixel height for drawing
+    },
+    simpleCuboidal: {
+        id: "simpleCuboidal", name: "Simple Cuboidal",
+        thickness: 15, func: "Secretion & Absorption",
+        location: "kidney", locationName: "Kidney Tubules, Gland Ducts",
+        clinical: "A single layer of cube-shaped cells with central nuclei. Provides more organelle volume for active transport and secretion.",
+        eli5: "Like a row of ice cubes. They are thick enough to manufacture and pump out fluids, like in your sweat glands.",
+        svgThickness: 100
+    },
+    simpleColumnar: {
+        id: "simpleColumnar", name: "Simple Columnar",
+        thickness: 25, func: "Absorption (Microvilli)",
+        location: "intestine", locationName: "Small Intestine, Stomach",
+        clinical: "A single layer of tall cells. Apical microvilli maximize surface area. Contains goblet cells for mucus secretion.",
+        eli5: "Like tall skyscrapers packing a lot of factories inside. The tops have tiny fingers to grab as many nutrients as possible from your food.",
+        svgThickness: 200,
+        special: 'microvilli'
+    },
+    stratifiedSquamous: {
+        id: "stratifiedSquamous", name: "Stratified Squamous",
+        thickness: 150, func: "Protection from Abrasion",
+        location: "skin", locationName: "Epidermis, Esophagus",
+        clinical: "Multiple layers. Basal cells are cuboidal and actively dividing. Apical layers become flat (squamous). Highly protective barrier.",
+        eli5: "Like a thick stack of cardboard boxes. If the top layers get scratched off, there are plenty more underneath to protect you.",
+        svgThickness: 300,
+        layers: 6
+    },
+    pseudostratified: {
+        id: "pseudostratified", name: "Pseudostratified Columnar",
+        thickness: 30, func: "Secretion & Motility (Cilia)",
+        location: "trachea", locationName: "Trachea (Windpipe)",
+        clinical: "Appears stratified due to staggered nuclei, but all cells contact the basement membrane. Apical cilia propel mucus upwards.",
+        eli5: "Looks like a crowded room where tall and short people are standing on the floor. The tops have tiny hairs acting like brooms to sweep out dust.",
+        svgThickness: 220,
+        special: 'cilia'
+    },
+    transitional: {
+        id: "transitional", name: "Transitional",
+        thickness: 80, func: "Distensibility (Stretch)",
+        location: "bladder", locationName: "Urinary Bladder, Ureters",
+        clinical: "Stratified tissue where apical 'umbrella' cells change shape from cuboidal to squamous when the organ stretches.",
+        eli5: "Like an accordion or a balloon. The cells are plump when empty, but flatten out to give the bladder room to fill up with liquid.",
+        svgThickness: 240,
+        layers: 4
+    },
+    stratifiedCuboidal: {
+        id: "stratifiedCuboidal", name: "Stratified Cuboidal",
+        thickness: 40, func: "Protection & Secretion",
+        location: "sweat", locationName: "Sweat Gland Ducts, Mammary Glands",
+        clinical: "Typically two layers of cube-shaped cells. Relatively rare in the body. Provides a robust lining for larger ducts.",
+        eli5: "Just two stacks of square blocks. Stronger than a single layer, used to line the tubes that carry sweat out of your body.",
+        svgThickness: 160,
+        layers: 2
+    },
+    stratifiedColumnar: {
+        id: "stratifiedColumnar", name: "Stratified Columnar",
+        thickness: 60, func: "Protection & Secretion",
+        location: "urethra", locationName: "Male Urethra, Pharynx",
+        clinical: "Rare tissue type. Basal layer is cuboidal, apical layer is columnar. Found in transition zones between tissue types.",
+        eli5: "A rare combination: tall skyscrapers sitting on top of square blocks. Built to protect special tubes in the body.",
+        svgThickness: 250,
+        layers: 2
+    }
+};
+
+let currentTissueId = 'simpleSquamous';
+let animationId = null;
+let particles = [];
+let isAnimating = false;
+
+// --- 2. INITIALIZATION & STATE MANAGEMENT ---
+function init() {
+    generateTypeButtons();
+    selectTissue('simpleSquamous');
+}
+
+function resetApp() {
+    stopAnimation();
+    document.getElementById('eli5-toggle').checked = false;
+    document.getElementById('location-select').value = 'alveoli';
+    selectTissue('simpleSquamous');
+}
+
+function generateTypeButtons() {
+    const grid = document.getElementById('type-buttons');
+    grid.innerHTML = '';
+    for (const key in TISSUE_DB) {
+        const btn = document.createElement('button');
+        btn.className = 'type-btn';
+        btn.id = `btn-${key}`;
+        btn.innerText = TISSUE_DB[key].name;
+        btn.onclick = () => {
+            selectTissue(key);
+            // Sync location dropdown
+            document.getElementById('location-select').value = TISSUE_DB[key].location;
+        };
+        grid.appendChild(btn);
+    }
+}
+
+function handleLocationChange(locValue) {
+    // Find tissue by location
+    for (const key in TISSUE_DB) {
+        if (TISSUE_DB[key].location === locValue) {
+            selectTissue(key);
+            break;
+        }
+    }
+}
+
+function selectTissue(tissueId) {
+    currentTissueId = tissueId;
+    
+    // Update active button state
+    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`btn-${tissueId}`).classList.add('active');
+
+    updateDataPanel();
+    drawTissueSVG();
+    
+    // Reset particles for new structure
+    if(isAnimating) {
+        stopAnimation();
+        startAnimation();
+    }
+}
+
+function updateDataPanel() {
+    const data = TISSUE_DB[currentTissueId];
+    const isELI5 = document.getElementById('eli5-toggle').checked;
+
+    document.getElementById('info-title').innerText = data.name;
+    document.getElementById('info-desc').innerText = isELI5 ? data.eli5 : data.clinical;
+    document.getElementById('info-thick').innerText = `${data.thickness} μm`;
+    document.getElementById('info-func').innerText = data.func;
+
+    // Calculate Diffusion Rate for Meter (Fick's Law Concept)
+    // Formula simplification: Rate = 100 / (thickness^0.6) - tweaked for UI scaling
+    let rate = 100 / Math.pow(data.thickness, 0.6);
+    if (data.thickness > 100) rate = 5; // Floor for very thick tissues
+    if (data.thickness < 2) rate = 95;  // Ceiling for squamous
+
+    const meter = document.getElementById('diffusion-meter');
+    meter.style.width = `${rate}%`;
+}
+
+
+// --- 3. SVG RENDERING ENGINE (Native API) ---
+function drawTissueSVG() {
+    const g = document.getElementById('tissue-group');
+    g.innerHTML = ''; // Clear previous
+
+    const data = TISSUE_DB[currentTissueId];
+    const canvasW = 1000;
+    const basementY = 480; 
+    const tissueTop = basementY - data.svgThickness;
+
+    // 1. Draw Connective Tissue (Under Basement Membrane)
+    const ct = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    ct.setAttribute("x", 0); ct.setAttribute("y", basementY);
+    ct.setAttribute("width", canvasW); ct.setAttribute("height", 600 - basementY);
+    ct.setAttribute("class", "connective-tissue");
+    g.appendChild(ct);
+
+    // 2. Draw Basement Membrane
+    const bm = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bm.setAttribute("x", 0); bm.setAttribute("y", basementY);
+    bm.setAttribute("width", canvasW); bm.setAttribute("height", 12);
+    bm.setAttribute("class", "basement-membrane");
+    g.appendChild(bm);
+
+    // 3. Draw Cells based on Type
+    switch(currentTissueId) {
+        case 'simpleSquamous': drawSimpleSquamous(g, canvasW, basementY); break;
+        case 'simpleCuboidal': drawSimpleCuboidal(g, canvasW, basementY); break;
+        case 'simpleColumnar': drawSimpleColumnar(g, canvasW, basementY); break;
+        case 'stratifiedSquamous': drawStratifiedSquamous(g, canvasW, basementY, data.layers); break;
+        case 'pseudostratified': drawPseudostratified(g, canvasW, basementY); break;
+        case 'transitional': drawTransitional(g, canvasW, basementY, data.layers); break;
+        case 'stratifiedCuboidal': drawStratifiedCuboidal(g, canvasW, basementY); break;
+        case 'stratifiedColumnar': drawStratifiedColumnar(g, canvasW, basementY); break;
+    }
+}
+
+// SVG Drawing Helper Functions
+function drawCellBody(g, pathData, isSpecial=false) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", pathData);
+    path.setAttribute("class", "cell-body");
+    g.appendChild(path);
+    return path;
+}
+
+function drawNucleus(g, cx, cy, rx, ry) {
+    const nuc = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+    nuc.setAttribute("cx", cx); nuc.setAttribute("cy", cy);
+    nuc.setAttribute("rx", rx); nuc.setAttribute("ry", ry);
+    nuc.setAttribute("class", "nucleus");
+    nuc.setAttribute("fill", "url(#nucGrad)");
+    g.appendChild(nuc);
+}
+
+function drawSimpleSquamous(g, w, bY) {
+    const cellW = 200; const cellH = 30;
+    const cols = Math.ceil(w / cellW);
+    for(let i=0; i<cols; i++) {
+        let x = i * cellW;
+        let y = bY - cellH;
+        // Wavy top path for flat cell
+        let path = `M ${x},${bY} L ${x},${y+10} Q ${x+cellW/2},${y-15} ${x+cellW},${y+10} L ${x+cellW},${bY} Z`;
+        drawCellBody(g, path);
+        drawNucleus(g, x + cellW/2, y + 10, 25, 8);
+    }
+}
+
+function drawSimpleCuboidal(g, w, bY) {
+    const cellW = 100; const cellH = 100;
+    const cols = Math.ceil(w / cellW);
+    for(let i=0; i<cols; i++) {
+        let x = i * cellW;
+        let y = bY - cellH;
+        // Imperfect square
+        let path = `M ${x},${bY} L ${x},${y} L ${x+cellW},${y} L ${x+cellW},${bY} Z`;
+        drawCellBody(g, path);
+        drawNucleus(g, x + cellW/2, y + cellH/2, 18, 18);
+    }
+}
+
+function drawSimpleColumnar(g, w, bY) {
+    const cellW = 80; const cellH = 200;
+    const cols = Math.ceil(w / cellW);
+    for(let i=0; i<cols; i++) {
+        let x = i * cellW;
+        let y = bY - cellH;
+        let path = `M ${x},${bY} L ${x},${y} L ${x+cellW},${y} L ${x+cellW},${bY} Z`;
+        drawCellBody(g, path);
+        // Basal nucleus
+        drawNucleus(g, x + cellW/2, bY - 40, 15, 25);
+        
+        // Microvilli (Zig-zag)
+        let mvPath = `M ${x},${y}`;
+        for(let v=1; v<=8; v++) {
+            mvPath += ` L ${x + (v-0.5)*(cellW/8)},${y-15} L ${x + v*(cellW/8)},${y}`;
+        }
+        const mv = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        mv.setAttribute("d", mvPath);
+        mv.setAttribute("class", "microvilli");
+        g.appendChild(mv);
+    }
+}
+
+function drawPseudostratified(g, w, bY) {
+    const cellW = 60; const maxHeight = 220;
+    const cols = Math.ceil(w / cellW);
+    for(let i=0; i<cols; i++) {
+        let x = i * cellW;
+        
+        // Alternate tall and short cells (both touch basement)
+        if(i % 2 === 0) {
+            // Tall cell
+            let path = `M ${x},${bY} L ${x},${bY-maxHeight} L ${x+cellW*1.5},${bY-maxHeight} L ${x+cellW*1.5},${bY} Z`;
+            drawCellBody(g, path);
+            drawNucleus(g, x + cellW*0.75, bY - 120, 12, 22); // High nucleus
+            
+            // Cilia
+            for(let c=0; c<10; c++) {
+                let cx = x + (c * (cellW*1.5/10));
+                let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", cx); line.setAttribute("y1", bY-maxHeight);
+                line.setAttribute("x2", cx + (Math.random()*10 - 5)); line.setAttribute("y2", bY-maxHeight-20);
+                line.setAttribute("class", "cilia");
+                g.appendChild(line);
+            }
+        } else {
+            // Short wedge cell
+            let path = `M ${x},${bY} L ${x},${bY-80} L ${x+cellW*0.5},${bY} Z`;
+            drawCellBody(g, path);
+            drawNucleus(g, x + cellW*0.25, bY - 30, 10, 10); // Basal nucleus
+        }
+    }
+}
+
+function drawStratifiedSquamous(g, w, bY, layers) {
+    const baseW = 60; const baseH = 60;
+    const numCols = Math.ceil(w / baseW);
+    
+    // Draw from bottom to top
+    for(let l=0; l<layers; l++) {
+        let rowY = bY - (l * baseH);
+        let currentH = baseH;
+        let isSquamous = l >= 3; // Top layers flatten out
+
+        if (isSquamous) {
+            currentH = 25;
+            rowY = bY - (3 * baseH) - ((l-3) * currentH);
+        }
+
+        for(let i=0; i<numCols * (isSquamous ? 1.5 : 1); i++) {
+            let currentW = isSquamous ? baseW * 1.5 : baseW;
+            let x = (i * currentW) + (l%2 === 0 ? 0 : currentW/2) - currentW; // stagger rows
+            
+            if (x > w || x + currentW < 0) continue;
+
+            // Wavy lines for squamous, rects for basal
+            let path;
+            if (isSquamous) {
+                 path = `M ${x},${rowY} L ${x},${rowY-currentH+10} Q ${x+currentW/2},${rowY-currentH-5} ${x+currentW},${rowY-currentH+10} L ${x+currentW},${rowY} Z`;
+                 drawCellBody(g, path);
+                 drawNucleus(g, x + currentW/2, rowY - currentH/2 + 5, 15, 5); // flat nuc
+            } else {
+                 path = `M ${x},${rowY} L ${x},${rowY-currentH} L ${x+currentW},${rowY-currentH} L ${x+currentW},${rowY} Z`;
+                 drawCellBody(g, path);
+                 drawNucleus(g, x + currentW/2, rowY - currentH/2, 12, 12); // round nuc
+            }
+        }
+    }
+}
+
+function drawTransitional(g, w, bY, layers) {
+    const baseW = 80; const baseH = 60;
+    const numCols = Math.ceil(w / baseW);
+    
+    for(let l=0; l<layers; l++) {
+        let rowY = bY - (l * baseH);
+        let isTop = (l === layers - 1);
+        let cellW = isTop ? baseW * 1.5 : baseW;
+        let numCells = Math.ceil(w / cellW) + 1;
+
+        for(let i=-1; i<numCells; i++) {
+            let x = (i * cellW) + (l%2 === 0 ? 0 : cellW/2);
+            if (x > w) continue;
+
+            if (isTop) {
+                // Plump umbrella cells
+                let path = `M ${x},${rowY} L ${x},${rowY-baseH+20} Q ${x+cellW/2},${rowY-baseH-30} ${x+cellW},${rowY-baseH+20} L ${x+cellW},${rowY} Z`;
+                drawCellBody(g, path);
+                drawNucleus(g, x + cellW/2, rowY - baseH/2, 16, 16);
+            } else {
+                // Pear/cuboidal cells
+                let path = `M ${x},${rowY} Q ${x+10},${rowY-baseH/2} ${x},${rowY-baseH} L ${x+cellW},${rowY-baseH} Q ${x+cellW-10},${rowY-baseH/2} ${x+cellW},${rowY} Z`;
+                drawCellBody(g, path);
+                drawNucleus(g, x + cellW/2, rowY - baseH/2, 14, 14);
+            }
+        }
+    }
+}
+
+function drawStratifiedCuboidal(g, w, bY) {
+    const cellW = 80; const cellH = 80;
+    const cols = Math.ceil(w / cellW);
+    for(let l=0; l<2; l++) {
+        let rowY = bY - (l * cellH);
+        for(let i=0; i<cols; i++) {
+            let x = i * cellW + (l%2===0 ? 0 : 20); // slight stagger
+            let path = `M ${x},${rowY} L ${x},${rowY-cellH} L ${x+cellW},${rowY-cellH} L ${x+cellW},${rowY} Z`;
+            drawCellBody(g, path);
+            drawNucleus(g, x + cellW/2, rowY - cellH/2, 16, 16);
+        }
+    }
+}
+
+function drawStratifiedColumnar(g, w, bY) {
+    const cellW = 80;
+    const cols = Math.ceil(w / cellW);
+    // Basal layer (cuboidal)
+    for(let i=0; i<cols; i++) {
+        let x = i * cellW;
+        let path = `M ${x},${bY} L ${x},${bY-80} L ${x+cellW},${bY-80} L ${x+cellW},${bY} Z`;
+        drawCellBody(g, path);
+        drawNucleus(g, x + cellW/2, bY - 40, 15, 15);
+    }
+    // Apical layer (columnar)
+    for(let i=0; i<cols; i++) {
+        let x = i * cellW + 10;
+        let y = bY - 80;
+        let path = `M ${x},${y} L ${x},${y-170} L ${x+cellW},${y-170} L ${x+cellW},${y} Z`;
+        drawCellBody(g, path);
+        drawNucleus(g, x + cellW/2, y - 40, 14, 25);
+    }
+}
+
+// --- 4. DIFFUSION PARTICLE ENGINE (Fick's Law Visualization) ---
+function toggleAnimation() {
+    const btn = document.getElementById('animation-btn');
+    if(isAnimating) {
+        stopAnimation();
+    } else {
+        startAnimation();
+    }
+}
+
+function startAnimation() {
+    isAnimating = true;
+    document.getElementById('animation-btn').innerText = 'Stop Diffusion Animation';
+    document.getElementById('animation-btn').style.backgroundColor = 'var(--danger)';
+    
+    // Clear old particles
+    particles = [];
+    document.getElementById('particle-group').innerHTML = '';
+    
+    // Create new pool
+    for(let i=0; i<25; i++) {
+        createParticle();
+    }
+    
+    animationId = requestAnimationFrame(animateParticles);
+}
+
+function stopAnimation() {
+    isAnimating = false;
+    document.getElementById('animation-btn').innerText = 'Start O₂ Diffusion Animation';
+    document.getElementById('animation-btn').style.backgroundColor = 'var(--blue)';
+    cancelAnimationFrame(animationId);
+    document.getElementById('particle-group').innerHTML = '';
+}
+
+function createParticle() {
+    const g = document.getElementById('particle-group');
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    
+    // Random start above tissue
+    let x = Math.random() * 1000;
+    let y = -20 - (Math.random() * 100); 
+    
+    p.setAttribute("cx", x);
+    p.setAttribute("cy", y);
+    p.setAttribute("r", 6);
+    p.setAttribute("class", "particle");
+    
+    g.appendChild(p);
+    
+    particles.push({
+        element: p,
+        x: x,
+        y: y,
+        speed: 1.5 + Math.random(),
+        wobble: Math.random() * Math.PI * 2
+    });
+}
+
+function animateParticles() {
+    if(!isAnimating) return;
+
+    const data = TISSUE_DB[currentTissueId];
+    const basementY = 480;
+    const tissueTop = basementY - data.svgThickness;
+    
+    // Math: Fick's Law modifier based on thickness
+    // If thickness > 100 (e.g. Stratified Squamous), rate approaches 0
+    let diffusionFactor = 1 / Math.sqrt(data.thickness); 
+    if (data.thickness >= 150) diffusionFactor = 0.05; // highly impermeable barrier
+
+    particles.forEach(p => {
+        // Brownian motion / wobble
+        p.wobble += 0.1;
+        p.x += Math.sin(p.wobble) * 2;
+        
+        // Determine Y speed based on position
+        let currentSpeed = p.speed;
+        
+        if (p.y > tissueTop && p.y < basementY) {
+            // Inside tissue - slow down according to Fick's Law factor
+            currentSpeed = p.speed * diffusionFactor;
+            
+            // If it's a very thick barrier, particles might get stuck or bounce
+            if (data.thickness >= 150 && Math.random() > 0.98) {
+               p.y = tissueTop - 10; // Bounce back
+            }
+        }
+        
+        p.y += currentSpeed;
+        
+        // Update DOM
+        p.element.setAttribute("cx", p.x);
+        p.element.setAttribute("cy", p.y);
+        
+        // Reset if passed through or drifted off
+        if (p.y > 600) {
+            p.y = -20 - (Math.random() * 50);
+            p.x = Math.random() * 1000;
+        }
+    });
+    
+    animationId = requestAnimationFrame(animateParticles);
+}
+
+// Start application
+window.onload = init;
+
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+/* Un-lock the app-shell so the quiz flows BELOW the sim instead of being clipped */
+html,body{height:auto!important;overflow:auto!important;}
+body>.dashboard-container{min-height:calc(100vh - 76px);}
+.ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Epithelial Tissues</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"epithelial-tissue", title:"Epithelial Tissue Explorer", unit:"Unit 5" });
+  APTools.mountHUD("#apHud","epithelial-tissue");
+  var BANK=[
+    { id:"e1", bloom:"Understand", outcome:"Classify by shape",
+      q:"Epithelial cells that are flat and scale-like are classified as:",
+      choices:["Squamous","Cuboidal","Columnar","Transitional"],
+      answer:0, why:"Squamous cells are thin and flat, ideal for diffusion and filtration (e.g., alveoli, capillary lining)." },
+    { id:"e2", bloom:"Understand", outcome:"Classify by layers",
+      q:"An epithelium with a SINGLE layer of cells is called:",
+      choices:["Simple","Stratified","Pseudostratified","Transitional"],
+      answer:0, why:"Simple = one layer (for absorption/diffusion); stratified = many layers (for protection)." },
+    { id:"e3", bloom:"Apply", outcome:"Match structure to function",
+      q:"Which epithelium is best suited for rapid diffusion of gases in the lungs?",
+      choices:["Simple squamous","Stratified squamous","Simple columnar","Transitional"],
+      answer:0, why:"Simple squamous epithelium is extremely thin, minimizing diffusion distance — perfect for alveoli." },
+    { id:"e4", bloom:"Apply", outcome:"Match structure to location",
+      q:"Stratified squamous epithelium is found where protection from abrasion is needed, such as the:",
+      choices:["Epidermis of the skin","Kidney tubules","Air sacs of the lungs","Lining of blood vessels"],
+      answer:0, why:"Multiple layers of squamous cells resist wear and tear, so stratified squamous lines skin, mouth, and esophagus." },
+    { id:"e5", bloom:"Understand", outcome:"Match structure to function",
+      q:"Simple columnar epithelium lining the intestine is specialized for:",
+      choices:["Absorption and secretion","Rapid gas diffusion","Stretching","Blocking all transport"],
+      answer:0, why:"Tall columnar cells (often with microvilli/goblet cells) maximize absorption and secretion in the gut." },
+    { id:"e6", bloom:"Understand", outcome:"Special epithelia",
+      q:"Transitional epithelium is uniquely able to:",
+      choices:["Stretch as an organ fills (e.g., bladder)","Secrete digestive enzymes","Transmit action potentials","Contract like muscle"],
+      answer:0, why:"Transitional epithelium changes shape to allow distension — it lines the urinary bladder and ureters." },
+    { id:"e7", bloom:"Remember", outcome:"General features",
+      q:"All epithelial tissue rests on a supportive layer called the:",
+      choices:["Basement membrane","Metaphase plate","Sarcomere","Myelin sheath"],
+      answer:0, why:"The basement membrane anchors epithelium to underlying connective tissue and helps regulate exchange." },
+    { id:"e8", bloom:"Understand", outcome:"General features",
+      q:"Epithelial tissue is described as AVASCULAR, meaning it:",
+      choices:["Has no blood vessels and is nourished by diffusion","Contains many arteries","Cannot regenerate","Is made of neurons"],
+      answer:0, why:"Epithelia lack their own blood supply; nutrients diffuse from vessels in the underlying connective tissue." },
+    { id:"e9", bloom:"Apply", outcome:"Match structure to location",
+      q:"Pseudostratified ciliated columnar epithelium with cilia typically lines the:",
+      choices:["Trachea / airways","Urinary bladder","Epidermis","Kidney glomerulus"],
+      answer:0, why:"This epithelium's cilia sweep mucus and trapped debris out of the respiratory airways." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"epithelial-tissue", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Division & Signaling Transduction Dashboard</title>
+    <link rel="stylesheet" href="assets/aptools.css?v=1">
+    <style>
+        /* * COLOR PALETTE & VARIABLES 
+         * Slate #2C3E50, Royal Blue #3498DB, Phosphorylation Orange #F39C12, Success Green #27AE60
+         */
+        :root {
+            --slate: #2C3E50;
+            --slate-light: #34495E;
+            --royal-blue: #3498DB;
+            --royal-blue-light: #ebf5fb;
+            --orange: #F39C12;
+            --green: #27AE60;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #7f8c8d;
+            --border-color: #e0e6ed;
+            --transition-speed: 0.4s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* LAYOUT: CSS Grid Dashboard */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+            grid-template-areas: 
+                "header header"
+                "wheel signaling"
+                "info info";
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "header"
+                    "wheel"
+                    "signaling"
+                    "info";
+            }
+        }
+
+        /* HEADER */
+        .header {
+            grid-area: header;
+            background: var(--slate);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* TOGGLE SWITCH */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--slate-light);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--orange);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+        
+        .card-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--slate);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--royal-blue-light);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* BUTTONS */
+        button {
+            background: var(--royal-blue);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background var(--transition-speed);
+        }
+        button:hover { background: #2980B9; }
+        button:disabled { background: #BDC3C7; cursor: not-allowed; }
+        
+        .btn-green { background: var(--green); }
+        .btn-green:hover { background: #219653; }
+        .btn-orange { background: var(--orange); }
+        .btn-orange:hover { background: #E67E22; }
+
+        /* LEFT PANEL: CELL CYCLE */
+        .cell-cycle-panel {
+            grid-area: wheel;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .visual-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--royal-blue-light);
+            border-radius: 50%;
+            border: 4px solid var(--slate);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .svg-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease-in-out;
+            pointer-events: none;
+        }
+        .svg-layer.active {
+            opacity: 1;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .controls-row button {
+            background: var(--slate-light);
+        }
+        .controls-row button.active {
+            background: var(--orange);
+            box-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
+        }
+
+        /* RIGHT PANEL: SIGNALING CASCADE */
+        .signaling-panel {
+            grid-area: signaling;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cascade-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #FAFAFA;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .cascade-svg {
+            width: 100%;
+            max-height: 400px;
+        }
+
+        /* Nodes for signaling */
+        .node { transition: fill var(--transition-speed), filter var(--transition-speed); }
+        .inactive-node { fill: var(--royal-blue); }
+        .active-node { fill: var(--orange); filter: drop-shadow(0px 0px 4px rgba(243,156,18,0.8)); }
+        
+        .pathway-line { stroke: var(--text-muted); stroke-width: 3; stroke-dasharray: 5,5; }
+        .pathway-line.active { stroke: var(--orange); stroke-dasharray: none; }
+
+        /* INFO PANEL */
+        .info-panel {
+            grid-area: info;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .info-panel { grid-template-columns: 1fr; }
+        }
+
+        .info-box {
+            background: var(--royal-blue-light);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--royal-blue);
+        }
+        
+        .info-box h3 { color: var(--slate); margin-bottom: 10px; }
+        .info-box p { font-size: 1.05rem; }
+
+        .deep-dive {
+            background: #FFF9E6;
+            border-left: 5px solid var(--orange);
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--slate);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Animations for Cell Graphics */
+        @keyframes spindlePull {
+            0% { transform: scaleX(1); }
+            100% { transform: scaleX(1.5); }
+        }
+        .anim-pull { animation: spindlePull 2s infinite alternate; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <!-- HEADER -->
+    <header class="header">
+        <div>
+            <h1>Cellular Division & Signaling Transduction</h1>
+            <p style="font-size: 0.9rem; opacity: 0.9;">Interactive Dashboard for Medical Education</p>
+        </div>
+        <div class="header-controls">
+            <div class="toggle-container">
+                <span>Academic</span>
+                <label class="switch">
+                    <input type="checkbox" id="eli5-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span>ELI5 Mode</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- LEFT PANEL: CELL CYCLE -->
+    <section class="card cell-cycle-panel">
+        <div class="card-header">
+            <span>The Cell Cycle & Mitosis</span>
+            <span class="tag" id="current-phase-tag">G1 Phase</span>
+        </div>
+        
+        <div class="controls-row" id="phase-controls">
+            <button onclick="setPhase('G1')" id="btn-G1" class="active">G1</button>
+            <button onclick="setPhase('S')" id="btn-S">S</button>
+            <button onclick="setPhase('G2')" id="btn-G2">G2</button>
+            <button onclick="setPhase('Prophase')" id="btn-Prophase">Prophase</button>
+            <button onclick="setPhase('Metaphase')" id="btn-Metaphase">Metaphase</button>
+            <button onclick="setPhase('Anaphase')" id="btn-Anaphase">Anaphase</button>
+            <button onclick="setPhase('Telophase')" id="btn-Telophase">Telophase</button>
+            <button onclick="setPhase('Cytokinesis')" id="btn-Cytokinesis">Cytokinesis</button>
+        </div>
+
+        <div class="visual-container">
+            <!-- SVG: G1 Phase -->
+            <svg class="svg-layer active" id="svg-G1" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="80" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <circle cx="100" cy="100" r="40" fill="#D4E6F1" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="4"/>
+                <path d="M85 90 Q100 70 115 90 T100 110" stroke="var(--slate)" stroke-width="2" fill="none" opacity="0.6"/>
+                <path d="M90 100 Q105 120 110 100 T95 80" stroke="var(--slate)" stroke-width="2" fill="none" opacity="0.6"/>
+                <!-- Centrosome -->
+                <rect x="50" y="80" width="8" height="12" fill="var(--orange)" transform="rotate(45 54 86)"/>
+            </svg>
+
+            <!-- SVG: S Phase -->
+            <svg class="svg-layer" id="svg-S" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="85" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <circle cx="100" cy="100" r="45" fill="#D4E6F1" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="4"/>
+                <!-- Replicating DNA -->
+                <path d="M80 90 Q100 70 120 90 T100 110" stroke="var(--slate)" stroke-width="3" fill="none" opacity="0.8"/>
+                <path d="M85 95 Q100 75 115 95 T100 115" stroke="var(--slate)" stroke-width="3" fill="none" opacity="0.8"/>
+                <circle cx="95" cy="85" r="4" fill="var(--orange)"/> <!-- replication bubble -->
+                <circle cx="110" cy="105" r="4" fill="var(--orange)"/>
+                <rect x="45" y="75" width="8" height="12" fill="var(--orange)" transform="rotate(45 49 81)"/>
+            </svg>
+
+            <!-- SVG: G2 Phase -->
+            <svg class="svg-layer" id="svg-G2" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="90" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <circle cx="100" cy="100" r="50" fill="#D4E6F1" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="4"/>
+                <path d="M75 90 Q100 60 125 90 T100 120" stroke="var(--slate)" stroke-width="4" fill="none" opacity="0.9"/>
+                <path d="M80 100 Q100 130 120 100 T100 70" stroke="var(--slate)" stroke-width="4" fill="none" opacity="0.9"/>
+                <!-- Duplicated Centrosomes -->
+                <rect x="40" y="80" width="8" height="12" fill="var(--orange)" transform="rotate(45 44 86)"/>
+                <rect x="40" y="100" width="8" height="12" fill="var(--orange)" transform="rotate(45 44 106)"/>
+            </svg>
+
+            <!-- SVG: Prophase -->
+            <svg class="svg-layer" id="svg-Prophase" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="90" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <circle cx="100" cy="100" r="50" fill="none" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="10 10"/> <!-- Breaking envelope -->
+                <!-- Condensed Chromosomes (X shape) -->
+                <g stroke="var(--slate)" stroke-width="6" stroke-linecap="round">
+                    <line x1="85" y1="85" x2="105" y2="115"/>
+                    <line x1="105" y1="85" x2="85" y2="115"/>
+                    <circle cx="95" cy="100" r="4" fill="var(--orange)" stroke="none"/> <!-- Centromere -->
+                    
+                    <line x1="110" y1="75" x2="125" y2="100"/>
+                    <line x1="125" y1="75" x2="110" y2="100"/>
+                    <circle cx="117.5" cy="87.5" r="4" fill="var(--orange)" stroke="none"/>
+                </g>
+                <!-- Centrosomes moving -->
+                <rect x="80" y="30" width="10" height="15" fill="var(--orange)"/>
+                <rect x="110" y="155" width="10" height="15" fill="var(--orange)"/>
+            </svg>
+
+            <!-- SVG: Metaphase -->
+            <svg class="svg-layer" id="svg-Metaphase" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="90" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <!-- Spindle Fibers -->
+                <g stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="3 3">
+                    <line x1="100" y1="20" x2="80" y2="100"/>
+                    <line x1="100" y1="20" x2="100" y2="100"/>
+                    <line x1="100" y1="20" x2="120" y2="100"/>
+                    <line x1="100" y1="180" x2="80" y2="100"/>
+                    <line x1="100" y1="180" x2="100" y2="100"/>
+                    <line x1="100" y1="180" x2="120" y2="100"/>
+                </g>
+                <!-- Centrosomes at poles -->
+                <rect x="90" y="10" width="20" height="10" fill="var(--orange)"/>
+                <rect x="90" y="180" width="20" height="10" fill="var(--orange)"/>
+                <!-- Chromosomes aligned at equator -->
+                <g stroke="var(--slate)" stroke-width="6" stroke-linecap="round">
+                    <!-- Chr 1 -->
+                    <line x1="70" y1="90" x2="90" y2="110"/>
+                    <line x1="90" y1="90" x2="70" y2="110"/>
+                    <circle cx="80" cy="100" r="4" fill="var(--orange)" stroke="none"/>
+                    <!-- Chr 2 -->
+                    <line x1="90" y1="90" x2="110" y2="110"/>
+                    <line x1="110" y1="90" x2="90" y2="110"/>
+                    <circle cx="100" cy="100" r="4" fill="var(--orange)" stroke="none"/>
+                    <!-- Chr 3 -->
+                    <line x1="110" y1="90" x2="130" y2="110"/>
+                    <line x1="130" y1="90" x2="110" y2="110"/>
+                    <circle cx="120" cy="100" r="4" fill="var(--orange)" stroke="none"/>
+                </g>
+            </svg>
+
+            <!-- SVG: Anaphase -->
+            <svg class="svg-layer" id="svg-Anaphase" viewBox="0 0 200 200">
+                <ellipse cx="100" cy="100" rx="90" ry="95" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <!-- Spindle Fibers pulling -->
+                <g stroke="var(--royal-blue)" stroke-width="2">
+                    <line x1="100" y1="15" x2="80" y2="60"/>
+                    <line x1="100" y1="15" x2="100" y2="60"/>
+                    <line x1="100" y1="15" x2="120" y2="60"/>
+                    
+                    <line x1="100" y1="185" x2="80" y2="140"/>
+                    <line x1="100" y1="185" x2="100" y2="140"/>
+                    <line x1="100" y1="185" x2="120" y2="140"/>
+                </g>
+                <rect x="90" y="5" width="20" height="10" fill="var(--orange)"/>
+                <rect x="90" y="185" width="20" height="10" fill="var(--orange)"/>
+                
+                <!-- Chromatids split (V shapes) -->
+                <g stroke="var(--slate)" stroke-width="5" stroke-linecap="round" fill="none">
+                    <!-- Top set -->
+                    <path d="M70 70 L80 60 L90 70" />
+                    <path d="M90 70 L100 60 L110 70" />
+                    <path d="M110 70 L120 60 L130 70" />
+                    <!-- Bottom set -->
+                    <path d="M70 130 L80 140 L90 130" />
+                    <path d="M90 130 L100 140 L110 130" />
+                    <path d="M110 130 L120 140 L130 130" />
+                </g>
+            </svg>
+
+            <!-- SVG: Telophase -->
+            <svg class="svg-layer" id="svg-Telophase" viewBox="0 0 200 200">
+                <!-- Cleavage furrow figure-8 shape -->
+                <path d="M100 30 C 180 30, 180 170, 100 170 C 20 170, 20 30, 100 30 Z" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                
+                <!-- Reforming Nuclei -->
+                <circle cx="100" cy="70" r="30" fill="#D4E6F1" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="4"/>
+                <circle cx="100" cy="130" r="30" fill="#D4E6F1" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="4"/>
+                
+                <!-- Decondensing chromatin -->
+                <path d="M85 65 Q100 50 115 65 T100 80" stroke="var(--slate)" stroke-width="2" fill="none"/>
+                <path d="M85 125 Q100 110 115 125 T100 140" stroke="var(--slate)" stroke-width="2" fill="none"/>
+                
+                <rect x="95" y="20" width="10" height="5" fill="var(--orange)"/>
+                <rect x="95" y="175" width="10" height="5" fill="var(--orange)"/>
+            </svg>
+
+            <!-- SVG: Cytokinesis -->
+            <svg class="svg-layer" id="svg-Cytokinesis" viewBox="0 0 200 200">
+                <!-- Cell 1 -->
+                <circle cx="100" cy="55" r="45" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <circle cx="100" cy="55" r="25" fill="#D4E6F1" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="4"/>
+                <path d="M90 50 Q100 40 110 50 T100 60" stroke="var(--slate)" stroke-width="2" fill="none"/>
+                
+                <!-- Cell 2 -->
+                <circle cx="100" cy="150" r="45" fill="#E8F8F5" stroke="var(--slate)" stroke-width="4"/>
+                <circle cx="100" cy="150" r="25" fill="#D4E6F1" stroke="var(--royal-blue)" stroke-width="2" stroke-dasharray="4"/>
+                <path d="M90 145 Q100 135 110 145 T100 155" stroke="var(--slate)" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- RIGHT PANEL: SIGNALING CASCADE -->
+    <section class="card signaling-panel">
+        <div class="card-header">
+            <span>Cell Cycle Control: MPF Cascade</span>
+            <div>
+                <button class="btn-green" onclick="advanceSignal()" id="btn-advance">Next Step</button>
+                <button class="btn-orange" onclick="resetSignal()">Reset</button>
+            </div>
+        </div>
+        <div class="cascade-container">
+            <svg class="cascade-svg" viewBox="0 0 300 400">
+                <!-- Cell Membrane -->
+                <line x1="0" y1="50" x2="300" y2="50" stroke="var(--border-color)" stroke-width="10"/>
+                <text x="10" y="40" fill="var(--text-muted)" font-size="12">Extracellular</text>
+                <text x="10" y="75" fill="var(--text-muted)" font-size="12">Intracellular (Cytoplasm)</text>
+
+                <!-- Step 0: Growth Factor & Receptor -->
+                <circle id="sig-ligand" cx="150" cy="10" r="10" class="node inactive-node" />
+                <path id="sig-receptor" d="M130 30 L170 30 L160 80 L140 80 Z" class="node inactive-node" />
+                <text x="180" y="45" fill="var(--slate)" font-size="12" font-weight="bold">Growth Factor Receptor</text>
+
+                <!-- Line to Step 1 -->
+                <line id="line-1" x1="150" y1="80" x2="150" y2="130" class="pathway-line" />
+
+                <!-- Step 1: Cyclin Accumulation -->
+                <rect id="sig-cyclin" x="120" y="130" width="60" height="30" rx="5" class="node inactive-node" />
+                <text x="135" y="150" fill="white" font-size="12" font-weight="bold">Cyclin</text>
+                
+                <!-- Line to Step 2 -->
+                <line id="line-2" x1="150" y1="160" x2="150" y2="210" class="pathway-line" />
+
+                <!-- Step 2: cdc2 (CDK) Kinase -->
+                <circle id="sig-cdc2" cx="150" cy="240" r="30" class="node inactive-node" />
+                <text x="135" y="245" fill="white" font-size="12" font-weight="bold">cdc2</text>
+                
+                <!-- MPF Complex representation (hidden initially) -->
+                <g id="sig-mpf" opacity="0" style="transition: opacity var(--transition-speed)">
+                    <circle cx="150" cy="240" r="40" fill="none" stroke="var(--orange)" stroke-width="3" stroke-dasharray="4"/>
+                    <text x="195" y="245" fill="var(--orange)" font-size="14" font-weight="bold">MPF Active!</text>
+                </g>
+
+                <!-- Line to Nucleus -->
+                <line id="line-3" x1="150" y1="270" x2="150" y2="330" class="pathway-line" />
+
+                <!-- Step 3: Nucleus (Mitosis Trigger) -->
+                <ellipse id="sig-nucleus" cx="150" cy="360" rx="80" ry="30" class="node inactive-node" />
+                <text x="100" y="365" fill="white" font-size="14" font-weight="bold">Initiate Mitosis (M-Phase)</text>
+            </svg>
+        </div>
+        <div style="margin-top: 15px; text-align: center;">
+            <p id="signal-text" style="font-size: 0.95rem; color: var(--slate);"><strong>Status:</strong> Quiescent state. Awaiting growth signal.</p>
+        </div>
+    </section>
+
+    <!-- BOTTOM PANEL: EDUCATIONAL INFO -->
+    <section class="info-panel">
+        <div class="card info-box">
+            <h3 id="info-title">G1 Phase (First Gap)</h3>
+            <p id="info-desc">The cell undergoes rapid growth and active metabolism. Organelles like centrioles begin to replicate in preparation for future division. The cell functions normally while accumulating necessary building blocks.</p>
+        </div>
+        
+        <div class="card info-box deep-dive">
+            <h3>Deep Dive: Checkpoints</h3>
+            <p id="deep-dive-desc"><strong>G1/S Checkpoint (Restriction Point):</strong> The cell evaluates if it is large enough, has sufficient nutrients, and if DNA is undamaged before committing to DNA replication (S phase). If conditions are not met, the cell may enter a resting state (G0) or undergo apoptosis.</p>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    /** * EDUCATIONAL DATA DICTIONARY 
+     * Supports both Academic and ELI5 (Explain Like I'm 5) modes.
+     */
+    const cycleData = {
+        'G1': {
+            title: "G1 Phase (First Gap)",
+            academic: "The cell undergoes rapid growth and active metabolism. Organelles like centrioles begin to replicate in preparation for future division. The cell functions normally while accumulating necessary building blocks.",
+            eli5: "The cell is like a growing child. It is eating, getting bigger, and doing its normal everyday jobs. It's gathering supplies for a big trip.",
+            checkpoint: "<strong>G1/S Checkpoint:</strong> The cell evaluates if it is large enough, has sufficient nutrients, and if DNA is undamaged before committing to DNA replication."
+        },
+        'S': {
+            title: "S Phase (Synthesis)",
+            academic: "DNA Replication occurs. The loosely coiled chromatin fibers are duplicated so that each future daughter cell will receive a complete identical set of genetic information.",
+            eli5: "The cell makes an exact photocopy of its instruction manual (DNA) so that when it splits, both new cells know exactly what to do.",
+            checkpoint: "<strong>Intra-S Checkpoint:</strong> Monitors the progression of DNA synthesis, ensuring there are no errors or stalls in the replication forks."
+        },
+        'G2': {
+            title: "G2 Phase (Second Gap)",
+            academic: "Final preparations for cell division. The cell continues to grow and synthesizes proteins necessary for mitosis, such as tubulin for spindle fibers.",
+            eli5: "The cell is doing a final backpack check before the big trip. It is packing the special tools (proteins) it needs to pull itself apart.",
+            checkpoint: "<strong>G2/M Checkpoint:</strong> The cell checks that all DNA is fully and correctly replicated. This is regulated by the accumulation of Cyclin and activation of cdc2 to form MPF."
+        },
+        'Prophase': {
+            title: "Prophase (Mitosis Begins)",
+            academic: "Distinct pairs of chromosomes become apparent (tightly coiled DNA). Centriole pairs migrate to opposite poles, spindle fibers form. The nuclear envelope and nucleolus disintegrate.",
+            eli5: "The DNA instructions are packed tightly into tiny suitcases (chromosomes) so they don't get tangled up. The walls of the 'nucleus room' break down.",
+            checkpoint: "<strong>Structural Prep:</strong> Nuclear envelope breakdown is a direct target of MPF kinase activity via phosphorylation of nuclear lamins."
+        },
+        'Metaphase': {
+            title: "Metaphase",
+            academic: "Chromosomes line up in an orderly fashion midway between the centrioles (equatorial plate). Spindle fibers attach to the centromeres of each chromosome.",
+            eli5: "All the suitcases (chromosomes) line up in a single file line right in the middle of the cell, getting ready to be separated.",
+            checkpoint: "<strong>Spindle Assembly Checkpoint (SAC):</strong> Ensures every single chromosome is attached to spindle fibers from opposite poles before allowing them to separate."
+        },
+        'Anaphase': {
+            title: "Anaphase",
+            academic: "Centromeres split. Individual sister chromatids migrate in opposite directions along spindle fibers toward polar centrioles. Cytokinesis begins.",
+            eli5: "The twin suitcases let go of each other's hands and are pulled to opposite sides of the room by the spindle ropes.",
+            checkpoint: "<strong>Anaphase Promoting Complex (APC):</strong> Activation leads to the degradation of cohesin proteins holding chromatids together."
+        },
+        'Telophase': {
+            title: "Telophase",
+            academic: "Chromosomes complete migration. The nuclear envelope develops around each set of chromosomes. Nucleoli reappear. Spindle fibers disintegrate and a cleavage furrow is nearly complete.",
+            eli5: "The suitcases arrive at their destinations and are unpacked. New 'nucleus rooms' are built around them.",
+            checkpoint: "<strong>Mitotic Exit:</strong> Cyclins are degraded, MPF activity drops, allowing phosphatases to reverse prophase events."
+        },
+        'Cytokinesis': {
+            title: "Cytokinesis",
+            academic: "Cytoplasmic division is completed. The cell membrane fully constricts (cleavage furrow), separating the cytoplasm into two newly formed, identical daughter cells.",
+            eli5: "A wall is built right down the middle, perfectly splitting the one big house into two identical smaller houses.",
+            checkpoint: "<strong>Return to Interphase:</strong> The two new daughter cells now enter their own G1 phase, continuing the cycle."
+        }
+    };
+
+    const signalingData = {
+        0: {
+            academic: "<strong>Status:</strong> Quiescent state. Awaiting extracellular growth signal.",
+            eli5: "<strong>Status:</strong> The cell is sleeping. Waiting for a phone call telling it to wake up."
+        },
+        1: {
+            academic: "<strong>Status:</strong> Growth factor binds receptor. Signal transduction initiates accumulation of <strong>Cyclin</strong> protein during interphase.",
+            eli5: "<strong>Status:</strong> The phone rings! A message arrives telling the cell to start gathering 'Go' signals (Cyclin)."
+        },
+        2: {
+            academic: "<strong>Status:</strong> Cyclin binds to <strong>cdc2</strong> (a kinase). This forms the active Maturation Promoting Factor (<strong>MPF</strong>) complex.",
+            eli5: "<strong>Status:</strong> The 'Go' signals connect to a special engine (cdc2) to turn it on!"
+        },
+        3: {
+            academic: "<strong>Status:</strong> MPF phosphorylates nuclear targets, triggering nuclear envelope breakdown and initiating <strong>Mitosis</strong>.",
+            eli5: "<strong>Status:</strong> The engine revs up and blasts through the cell, yelling 'It is time to divide!'"
+        }
+    };
+
+    // State Variables
+    let currentPhase = 'G1';
+    let isEli5 = false;
+    let signalStep = 0;
+
+    // DOM Elements
+    const eli5Toggle = document.getElementById('eli5-toggle');
+    const infoTitle = document.getElementById('info-title');
+    const infoDesc = document.getElementById('info-desc');
+    const deepDiveDesc = document.getElementById('deep-dive-desc');
+    const currentPhaseTag = document.getElementById('current-phase-tag');
+    const signalText = document.getElementById('signal-text');
+
+    /**
+     * INITIALIZATION & EVENT LISTENERS
+     */
+    eli5Toggle.addEventListener('change', (e) => {
+        isEli5 = e.target.checked;
+        updateUI();
+        updateSignalText();
+    });
+
+    /**
+     * LEFT PANEL: CELL CYCLE LOGIC
+     */
+    function setPhase(phase) {
+        currentPhase = phase;
+        
+        // Update Buttons
+        document.querySelectorAll('#phase-controls button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(`btn-${phase}`).classList.add('active');
+
+        // Update SVGs
+        document.querySelectorAll('.svg-layer').forEach(svg => {
+            svg.classList.remove('active');
+        });
+        document.getElementById(`svg-${phase}`).classList.add('active');
+
+        // Update Text
+        updateUI();
+    }
+
+    function updateUI() {
+        const data = cycleData[currentPhase];
+        infoTitle.innerText = data.title;
+        currentPhaseTag.innerText = currentPhase + " Phase";
+        
+        if (isEli5) {
+            infoDesc.innerHTML = `<span style="font-size: 1.2rem;">🧩</span> ${data.eli5}`;
+        } else {
+            infoDesc.innerHTML = data.academic;
+        }
+        
+        deepDiveDesc.innerHTML = data.checkpoint;
+    }
+
+    /**
+     * RIGHT PANEL: SIGNALING CASCADE LOGIC
+     */
+    function advanceSignal() {
+        if (signalStep < 3) {
+            signalStep++;
+            renderSignalStep();
+        }
+    }
+
+    function resetSignal() {
+        signalStep = 0;
+        renderSignalStep();
+        // Reset visually to G1 if mitosis was triggered
+        if(currentPhase === 'Prophase' || currentPhase === 'Metaphase' || currentPhase === 'Anaphase' || currentPhase === 'Telophase' || currentPhase === 'Cytokinesis') {
+            setPhase('G1');
+        }
+    }
+
+    function renderSignalStep() {
+        // Elements
+        const ligand = document.getElementById('sig-ligand');
+        const receptor = document.getElementById('sig-receptor');
+        const cyclin = document.getElementById('sig-cyclin');
+        const cdc2 = document.getElementById('sig-cdc2');
+        const mpf = document.getElementById('sig-mpf');
+        const nucleus = document.getElementById('sig-nucleus');
+        
+        const line1 = document.getElementById('line-1');
+        const line2 = document.getElementById('line-2');
+        const line3 = document.getElementById('line-3');
+
+        // Reset all
+        [ligand, receptor, cyclin, cdc2, nucleus].forEach(el => {
+            el.classList.remove('active-node');
+            el.classList.add('inactive-node');
+        });
+        [line1, line2, line3].forEach(el => el.classList.remove('active'));
+        mpf.style.opacity = "0";
+
+        // Apply based on step
+        if (signalStep >= 1) {
+            ligand.classList.add('active-node');
+            ligand.setAttribute('cy', '20'); // Move ligand down to receptor
+            receptor.classList.add('active-node');
+            line1.classList.add('active');
+            cyclin.classList.add('active-node');
+        } else {
+            ligand.setAttribute('cy', '10'); // Reset ligand position
+        }
+        
+        if (signalStep >= 2) {
+            line2.classList.add('active');
+            cdc2.classList.add('active-node');
+            mpf.style.opacity = "1";
+        }
+        
+        if (signalStep >= 3) {
+            line3.classList.add('active');
+            nucleus.classList.add('active-node');
+            
+            // Educational tie-in: Automatically switch cell phase to Prophase to show the result of the signal
+            setTimeout(() => {
+                setPhase('Prophase');
+            }, 600);
+        }
+
+        // Update Text
+        updateSignalText();
+        
+        // Button state
+        document.getElementById('btn-advance').disabled = (signalStep >= 3);
+    }
+
+    function updateSignalText() {
+        const textData = signalingData[signalStep];
+        signalText.innerHTML = isEli5 ? textData.eli5 : textData.academic;
+    }
+
+    // Initialize UI on load
+    updateUI();
+    updateSignalText();
+
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Cell Division &amp; Signaling</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"cell-division-signaling", title:"Cell Division & Signaling", unit:"Unit 4" });
+  APTools.mountHUD("#apHud","cell-division-signaling");
+  var BANK=[
+    { id:"c1", bloom:"Remember", outcome:"Order mitosis phases",
+      q:"What is the correct order of mitosis?",
+      choices:["Prophase → Metaphase → Anaphase → Telophase","Metaphase → Prophase → Telophase → Anaphase","Anaphase → Prophase → Metaphase → Telophase","Telophase → Anaphase → Metaphase → Prophase"],
+      answer:0, why:"PMAT: Prophase, Metaphase, Anaphase, Telophase — remember 'Please Meet At Two'." },
+    { id:"c2", bloom:"Understand", outcome:"Identify phases",
+      q:"During METAPHASE, the chromosomes are:",
+      choices:["Aligned along the cell's equator (metaphase plate)","Being pulled to opposite poles","Decondensing into chromatin","Replicating their DNA"],
+      answer:0, why:"In metaphase, sister chromatids line up single-file on the metaphase plate before separation." },
+    { id:"c3", bloom:"Understand", outcome:"Identify phases",
+      q:"Sister chromatids are pulled toward opposite poles during:",
+      choices:["Anaphase","Prophase","Metaphase","Interphase"],
+      answer:0, why:"Anaphase is when centromeres split and sister chromatids move to opposite poles." },
+    { id:"c4", bloom:"Remember", outcome:"Interphase / S phase",
+      q:"DNA is replicated during which part of the cell cycle?",
+      choices:["S phase (interphase)","Prophase","Anaphase","Cytokinesis"],
+      answer:0, why:"DNA synthesis (replication) happens in the S phase of interphase, before mitosis begins." },
+    { id:"c5", bloom:"Understand", outcome:"Cytokinesis",
+      q:"Cytokinesis refers to:",
+      choices:["Division of the cytoplasm into two cells","Condensation of chromosomes","Replication of DNA","Breakdown of the nuclear envelope"],
+      answer:0, why:"Cytokinesis is the physical splitting of the cytoplasm, producing two separate daughter cells." },
+    { id:"c6", bloom:"Understand", outcome:"Checkpoints",
+      q:"Cell-cycle checkpoints exist mainly to:",
+      choices:["Verify conditions are correct before proceeding (e.g., DNA intact)","Speed the cell through division","Destroy all cyclins","Prevent DNA replication entirely"],
+      answer:0, why:"Checkpoints (G1/S, G2/M, spindle) halt the cycle until DNA integrity and other conditions are satisfied, preventing errors/cancer." },
+    { id:"c7", bloom:"Understand", outcome:"Cyclins/CDKs",
+      q:"Cyclins regulate the cell cycle by:",
+      choices:["Activating cyclin-dependent kinases (CDKs)","Replicating the DNA directly","Building the cell membrane","Transporting ions"],
+      answer:0, why:"Cyclin levels rise and fall to activate CDKs, which phosphorylate targets that drive the cell into the next phase." },
+    { id:"c8", bloom:"Understand", outcome:"Signal transduction",
+      q:"In signal transduction, binding of a ligand to a membrane receptor typically triggers:",
+      choices:["An intracellular cascade (e.g., phosphorylation relay)","Immediate cell death","DNA replication with no intermediates","Only passive diffusion"],
+      answer:0, why:"A ligand-bound receptor activates a relay of intracellular molecules (a cascade), amplifying the signal to change cell behavior." },
+    { id:"c9", bloom:"Apply", outcome:"Clinical link",
+      q:"Loss of checkpoint control that allows damaged cells to keep dividing is a hallmark of:",
+      choices:["Cancer","Isotonic balance","Simple diffusion","Hyperpolarization"],
+      answer:0, why:"When checkpoints fail, cells with DNA damage proliferate unchecked — a defining feature of cancer." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"cell-division-signaling", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

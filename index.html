@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy &amp; Physiology Active Learning Mini Apps</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&family=Spline+Sans+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Riso-zine "notebook" aesthetic — adapted from
+   100-NLM-use-cases.html (Dr. V. Garcia-Martinez)
+   ============================================================ */
+:root{
+  --paper:#F4F1E8; --paper-2:#EFEBDD; --card:#FCFBF6; --card-2:#F7F4EA;
+  --ink:#16150F; --ink-soft:rgba(22,21,15,.68); --ink-faint:rgba(22,21,15,.14);
+  --rule:rgba(22,21,15,.16);
+  --lime:#CDF13B; --lime-d:#B4D827; --red:#C0392B; --blue:#2F55D4;
+  --teal:#0E5E6F; --amber:#C6792B; --purple:#6B4E9E; --green:#1B7D46;
+  --grid:rgba(40,70,120,.075); --bind:70px; --bind-mobile:24px;
+  --shadow:0 1px 1px rgba(22,21,15,.08),0 10px 22px -8px rgba(22,21,15,.32);
+  --stamp-shadow:2px 3px 0 rgba(22,21,15,.86);
+}
+*{box-sizing:border-box}
+html{background:#d8d1bd;scroll-behavior:smooth;scroll-padding-top:80px}
+body{
+  position:relative; margin:0; padding-left:var(--bind); color:var(--ink);
+  background:
+    linear-gradient(var(--grid) 1px,transparent 1px) 0 0/100% 30px,
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/30px 100%,
+    radial-gradient(120% 80% at 70% -10%,#FAF7EF 0,var(--paper) 46%,#ECE7D8 100%);
+  font-family:"Hanken Grotesk","Aptos","Segoe UI",Arial,sans-serif;
+  line-height:1.58; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+/* left binding edge */
+body::before{
+  content:""; position:fixed; top:0; bottom:0; left:0; width:var(--bind); z-index:120; pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(22,21,15,.06),transparent 72%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='40'%3E%3Cellipse cx='44' cy='20' rx='9' ry='12' fill='%23d6d0c0' stroke='%233a3a32' stroke-width='1.5'/%3E%3Cellipse cx='44' cy='20' rx='4.5' ry='7' fill='%23b3afa2'/%3E%3Crect x='8' y='14' width='50' height='11' rx='5.5' fill='%23d2cfc4' stroke='%233a3a32' stroke-width='1'/%3E%3Crect x='10' y='20.5' width='46' height='3.5' rx='1.8' fill='%238e8b80'/%3E%3C/svg%3E");
+  background-repeat:no-repeat,repeat-y; background-position:0 0,0 6px; background-size:auto,70px 40px;
+}
+/* paper grain + red margin rule */
+body::after{
+  content:""; position:fixed; inset:0; z-index:999; pointer-events:none; opacity:.86; mix-blend-mode:multiply;
+  background:
+    linear-gradient(90deg,transparent calc(var(--bind) + 25px),rgba(192,57,43,.30) calc(var(--bind) + 25px),rgba(192,57,43,.30) calc(var(--bind) + 27px),transparent calc(var(--bind) + 27px)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 .09 0 0 0 0 .08 0 0 0 0 .06 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='.055'/%3E%3C/svg%3E");
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 48px 0 60px}
+h1,h2,h3,.ui,.brandmark{font-family:"Bricolage Grotesque","Arial Black","Inter",sans-serif}
+
+/* ---- topbar ---- */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(244,241,232,.9);backdrop-filter:blur(10px);border-bottom:1.5px solid var(--ink)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+.brandmark{font-size:22px;font-weight:900;letter-spacing:-.045em;color:var(--ink)}
+.brandmark span{color:rgba(22,21,15,.58);font-family:"Spline Sans Mono",Consolas,monospace;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.name-field{display:flex;align-items:center;gap:8px;font-family:"Spline Sans Mono",monospace;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.name-field input{font-family:"Hanken Grotesk",sans-serif;font-weight:600;font-size:13px;letter-spacing:0;text-transform:none;padding:7px 11px;border:1.5px solid var(--ink);border-radius:4px;background:var(--card);color:var(--ink);box-shadow:1.5px 1.5px 0 rgba(22,21,15,.5)}
+
+/* ---- hero ---- */
+.hero{position:relative;padding:70px 0 50px;border-bottom:1px dashed var(--ink-faint);overflow:visible}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:40px;align-items:center}
+.hero-media{position:relative;margin:0;transform:rotate(.5deg);justify-self:center;width:100%;max-width:320px}
+.video-frame{position:relative;width:100%;aspect-ratio:9/16;max-height:78vh;margin:0 auto;border:2px solid var(--ink);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:#000}
+.video-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.hero-media figcaption{font-family:"Spline Sans Mono",monospace;font-size:11.5px;font-weight:700;color:rgba(22,21,15,.6);margin-top:9px;text-align:center}
+.hero-video-tape{position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-2deg);z-index:2;background:var(--lime);border:1.5px solid var(--ink);border-radius:4px;padding:4px 12px;font-family:"Spline Sans Mono",monospace;font-size:11px;font-weight:800;letter-spacing:.06em;box-shadow:var(--shadow)}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:28px}.hero-media{max-width:300px;justify-self:start}}
+.hero::before{content:"";position:absolute;inset:18px 24px 18px 34px;pointer-events:none;opacity:.5;transform:rotate(-1deg);
+  background:radial-gradient(80% 60% at 88% 8%,rgba(205,241,59,.24),transparent 55%),
+  linear-gradient(transparent 60%,rgba(205,241,59,.82) 60% 92%,transparent 92%)}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:"Spline Sans Mono",monospace;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(22,21,15,.58);margin:0 0 16px;position:relative}
+.eyebrow::before{content:"";width:9px;height:9px;background:var(--lime);border:1.4px solid var(--ink);transform:rotate(8deg);flex:0 0 auto}
+.hero h1{max-width:16ch;font-size:clamp(42px,7.4vw,92px);line-height:.86;margin:6px 0 20px;font-weight:900;letter-spacing:-.05em;color:var(--ink);position:relative}
+.hero h1 mark{background:linear-gradient(transparent 58%,var(--lime) 58% 96%,transparent 96%);color:inherit;padding:0 .05em}
+.hero .sub{max-width:60ch;color:var(--ink);font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(19px,2.4vw,28px);line-height:1.06;font-weight:800;letter-spacing:-.03em;margin:0 0 16px;position:relative}
+.hero .tag{display:inline-block;color:var(--red);font-family:"Comic Sans MS","Segoe Print",cursive;font-size:19px;font-weight:700;line-height:1.15;transform:rotate(-1.4deg);margin:0 0 8px;position:relative}
+
+/* photo card in hero */
+.photo-wrap{position:relative;display:flex;align-items:center;gap:18px;width:min(100%,560px);margin-top:28px;padding:16px 20px;background:var(--card);border:1.5px solid var(--ink);border-radius:5px;box-shadow:var(--shadow);transform:rotate(-.45deg)}
+.photo-wrap::before{content:"";position:absolute;top:-15px;left:42px;width:86px;height:26px;background:rgba(205,241,59,.44);border-left:1px dashed rgba(22,21,15,.18);border-right:1px dashed rgba(22,21,15,.18);transform:rotate(-5deg);background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.25) 0 5px,transparent 5px 10px)}
+.photo-circle{width:78px;height:78px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);box-shadow:var(--stamp-shadow);background:var(--paper-2);flex-shrink:0}
+.photo-info{font-family:"Hanken Grotesk",sans-serif}
+.photo-info .name{font-weight:900;font-size:16px;color:var(--ink)}
+.photo-info .title{font-size:12.5px;color:var(--ink-soft);margin-top:3px;line-height:1.4}
+.grounded{display:inline-flex;align-items:center;gap:9px;margin-top:22px;padding:7px 14px;border:1.5px solid var(--ink);border-radius:999px;background:var(--card);color:var(--ink);font-family:"Spline Sans Mono",monospace;font-size:11.5px;font-weight:800;box-shadow:var(--shadow);transform:rotate(.5deg)}
+.grounded .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);border:1px solid var(--ink)}
+
+/* ---- overall stats ---- */
+.overall{display:flex;gap:14px;flex-wrap:wrap;margin:34px 0 6px}
+.ov-cell{background:var(--card);border:1.5px solid var(--ink);border-radius:6px;padding:14px 20px;box-shadow:var(--stamp-shadow);min-width:120px}
+.ov-cell .big{font-family:"Bricolage Grotesque",sans-serif;font-size:2rem;font-weight:900;line-height:1;letter-spacing:-.03em}
+.ov-cell .lbl{font-family:"Spline Sans Mono",monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-top:6px}
+.reset-btn{font-family:"Bricolage Grotesque",sans-serif;font-weight:900;font-size:13px;cursor:pointer;border:2px solid var(--ink);border-radius:4px;background:var(--card);color:var(--ink);box-shadow:var(--stamp-shadow);padding:10px 16px;transition:transform .14s,box-shadow .14s}
+.reset-btn:hover{transform:translate(-1px,-1px) rotate(-.4deg);box-shadow:4px 5px 0 rgba(22,21,15,.86);background:var(--lime)}
+
+/* ---- sections & module cards ---- */
+main{padding:20px 0 10px}
+.unit-h{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(22px,3vw,32px);font-weight:900;letter-spacing:-.04em;margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:12px}
+.unit-h .u-badge{font-family:"Spline Sans Mono",monospace;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--ink);padding:3px 9px;border-radius:4px}
+.unit-h .ch-count{font-family:"Spline Sans Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);border:1.2px solid var(--ink-faint);border-radius:999px;padding:2px 9px;margin-left:auto}
+.ch-soon{font-family:"Spline Sans Mono",monospace;font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--ink-soft);background:var(--card-2);border:1.5px dashed var(--ink-faint);border-radius:10px;padding:16px 20px;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));gap:16px}
+.mod{position:relative;display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--ink);border-radius:8px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .14s,box-shadow .14s}
+.mod:hover{transform:translate(-2px,-2px) rotate(-.3deg);box-shadow:5px 6px 0 rgba(22,21,15,.82)}
+.mod::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px}
+.mod[data-accent="blue"]::before{background:var(--blue)}
+.mod[data-accent="red"]::before{background:var(--red)}
+.mod[data-accent="teal"]::before{background:var(--teal)}
+.mod[data-accent="amber"]::before{background:var(--amber)}
+.mod[data-accent="purple"]::before{background:var(--purple)}
+.mod[data-accent="green"]::before{background:var(--green)}
+.mod .top{padding:16px 18px 10px 22px}
+.mod .num{font-family:"Spline Sans Mono",monospace;font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+.mod .chip{font-family:"Spline Sans Mono",monospace;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:3px;border:1.2px solid var(--ink)}
+.mod .chip.engine{background:var(--lime);color:var(--ink)}
+.mod .chip.explore{background:var(--card-2);color:var(--ink-soft)}
+.mod h3{margin:8px 0 5px;font-size:1.08rem;font-weight:900;line-height:1.15;letter-spacing:-.02em}
+.mod .desc{font-size:.85rem;color:var(--ink-soft);line-height:1.42}
+.mod .bar-wrap{margin:12px 18px 16px 22px}
+.mod .bar{height:9px;border-radius:5px;background:var(--paper-2);border:1.2px solid var(--ink);overflow:hidden}
+.mod .bar>i{display:block;height:100%;background:var(--lime);border-right:1.2px solid var(--ink);width:0;transition:width .4s}
+.mod .meta{display:flex;justify-content:space-between;font-family:"Spline Sans Mono",monospace;font-size:10.5px;font-weight:700;color:var(--ink-soft);margin-top:8px}
+
+/* ---- footer ---- */
+footer{margin-top:40px;padding:30px 0 70px;border-top:1px dashed var(--ink-faint)}
+.footer-inner{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;text-align:left}
+.photo-sm{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);box-shadow:var(--stamp-shadow);background:var(--paper-2)}
+.footer-inner .built{font-family:"Bricolage Grotesque",sans-serif;font-weight:900;font-size:15px;color:var(--ink)}
+.footer-inner .credit{font-family:"Hanken Grotesk",sans-serif;font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+/* back to top */
+#backtop{position:fixed;right:18px;bottom:18px;z-index:40;border:2px solid var(--ink);border-radius:4px;background:var(--lime);color:var(--ink);font-family:"Bricolage Grotesque",sans-serif;font-weight:900;font-size:13px;padding:10px 14px;cursor:pointer;box-shadow:var(--stamp-shadow);opacity:0;pointer-events:none;transition:.25s}
+#backtop.show{opacity:1;pointer-events:auto}
+
+@media (max-width:680px){
+  :root{--bind:var(--bind-mobile)}
+  .wrap{padding:0 18px 0 24px}
+  .grid{grid-template-columns:1fr}
+  .footer-inner{flex-direction:column;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brandmark">A&amp;P Mini Apps <span>· Active Learning</span></div>
+    <label class="name-field">Name
+      <input id="nameInput" placeholder="for results cards">
+    </label>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+   <div class="hero-copy">
+    <p class="eyebrow">Interactive Study Hub · Anatomy &amp; Physiology I</p>
+    <h1>Anatomy &amp; Physiology <mark>Active Learning</mark> Mini Apps</h1>
+    <p class="sub">Explore each simulation, then test yourself. Your mastery, XP and streaks are saved right here on this device.</p>
+    <p class="tag">Explore it → predict it → prove it ✏️</p>
+
+    <div class="photo-wrap">
+      <img class="photo-circle" src="public/fotos%20and%20miscellaneous/VHGM%20traje%20azul.png" alt="Dr. Victor Garcia-Martinez">
+      <div class="photo-info">
+        <div class="name">Dr. Victor Garcia-Martinez, MSN, FNP-C, RN</div>
+        <div class="title">Nursing &amp; Biology Faculty · Lone Star College–North Harris</div>
+      </div>
+    </div>
+
+    <div class="grounded"><span class="dot"></span> Progress saved on this device</div>
+   </div>
+
+   <figure class="hero-media">
+     <div class="hero-video-tape">▶ Watch the intro</div>
+     <div class="video-frame">
+       <video controls preload="metadata" playsinline>
+         <source src="assets/Video_introduction_202607061652.mp4" type="video/mp4">
+         Your browser can't play this video. <a href="assets/Video_introduction_202607061652.mp4">Download the intro</a>.
+       </video>
+     </div>
+     <figcaption>A quick intro to how these mini-apps work.</figcaption>
+   </figure>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="overall">
+    <div class="ov-cell"><div class="big" id="oMastery">0%</div><div class="lbl">Avg mastery</div></div>
+    <div class="ov-cell"><div class="big" id="oXP">0</div><div class="lbl">Total XP</div></div>
+    <div class="ov-cell"><div class="big" id="oModules">0/0</div><div class="lbl">Modules started</div></div>
+    <div class="ov-cell"><div class="big" id="oCorrect">0</div><div class="lbl">Correct answers</div></div>
+    <div class="ov-cell" style="display:flex;align-items:center;border:none;box-shadow:none;background:none;padding-left:0;">
+      <button class="reset-btn" id="resetBtn">Reset all progress</button>
+    </div>
+  </div>
+
+  <main id="units"></main>
+</div>
+
+<footer>
+  <div class="wrap footer-inner">
+    <img class="photo-sm" src="public/fotos%20and%20miscellaneous/VHGM%20traje%20azul.png" alt="Dr. Victor Garcia-Martinez">
+    <div>
+      <div class="built">Built by Dr. Victor Garcia Martinez</div>
+      <div class="credit">MSN, FNP-C, RN · Nursing &amp; Biology Faculty · Lone Star College–North Harris · 2026</div>
+    </div>
+  </div>
+</footer>
+
+<button id="backtop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+"use strict";
+/* Course chapters — the full A&P I scaffold (order matters). */
+const CHAPTERS = [
+  { n:1,  title:"Introduction to Anatomy & Physiology" },
+  { n:2,  title:"Chemistry" },
+  { n:3,  title:"Cells" },
+  { n:4,  title:"Metabolism" },
+  { n:5,  title:"Tissues" },
+  { n:6,  title:"Integumentary System" },
+  { n:7,  title:"Skeletal System — Bones" },
+  { n:8,  title:"Skeletal System — Joints" },
+  { n:9,  title:"Muscular System" },
+  { n:10, title:"Nervous System — Part I" },
+  { n:11, title:"Nervous System — Part II" },
+  { n:12, title:"Nervous System — Part III" },
+];
+
+/* Module registry — chapter = A&P chapter number. engine:true = wired to APTools scoring. */
+const MODULES = [
+  { chapter:1, num:"1.1", id:"anatomical-regions", accent:"blue",
+    title:"Anatomical Regions, Planes & Terms",
+    desc:"Click regions, planes, directional terms and quadrants.",
+    file:"1. Anatomical Regions Interactive.html", engine:true },
+  { chapter:1, num:"1.2", id:"homeostasis", accent:"green",
+    title:"Homeostasis & Feedback Loops",
+    desc:"Predict the curve, then run negative & positive feedback. Scored challenges.",
+    file:"2. homeostasis-feedback-dashboard.html", engine:true },
+  { chapter:2, num:"2.1", id:"atomic-structure",  accent:"blue",
+    title:"Atomic Structure Lab", desc:"Build atoms; make ions, isotopes, radioisotopes & free radicals.",
+    file:"9. atomic-structure-lab.html", engine:true },
+  { chapter:2, num:"2.2", id:"chemical-bonding",  accent:"purple",
+    title:"Chemical Bonding Lab", desc:"Electronegativity tug-of-war: ionic, covalent (polar/nonpolar) & H-bonds.",
+    file:"10. chemical-bonding-lab.html", engine:true },
+  { chapter:2, num:"2.3", id:"inorganic-solutions", accent:"teal",
+    title:"Solutions, Acids & Bases", desc:"Mixtures, the pH scale, salts & buffers.",
+    file:"11. inorganic-solutions-ph.html", engine:true },
+  { chapter:4, num:"4.1", id:"organic-compounds", accent:"green",
+    title:"Organic Compounds & Energy",
+    desc:"Carbs, lipids, proteins & nucleic acids; dehydration/hydrolysis & ATP.",
+    file:"16. organic-compounds-dashboard.html", engine:false },
+  { chapter:3, num:"3.1", id:"membrane-transport", accent:"teal",
+    title:"Membrane Transport",
+    desc:"Diffusion, osmosis and active transport across the membrane.",
+    file:"3. membrane-transport-dashboard.html", engine:true },
+  { chapter:3, num:"3.2", id:"resting-potential", accent:"teal",
+    title:"Resting Membrane Potential",
+    desc:"Ion gradients, permeability and the origin of Vm.",
+    file:"4. resting-membrane-potential.html", engine:true },
+  { chapter:3, num:"3.3", id:"tonicity", accent:"teal",
+    title:"Tonicity & Osmosis",
+    desc:"Hypotonic, hypertonic and isotonic effects on cells.",
+    file:"5. tonicity-osmosis-dashboard.html", engine:true },
+  { chapter:3, num:"3.4", id:"cell-division-signaling", accent:"purple",
+    title:"Cell Division & Signaling Dashboard",
+    desc:"Mitosis phase-by-phase, MPF signaling cascade and checkpoints.",
+    file:"6.1.2 cell_division_signaling_dashboard.html", engine:true },
+  { chapter:3, num:"3.5", id:"cell-division-command", accent:"red",
+    title:"Cell Division Command (Game)",
+    desc:"Guide a cell through the cycle: manage ATP, pass checkpoints, avoid apoptosis.",
+    file:"6.1. cell_division_command.html", engine:true },
+  { chapter:6, num:"6.1", id:"wound-healing", accent:"red",
+    title:"Wound Healing Dashboard",
+    desc:"Watch a wound close through 4 phases; toggle infection & diabetes.",
+    file:"8. wound-healing-dashboard.html", engine:true },
+  { chapter:7, num:"7.1", id:"bone-histology", accent:"blue",
+    title:"The Micro-Matrix",
+    desc:"Zoom to the osteon; label lamellae, lacunae & canaliculi; compact vs spongy.",
+    file:"12. micro-matrix-bone-histology.html", engine:true },
+  { chapter:7, num:"7.2", id:"long-bone-anatomy", accent:"teal",
+    title:"The Long Bone Architect",
+    desc:"Cross-section explorer: diaphysis, epiphysis, marrow & periosteum.",
+    file:"13. long-bone-architect.html", engine:true },
+  { chapter:7, num:"7.3", id:"bone-remodeling", accent:"red",
+    title:"The Remodeling Lab",
+    desc:"Blood-calcium simulator: PTH, calcitonin, osteoblasts vs osteoclasts.",
+    file:"14. remodeling-lab-calcium.html", engine:true },
+  { chapter:7, num:"7.4", id:"skeletal-organization", accent:"purple",
+    title:"The Skeletal Assembler",
+    desc:"Axial vs appendicular; male vs female pelvis; landmark hunt.",
+    file:"15. skeletal-assembler.html", engine:true },
+  { chapter:5, num:"5.1", id:"epithelial-tissue", accent:"amber",
+    title:"Epithelial Tissue Explorer",
+    desc:"Structure, function and classification of epithelia.",
+    file:"7. interactive_epithelial_tissue_dashboard.html", engine:true },
+  { chapter:5, num:"5.2", id:"tissue-architect", accent:"amber",
+    title:"The Tissue Architect (Build)",
+    desc:"Drag cell types onto a basement membrane to build epithelia.",
+    file:"7.1. the_tissue_architect.html", engine:true },
+  { chapter:5, num:"5.3", id:"tissue-microscope", accent:"amber",
+    title:"Virtual Microscope — Tissue Diagnostic",
+    desc:"Identify tissue slides under the scope. Lab-practical prep.",
+    file:"7.2.1 virtual-microscope-tissue-diagnostic.html", engine:true },
+];
+
+const nameInput = document.getElementById("nameInput");
+try { nameInput.value = localStorage.getItem("apstudio.name") || ""; } catch(e){}
+nameInput.addEventListener("input", ()=>{ try{ localStorage.setItem("apstudio.name", nameInput.value);}catch(e){} });
+
+function render(){
+  const all = APTools.progress.all();
+  const unitsEl = document.getElementById("units");
+  unitsEl.innerHTML = "";
+
+  let started=0, xpSum=0, masterySum=0, masteryCount=0, correctSum=0;
+  MODULES.forEach(m=>{
+    const r = all[m.id];
+    if(r){ if(r.seen>0) started++; xpSum+=r.xp||0; correctSum+=r.correct||0; masterySum+=r.mastery||0; masteryCount++; }
+  });
+
+  CHAPTERS.forEach(ch=>{
+    const mods = MODULES.filter(m=>m.chapter===ch.n);
+    const h = document.createElement("div"); h.className="unit-h";
+    h.innerHTML = '<span class="u-badge">CH '+ch.n+'</span> '+ch.title+
+      (mods.length? ' <span class="ch-count">'+mods.length+' app'+(mods.length>1?'s':'')+'</span>' : '');
+    unitsEl.appendChild(h);
+
+    if(!mods.length){
+      const soon = document.createElement("div");
+      soon.className="ch-soon";
+      soon.textContent = "Interactive apps coming soon";
+      unitsEl.appendChild(soon);
+      return;
+    }
+
+    const grid = document.createElement("div"); grid.className="grid";
+    mods.forEach(m=>{
+      const r = all[m.id] || {mastery:0,seen:0,xp:0};
+      const a = document.createElement("a");
+      a.className="mod"; a.href=encodeURI(m.file); a.dataset.accent=m.accent||"blue";
+      a.innerHTML =
+        '<div class="top">'+
+          '<div class="num">APP '+m.num+' '+
+            (m.engine?'<span class="chip engine">scored</span>':'<span class="chip explore">explore</span>')+'</div>'+
+          '<h3>'+m.title+'</h3>'+
+          '<div class="desc">'+m.desc+'</div>'+
+        '</div>'+
+        '<div class="bar-wrap">'+
+          '<div class="bar"><i style="width:'+(r.mastery||0)+'%"></i></div>'+
+          '<div class="meta"><span>'+(r.mastery||0)+'% MASTERY</span>'+
+            '<span>'+(r.seen? r.seen+' Qs · '+(r.xp||0)+' XP' : 'NOT STARTED')+'</span></div>'+
+        '</div>';
+      grid.appendChild(a);
+    });
+    unitsEl.appendChild(grid);
+  });
+
+  document.getElementById("oMastery").textContent = (masteryCount? Math.round(masterySum/masteryCount):0)+"%";
+  document.getElementById("oXP").textContent = xpSum;
+  document.getElementById("oModules").textContent = started+"/"+MODULES.length;
+  document.getElementById("oCorrect").textContent = correctSum;
+}
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("Reset ALL saved progress on this device? This cannot be undone.")){
+    APTools.progress.reset(); render();
+  }
+});
+
+/* back-to-top visibility */
+addEventListener("scroll", ()=>{
+  document.getElementById("backtop").classList.toggle("show", scrollY>400);
+});
+
+render();
+</script>
+</body>
+</html>

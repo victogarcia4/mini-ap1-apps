@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CELL DIVISION COMMAND</title>
+    <link rel="stylesheet" href="assets/aptools.css?v=1">
+    <style>
+        :root {
+            --bg-color: #1A1A2E;
+            --cell-body: #2D6A4F;
+            --nucleus: #40916C;
+            --chromosomes: #E76F51;
+            --spindles: #F4A261;
+            --text-main: #EDF2F4;
+            --success: #52B788;
+            --error: #E63946;
+            --accent: #48CAE4;
+            --panel-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * { box-sizing: border-box; user-select: none; }
+        
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Bar */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; background: rgba(0,0,0,0.3); border-bottom: 2px solid var(--accent);
+            height: 60px;
+        }
+        .stats-group { display: flex; gap: 20px; align-items: center; }
+        .stat-box { display: flex; flex-direction: column; align-items: center; font-weight: bold; }
+        .stat-value { font-size: 1.2rem; color: var(--accent); }
+        .health-bar-container { width: 150px; height: 15px; background: #333; border-radius: 10px; overflow: hidden; }
+        #health-bar { height: 100%; width: 100%; background: var(--success); transition: width 0.3s, background 0.3s; }
+
+        /* Main Game Area */
+        #game-container { display: flex; flex: 1; height: calc(100vh - 140px); }
+        
+        /* Sidebar */
+        aside {
+            width: 200px; padding: 15px; background: var(--panel-bg);
+            border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto;
+        }
+        .phase-item {
+            padding: 8px 10px; margin-bottom: 5px; border-radius: 5px;
+            color: #888; font-size: 0.9rem; transition: all 0.3s;
+        }
+        .phase-item.active { background: var(--accent); color: #000; font-weight: bold; }
+        .phase-item.completed { color: var(--success); border-left: 3px solid var(--success); }
+
+        /* SVG Viewport */
+        main { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
+        svg { width: 100%; height: 100%; max-height: 800px; max-width: 800px; }
+
+        /* Bottom Bar */
+        footer {
+            height: 80px; background: rgba(0,0,0,0.5); border-top: 1px solid var(--accent);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
+        }
+        .task-queue { flex: 1; display: flex; gap: 10px; overflow-x: auto; padding: 0 10px; }
+        .task-card {
+            background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 15px; border-radius: 20px; font-size: 0.85rem;
+            display: flex; align-items: center; justify-content: center; opacity: 0.5;
+        }
+        .task-card.current { opacity: 1; border-color: var(--accent); box-shadow: 0 0 10px rgba(72, 202, 228, 0.5); }
+        .task-card.done { opacity: 1; border-color: var(--success); color: var(--success); text-decoration: line-through; }
+        
+        .controls { display: flex; gap: 10px; }
+        button {
+            background: var(--panel-bg); color: white; border: 1px solid var(--accent);
+            padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;
+            transition: 0.2s;
+        }
+        button:hover { background: var(--accent); color: black; }
+        button.active-toggle { background: var(--success); color: black; border-color: var(--success); }
+
+        .interactive { cursor: pointer; transition: filter 0.2s; pointer-events: auto; }
+        .interactive:hover { filter: drop-shadow(0 0 8px var(--accent)) brightness(1.3); }
+        
+        .hint-glow { animation: hintPulse 1.5s infinite; }
+        @keyframes hintPulse {
+            0% { filter: drop-shadow(0 0 5px var(--accent)); }
+            50% { filter: drop-shadow(0 0 20px var(--accent)); }
+            100% { filter: drop-shadow(0 0 5px var(--accent)); }
+        }
+
+        .success-flash { animation: successAnim 0.5s ease-out; }
+        @keyframes successAnim {
+            0% { filter: brightness(1); transform: scale(1); }
+            50% { filter: brightness(2) drop-shadow(0 0 20px var(--success)); transform: scale(1.1); }
+            100% { filter: brightness(1); transform: scale(1); }
+        }
+
+        .error-shake { animation: shakeAnim 0.4s ease-in-out; }
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .apoptosis-sequence { animation: apoptosisAnim 3s forwards; }
+        @keyframes apoptosisAnim {
+            0% { filter: sepia(0); transform: scale(1); }
+            20% { filter: sepia(1) hue-rotate(-50deg); transform: scale(1.05) skew(2deg); }
+            40% { filter: sepia(1) hue-rotate(-50deg) saturate(3); transform: scale(0.9) skew(-2deg); }
+            60% { filter: sepia(1) saturate(5); transform: scale(1.1); opacity: 1; }
+            100% { filter: sepia(1) saturate(5); transform: scale(0); opacity: 0; }
+        }
+
+        /* SVG Element specific transitions */
+        .spindle-fiber { stroke-dasharray: 400; stroke-dashoffset: 400; transition: stroke-dashoffset 2s; }
+        .spindle-fiber.active { stroke-dashoffset: 0; }
+        .chromosome-group { transition: transform 2s ease-in-out; }
+        .membrane { transition: all 2s ease-in-out; }
+        .hidden-el { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        .visible-el { opacity: 1; pointer-events: auto; }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: #111; border: 2px solid var(--accent); border-radius: 10px;
+            padding: 30px; max-width: 500px; width: 90%; text-align: center;
+            box-shadow: 0 0 30px rgba(72, 202, 228, 0.3);
+        }
+        .modal-title { font-size: 1.5rem; margin-bottom: 15px; color: var(--accent); }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .quiz-btn { padding: 12px; font-size: 1rem; text-align: left; background: #222; border: 1px solid #444; }
+        .quiz-btn:hover { background: #333; border-color: var(--accent); }
+        .quiz-btn.correct { background: var(--success); color: black; }
+        .quiz-btn.wrong { background: var(--error); color: white; }
+
+        #screen-msg { position: absolute; top: 20%; width: 100%; text-align: center; font-size: 2rem; font-weight: bold; pointer-events: none; opacity: 0; transition: opacity 0.5s; text-shadow: 0 0 10px black; z-index: 200; }
+
+        #instruction-banner {
+            position: absolute; top: 15px; background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--accent); border-radius: 8px; padding: 10px 20px;
+            font-size: 0.95rem; z-index: 10; pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.3s ease; text-align: center;
+        }
+        .instruction-highlight { color: var(--accent); font-weight: bold; letter-spacing: 1px; }
+
+        /* Start Menu */
+        #start-menu { display: flex; flex-direction: column; gap: 15px; }
+        .diff-btn { padding: 15px; font-size: 1.1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="font-size: 1.2rem; font-weight: bold; letter-spacing: 2px;">CELL DIVISION COMMAND</div>
+        <div class="stats-group">
+            <div class="stat-box"><span>SCORE</span><span class="stat-value" id="ui-score">0</span></div>
+            <div class="stat-box"><span>COMBO</span><span class="stat-value" id="ui-combo">x1</span></div>
+            <div class="stat-box"><span>ATP</span><span class="stat-value" id="ui-atp" style="color:#F4A261">100</span></div>
+            <div class="stat-box"><span>NUC</span><span class="stat-value" id="ui-nuc" style="color:#A8DADC">50</span></div>
+            <div class="stat-box"><span>ENZ</span><span class="stat-value" id="ui-enz" style="color:#9B5DE5">30</span></div>
+            <div class="stat-box">
+                <span>HEALTH</span>
+                <div class="health-bar-container"><div id="health-bar"></div></div>
+            </div>
+        </div>
+    </header>
+
+    <div id="game-container">
+        <aside id="sidebar">
+            <h3 style="margin-top:0; color:var(--accent); font-size:0.9rem;">PHASES</h3>
+            <div id="phase-list"></div>
+            <div style="margin-top: 30px; font-size: 0.8rem; color: #888;" id="phase-desc"></div>
+        </aside>
+
+        <main id="canvas-area">
+            <div id="screen-msg">Phase Complete!</div>
+            <div id="instruction-banner"></div>
+            
+            <svg id="cell-svg" viewBox="0 0 1000 1000">
+                <defs>
+                    <filter id="gooey">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
+                        <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -10" result="goo" />
+                        <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+                    </filter>
+                    <radialGradient id="cyto" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#40916C" />
+                        <stop offset="100%" stop-color="#2D6A4F" />
+                    </radialGradient>
+                </defs>
+
+                <!-- Extracellular BG (Optional) -->
+                <rect width="1000" height="1000" fill="transparent" />
+
+                <!-- Cell Membrane (Uses Gooey filter for Cytokinesis cleavage furrow) -->
+                <g filter="url(#gooey)" id="cell-membrane-group">
+                    <circle id="cell-left" class="membrane" cx="500" cy="500" r="300" fill="url(#cyto)" />
+                    <circle id="cell-right" class="membrane" cx="500" cy="500" r="300" fill="url(#cyto)" />
+                </g>
+
+                <!-- Nucleus -->
+                <circle id="nucleus-membrane" cx="500" cy="500" r="120" fill="#1B4332" stroke="#48CAE4" stroke-width="4" stroke-dasharray="0" class="membrane visible-el" />
+                <circle id="nucleolus" cx="530" cy="470" r="30" fill="#081C15" class="visible-el interactive" />
+
+                <!-- Chromatin (Interphase) -->
+                <path id="chromatin" d="M 450 500 Q 480 450 520 480 T 550 520 T 480 540 Q 460 520 450 500" fill="none" stroke="var(--chromosomes)" stroke-width="6" class="visible-el interactive" />
+
+                <!-- Chromosomes (Mitosis) -->
+                <g id="chromosomes-group" class="hidden-el">
+                    <!-- Pair 1 -->
+                    <g id="chromo-1" class="chromosome-group interactive" transform="translate(430, 430)">
+                        <path d="M-20,-20 L20,20 M-20,20 L20,-20" stroke="var(--chromosomes)" stroke-width="8" stroke-linecap="round"/>
+                        <circle class="centromere" cx="0" cy="0" r="5" fill="white"/>
+                    </g>
+                    <!-- Pair 2 -->
+                    <g id="chromo-2" class="chromosome-group interactive" transform="translate(550, 450)">
+                        <path d="M-20,-20 L20,20 M-20,20 L20,-20" stroke="var(--chromosomes)" stroke-width="8" stroke-linecap="round"/>
+                        <circle class="centromere" cx="0" cy="0" r="5" fill="white"/>
+                    </g>
+                    <!-- Pair 3 -->
+                    <g id="chromo-3" class="chromosome-group interactive" transform="translate(480, 550)">
+                        <path d="M-20,-20 L20,20 M-20,20 L20,-20" stroke="var(--chromosomes)" stroke-width="8" stroke-linecap="round"/>
+                        <circle class="centromere" cx="0" cy="0" r="5" fill="white"/>
+                    </g>
+                </g>
+
+                <!-- Separated Chromatids (Anaphase/Telophase) -->
+                <g id="chromatids-left" class="hidden-el chromosome-group">
+                    <path d="M280,480 L320,520 M280,500 L320,540 M280,520 L320,560" stroke="var(--chromosomes)" stroke-width="6" stroke-linecap="round"/>
+                </g>
+                <g id="chromatids-right" class="hidden-el chromosome-group">
+                    <path d="M720,480 L680,520 M720,500 L680,540 M720,520 L680,560" stroke="var(--chromosomes)" stroke-width="6" stroke-linecap="round"/>
+                </g>
+
+                <!-- Spindle Fibers -->
+                <g id="spindles-group" class="hidden-el">
+                    <!-- Left side spindles -->
+                    <path id="spindle-l1" class="spindle-fiber" d="M 250 500 L 500 450" stroke="var(--spindles)" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path id="spindle-l2" class="spindle-fiber" d="M 250 500 L 500 500" stroke="var(--spindles)" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path id="spindle-l3" class="spindle-fiber" d="M 250 500 L 500 550" stroke="var(--spindles)" stroke-width="2" stroke-dasharray="5,5"/>
+                    <!-- Right side spindles -->
+                    <path id="spindle-r1" class="spindle-fiber" d="M 750 500 L 500 450" stroke="var(--spindles)" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path id="spindle-r2" class="spindle-fiber" d="M 750 500 L 500 500" stroke="var(--spindles)" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path id="spindle-r3" class="spindle-fiber" d="M 750 500 L 500 550" stroke="var(--spindles)" stroke-width="2" stroke-dasharray="5,5"/>
+                </g>
+
+                <!-- Organelles (G1, S, G2) -->
+                <!-- Centrioles / Centrosomes -->
+                <g id="centriole-pair-1" class="visible-el interactive" transform="translate(480, 280)">
+                    <rect x="0" y="0" width="10" height="25" fill="#E9C46A" transform="rotate(20)" />
+                    <rect x="-5" y="10" width="25" height="10" fill="#E9C46A" transform="rotate(20)" />
+                </g>
+                <g id="centriole-pair-2" class="hidden-el interactive chromosome-group" transform="translate(520, 280)">
+                    <rect x="0" y="0" width="10" height="25" fill="#E9C46A" transform="rotate(-20)" />
+                    <rect x="-15" y="10" width="25" height="10" fill="#E9C46A" transform="rotate(-20)" />
+                </g>
+
+                <!-- Mitochondria -->
+                <g id="mitochondria-1" class="visible-el interactive" transform="translate(300, 400)">
+                    <rect x="0" y="0" width="60" height="30" rx="15" fill="#F4A261" />
+                    <path d="M 10 15 L 20 5 L 30 25 L 40 5 L 50 15" fill="none" stroke="#264653" stroke-width="3" />
+                </g>
+                <g id="mitochondria-2" class="visible-el" transform="translate(620, 600) rotate(45)">
+                    <rect x="0" y="0" width="60" height="30" rx="15" fill="#F4A261" />
+                    <path d="M 10 15 L 20 5 L 30 25 L 40 5 L 50 15" fill="none" stroke="#264653" stroke-width="3" />
+                </g>
+
+                <!-- Ribosomes -->
+                <g id="ribosomes" class="visible-el interactive">
+                    <circle cx="350" cy="600" r="4" fill="white"/> <circle cx="370" cy="580" r="4" fill="white"/>
+                    <circle cx="330" cy="570" r="4" fill="white"/> <circle cx="360" cy="620" r="4" fill="white"/>
+                    <circle cx="650" cy="350" r="4" fill="white"/> <circle cx="670" cy="370" r="4" fill="white"/>
+                    <circle cx="680" cy="340" r="4" fill="white"/>
+                </g>
+
+                <!-- S-Phase Specifics (Inside Nucleus) -->
+                <g id="s-phase-tools" class="hidden-el">
+                    <!-- Replication Fork icon -->
+                    <path id="rep-fork" class="interactive" d="M 450 450 L 480 480 L 450 510" fill="none" stroke="#E9C46A" stroke-width="5" />
+                    <!-- DNA Pol icon -->
+                    <circle id="dna-pol" class="interactive" cx="520" cy="460" r="15" fill="#2A9D8F" />
+                    <!-- Ligase icon -->
+                    <polygon id="ligase" class="interactive" points="530,520 550,500 550,540" fill="#E76F51" />
+                </g>
+
+                <!-- G2 Specifics -->
+                <g id="microtubules" class="hidden-el interactive">
+                    <line x1="400" y1="300" x2="430" y2="330" stroke="#FFF" stroke-width="3"/>
+                    <line x1="600" y1="300" x2="570" y2="330" stroke="#FFF" stroke-width="3"/>
+                    <line x1="400" y1="700" x2="450" y2="650" stroke="#FFF" stroke-width="3"/>
+                </g>
+                
+                <g id="dna-verify" class="hidden-el interactive" transform="translate(480, 480)">
+                    <circle cx="20" cy="20" r="20" fill="rgba(0,0,0,0.5)" />
+                    <path d="M 10 20 L 15 25 L 30 10" fill="none" stroke="var(--success)" stroke-width="4"/>
+                </g>
+
+                <!-- Telophase targets -->
+                <circle id="pole-target-l" cx="250" cy="500" r="50" fill="rgba(72, 202, 228, 0.3)" class="hidden-el interactive" />
+                <circle id="pole-target-r" cx="750" cy="500" r="50" fill="rgba(72, 202, 228, 0.3)" class="hidden-el interactive" />
+                
+                <g id="cleavage-target" class="hidden-el interactive">
+                    <rect x="480" y="200" width="40" height="600" fill="rgba(230, 57, 70, 0.2)" />
+                    <path d="M 500 200 L 500 800" stroke="var(--error)" stroke-width="2" stroke-dasharray="10,10" />
+                </g>
+
+            </svg>
+        </main>
+    </div>
+
+    <footer>
+        <div class="task-queue" id="task-queue">
+            <!-- Tasks injected here -->
+        </div>
+        <div class="controls">
+            <button id="btn-hint">Hint (-50 pt)</button>
+            <button id="btn-eli5">ELI5 Mode</button>
+            <button id="btn-restart" style="border-color:var(--error); color:var(--error)">Abort</button>
+        </div>
+    </footer>
+
+    <!-- Main Modal (Start, Quiz, End) -->
+    <div class="modal-overlay" id="main-modal">
+        <div class="modal-content" id="modal-container">
+            <h2 class="modal-title" id="modal-title">CELL DIVISION COMMAND</h2>
+            <div id="modal-body">
+                <div id="start-menu">
+                    <p>Guide the cell through the cell cycle. Manage resources, pass checkpoints, and produce healthy daughter cells.</p>
+                    
+                    <div id="instructions" style="text-align: left; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 0.95rem; border: 1px solid rgba(255,255,255,0.2);">
+                        <h3 style="color: var(--accent); margin-top: 0; margin-bottom: 10px; text-align: center; font-size: 1.1rem;">HOW TO PLAY</h3>
+                        <ol style="margin: 0; padding-left: 25px; line-height: 1.5;">
+                            <li style="margin-bottom: 8px;"><strong>Check Your Tasks:</strong> Look at the Task Queue at the bottom of the screen to see what needs to happen next.</li>
+                            <li style="margin-bottom: 8px;"><strong>Interact:</strong> Click the organelles and structures inside the center cell visualization in the <em>correct biological order</em> matching your tasks.</li>
+                            <li style="margin-bottom: 8px;"><strong>Manage Resources:</strong> Actions cost <strong>ATP</strong> and <strong>Nucleotides</strong>. Clicking out of order or running out of resources drains <strong>Cell Health</strong>.</li>
+                            <li style="margin-bottom: 8px;"><strong>Pass Checkpoints:</strong> Use your biological knowledge to pass quiz checkpoints between major phases.</li>
+                            <li><strong>Survive:</strong> Don't let your Cell Health reach zero, or the cell will undergo <em>Apoptosis</em> (programmed cell death)!</li>
+                        </ol>
+                    </div>
+
+                    <button class="diff-btn" onclick="startGame('guided')" style="background:var(--success); color:black;">Level 1: GUIDED (Tutorial)</button>
+                    <button class="diff-btn" onclick="startGame('standard')">Level 2: STANDARD</button>
+                    <button class="diff-btn" onclick="startGame('challenge')" style="border-color:var(--error)">Level 3: CHALLENGE</button>
+                </div>
+            </div>
+            <div class="quiz-options" id="modal-options"></div>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio API Context
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'pass') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.setValueAtTime(600, now + 0.1);
+                osc.frequency.setValueAtTime(800, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (type === 'die') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 1.5);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 1.5);
+                osc.start(now); osc.stop(now + 1.5);
+            }
+        }
+
+        // Knowledge Base & Config
+        const phases = [
+            {
+                id: 'G1', name: 'G1 Phase', eli5: 'Growing Up',
+                desc: 'Rapid cell growth and duplication of organelles like centrioles.',
+                eli5Desc: 'The cell eats and grows like a kid. Make copies of the team captains (centrioles)!',
+                tasks: [
+                    { id: 'centriole-pair-1', label: 'Duplicate Centrioles', eli5: 'Copy Captains' },
+                    { id: 'ribosomes', label: 'Synthesize Proteins', eli5: 'Make Building Blocks' },
+                    { id: 'mitochondria-1', label: 'Generate ATP', eli5: 'Store Energy' }
+                ],
+                reqOrder: true,
+                checkpoint: null
+            },
+            {
+                id: 'S', name: 'S Phase', eli5: 'DNA Copying',
+                desc: 'DNA replication occurs. Chromosomes are duplicated.',
+                eli5Desc: 'Time to photocopy the instruction manual! Every page must be perfect.',
+                tasks: [
+                    { id: 'rep-fork', label: 'Unzip DNA', eli5: 'Open the Book' },
+                    { id: 'dna-pol', label: 'Synthesize Strands', eli5: 'Photocopy Pages' },
+                    { id: 'ligase', label: 'Seal Gaps', eli5: 'Tape it Together' }
+                ],
+                reqOrder: true,
+                checkpoint: 'G1/S Checkpoint'
+            },
+            {
+                id: 'G2', name: 'G2 Phase', eli5: 'Final Checks',
+                desc: 'Final preparations for division. Organelles multiply, DNA checked.',
+                eli5Desc: 'Final check before the big split! Are all pages copied?',
+                tasks: [
+                    { id: 'microtubules', label: 'Build Tubulin', eli5: 'Make Ropes' },
+                    { id: 'dna-verify', label: 'Verify DNA Intact', eli5: 'Check for Typos' }
+                ],
+                reqOrder: false,
+                checkpoint: 'G2/M Checkpoint'
+            },
+            {
+                id: 'Prophase', name: 'Prophase', eli5: 'Packing Up',
+                desc: 'Chromatin condenses into chromosomes. Nuclear envelope breaks down.',
+                eli5Desc: 'Pack the threads into tight springs. Break down the nucleus wall!',
+                tasks: [
+                    { id: 'chromatin', label: 'Condense Chromatin', eli5: 'Coil the Springs' },
+                    { id: 'nucleolus', label: 'Disintegrate Nucleolus', eli5: 'Hide the Core' },
+                    { id: 'nucleus-membrane', label: 'Breakdown Envelope', eli5: 'Smash the Wall' }
+                ],
+                reqOrder: false,
+                checkpoint: null
+            },
+            {
+                id: 'Metaphase', name: 'Metaphase', eli5: 'Lining Up',
+                desc: 'Chromosomes align along the equatorial plate.',
+                eli5Desc: 'Line up all the springs in the middle of the room!',
+                tasks: [
+                    { id: 'chromo-1', label: 'Align Pair 1', eli5: 'Move Pair 1' },
+                    { id: 'chromo-2', label: 'Align Pair 2', eli5: 'Move Pair 2' },
+                    { id: 'chromo-3', label: 'Align Pair 3', eli5: 'Move Pair 3' }
+                ],
+                reqOrder: false,
+                checkpoint: 'Spindle Assembly Checkpoint'
+            },
+            {
+                id: 'Anaphase', name: 'Anaphase', eli5: 'Pulling Apart',
+                desc: 'Sister chromatids split and migrate to opposite poles.',
+                eli5Desc: 'Tug of war! Pull the copies to opposite sides.',
+                tasks: [
+                    { id: 'chromo-1', label: 'Split Centromere 1', eli5: 'Snap Pair 1' },
+                    { id: 'chromo-2', label: 'Split Centromere 2', eli5: 'Snap Pair 2' },
+                    { id: 'chromo-3', label: 'Split Centromere 3', eli5: 'Snap Pair 3' },
+                ],
+                reqOrder: false,
+                checkpoint: null
+            },
+            {
+                id: 'Telophase', name: 'Telophase', eli5: 'Unpacking',
+                desc: 'Nuclear envelopes reform. Chromosomes decondense.',
+                eli5Desc: 'Build new walls. Uncoil the springs back to threads.',
+                tasks: [
+                    { id: 'pole-target-l', label: 'Form Left Nucleus', eli5: 'Build Left Wall' },
+                    { id: 'pole-target-r', label: 'Form Right Nucleus', eli5: 'Build Right Wall' }
+                ],
+                reqOrder: false,
+                checkpoint: null
+            },
+            {
+                id: 'Cytokinesis', name: 'Cytokinesis', eli5: 'The Split',
+                desc: 'Cell membrane constricts, completely separating daughter cells.',
+                eli5Desc: 'SNAP! Pinch the cell in half to make two!',
+                tasks: [
+                    { id: 'cleavage-target', label: 'Pinch Cleavage Furrow', eli5: 'Cut in Half!' }
+                ],
+                reqOrder: false,
+                checkpoint: null
+            }
+        ];
+
+        const quizzes = {
+            'G1/S Checkpoint': [
+                { q: "What must be duplicated before DNA replication?", options: ["Ribosomes", "Centrioles", "Lysosomes", "Peroxisomes"], a: 1 },
+                { q: "During which phase does the cell grow rapidly?", options: ["S Phase", "G2 Phase", "G1 Phase", "M Phase"], a: 2 },
+                { q: "What is the primary purpose of this checkpoint?", options: ["Check DNA damage", "Ensure adequate size & reserves", "Check spindle attachment", "Produce ATP"], a: 1 }
+            ],
+            'G2/M Checkpoint': [
+                { q: "What MUST be verified before mitosis begins?", options: ["ATP levels only", "DNA replication is complete & intact", "Cell size only", "Ribosome count"], a: 1 },
+                { q: "Which protein complex triggers mitosis?", options: ["Maturation Promoting Factor (MPF)", "Hemoglobin", "Insulin", "Collagen"], a: 0 },
+                { q: "What builds up during interphase to activate MPF?", options: ["Glucose", "Cyclin", "Lipids", "Calcium"], a: 1 }
+            ],
+            'Spindle Assembly Checkpoint': [
+                { q: "What happens if chromosomes aren't properly attached to spindles?", options: ["Cell proceeds normally", "Apoptosis is triggered immediately", "Division pauses until corrected", "Cytokinesis skips"], a: 2 },
+                { q: "During which phase do chromosomes align at the equatorial plate?", options: ["Prophase", "Anaphase", "Metaphase", "Telophase"], a: 2 },
+                { q: "What structure on the chromosome do spindle fibers attach to?", options: ["Telomere", "Centromere", "Chromatid", "Nucleosome"], a: 1 }
+            ]
+        };
+
+        // Game State
+        let state = {
+            phaseIdx: 0,
+            health: 100, atp: 100, nuc: 20, enz: 10,
+            score: 0, combo: 1,
+            eli5: false, difficulty: 'guided',
+            taskProgress: [],
+            loopTimer: null,
+            quizActive: false,
+            quizScore: 0,
+            quizIdx: 0
+        };
+
+        // DOM Elements
+        const el = {
+            health: document.getElementById('health-bar'),
+            score: document.getElementById('ui-score'),
+            combo: document.getElementById('ui-combo'),
+            atp: document.getElementById('ui-atp'),
+            nuc: document.getElementById('ui-nuc'),
+            enz: document.getElementById('ui-enz'),
+            phaseList: document.getElementById('phase-list'),
+            phaseDesc: document.getElementById('phase-desc'),
+            taskQueue: document.getElementById('task-queue'),
+            modal: document.getElementById('main-modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalBody: document.getElementById('modal-body'),
+            modalOpts: document.getElementById('modal-options'),
+            svg: document.getElementById('cell-svg'),
+            msg: document.getElementById('screen-msg')
+        };
+
+        function startGame(difficulty) {
+            state = {
+                phaseIdx: 0, health: 100, atp: 100, nuc: 20, enz: 10,
+                score: 0, combo: 1, eli5: false, difficulty: difficulty,
+                taskProgress: [], quizActive: false
+            };
+            
+            if(difficulty === 'challenge') { state.atp = 50; state.nuc = 10; }
+            
+            el.modal.style.display = 'none';
+            document.getElementById('btn-eli5').disabled = (difficulty === 'challenge');
+            if(difficulty==='challenge') document.getElementById('btn-eli5').style.opacity = '0.3';
+            
+            // Reset visuals
+            resetSVG();
+            buildSidebar();
+            loadPhase(0);
+            
+            if(state.loopTimer) clearInterval(state.loopTimer);
+            state.loopTimer = setInterval(gameLoop, 1000);
+        }
+
+        function resetSVG() {
+            el.svg.classList.remove('apoptosis-sequence');
+            document.querySelectorAll('.interactive').forEach(n => {
+                n.classList.remove('hidden-el', 'hint-glow');
+                n.onclick = null;
+            });
+            // Reset transforms & specific visibility
+            document.getElementById('cell-left').setAttribute('cx', 500);
+            document.getElementById('cell-right').setAttribute('cx', 500);
+            document.getElementById('nucleus-membrane').classList.remove('hidden-el');
+            document.getElementById('nucleolus').classList.remove('hidden-el');
+            document.getElementById('chromatin').classList.remove('hidden-el');
+            
+            document.getElementById('chromosomes-group').classList.add('hidden-el');
+            document.getElementById('chromatids-left').classList.add('hidden-el');
+            document.getElementById('chromatids-right').classList.add('hidden-el');
+            document.getElementById('spindles-group').classList.add('hidden-el');
+            document.getElementById('s-phase-tools').classList.add('hidden-el');
+            document.getElementById('microtubules').classList.add('hidden-el');
+            document.getElementById('dna-verify').classList.add('hidden-el');
+            document.getElementById('centriole-pair-2').classList.add('hidden-el');
+            
+            document.querySelectorAll('.chromosome-group').forEach(c => {
+                c.style.transform = '';
+            });
+            document.getElementById('nucleus-membrane').style.strokeDasharray = '0';
+        }
+
+        function buildSidebar() {
+            el.phaseList.innerHTML = '';
+            phases.forEach((p, i) => {
+                let d = document.createElement('div');
+                d.className = 'phase-item';
+                d.id = 'phase-item-' + i;
+                d.innerText = (i+1) + '. ' + (state.eli5 ? p.eli5 : p.name);
+                el.phaseList.appendChild(d);
+            });
+        }
+
+        function updateUI() {
+            el.health.style.width = Math.max(0, state.health) + '%';
+            if(state.health < 40) el.health.style.background = 'var(--error)';
+            else if(state.health < 70) el.health.style.background = '#E9C46A';
+            else el.health.style.background = 'var(--success)';
+            
+            el.score.innerText = state.score;
+            el.combo.innerText = 'x' + state.combo;
+            el.atp.innerText = state.atp;
+            el.nuc.innerText = state.nuc;
+            el.enz.innerText = state.enz;
+        }
+
+        function loadPhase(index) {
+            if (index >= phases.length) return winGame();
+            
+            state.quizActive = false; // FIX: Ensure game loop resumes after quizzes
+            state.phaseIdx = index;
+            state.taskProgress = [];
+            state.taskFailCount = 0;
+            state.quizFailCount = 0;
+            let p = phases[index];
+            
+            // UI updates
+            document.querySelectorAll('.phase-item').forEach((n,i) => {
+                n.classList.remove('active');
+                if (i < index) n.classList.add('completed');
+                if (i === index) n.classList.add('active');
+            });
+            el.phaseDesc.innerText = state.eli5 ? p.eli5Desc : p.desc;
+            
+            buildTasks(p);
+            setupPhaseVisuals(p);
+            applyHints();
+            updateUI();
+            updateInstructionBanner();
+            
+            showMsg(state.eli5 ? p.eli5 : p.name);
+        }
+
+        function updateInstructionBanner() {
+            const banner = document.getElementById('instruction-banner');
+            if(!banner) return;
+            
+            let p = phases[state.phaseIdx];
+            if (state.difficulty === 'guided') {
+                banner.innerHTML = `<span class="instruction-highlight">GUIDED MODE:</span> Check your task below, then click the <span style="color:var(--accent); text-shadow: 0 0 5px var(--accent)">glowing structure</span> in the cell.`;
+            } else {
+                if (p.reqOrder) {
+                    banner.innerHTML = `<span class="instruction-highlight">COMMAND:</span> Complete tasks in the EXACT ORDER shown below by clicking the matching structures.`;
+                } else {
+                    banner.innerHTML = `<span class="instruction-highlight">COMMAND:</span> Complete the tasks below by clicking the matching cell structures.`;
+                }
+            }
+        }
+
+        function buildTasks(p) {
+            el.taskQueue.innerHTML = '';
+            p.tasks.forEach((t, i) => {
+                let d = document.createElement('div');
+                d.className = 'task-card';
+                if(i===0) d.classList.add('current');
+                d.id = 'task-ui-' + i;
+                d.innerText = state.eli5 ? t.eli5 : t.label;
+                el.taskQueue.appendChild(d);
+                
+                // Bind click to SVG element
+                let svgEl = document.getElementById(t.id);
+                if(svgEl) {
+                    svgEl.classList.add('interactive');
+                    svgEl.onclick = () => handleTaskClick(i, t.id);
+                }
+            });
+        }
+
+        function applyHints() {
+            if(state.difficulty !== 'guided') return;
+            // Remove old hints
+            document.querySelectorAll('.hint-glow').forEach(n => n.classList.remove('hint-glow'));
+            // Add hint to current target
+            let p = phases[state.phaseIdx];
+            let nextTaskIdx = state.taskProgress.length;
+            if(nextTaskIdx < p.tasks.length) {
+                let targetId = p.tasks[nextTaskIdx].id;
+                let targetEl = document.getElementById(targetId);
+                if(targetEl) targetEl.classList.add('hint-glow');
+            }
+        }
+
+        function handleTaskClick(taskIndex, elementId) {
+            let p = phases[state.phaseIdx];
+            
+            // Check order requirement
+            if (p.reqOrder && taskIndex !== state.taskProgress.length) {
+                // Wrong order
+                triggerError(elementId, "Wrong Order!");
+                return;
+            }
+            
+            // If already done, ignore
+            if (state.taskProgress.includes(taskIndex)) return;
+            
+            // Resource checks
+            if (state.atp < 5) { triggerError(elementId, "Low ATP!"); return; }
+            state.atp -= 5;
+            if (state.phaseIdx === 1) { // S Phase needs nuc
+                if(state.nuc < 5) { triggerError(elementId, "Low Nucleotides!"); return; }
+                state.nuc -= 5;
+            }
+
+            // Success
+            state.taskProgress.push(taskIndex);
+            state.score += (10 * state.combo);
+            if(state.combo < 5) state.combo++;
+            
+            // Generate resources based on task
+            if (elementId === 'mitochondria-1') state.atp += 20;
+            if (elementId === 'ribosomes') state.enz += 10;
+            if (elementId === 'centriole-pair-1' && state.phaseIdx === 0) {
+                document.getElementById('centriole-pair-2').classList.remove('hidden-el');
+            }
+
+            playSound('click');
+            let elSvg = document.getElementById(elementId);
+            elSvg.classList.add('success-flash');
+            setTimeout(() => elSvg.classList.remove('success-flash'), 500);
+            
+            // Update UI Task
+            document.getElementById('task-ui-'+taskIndex).classList.replace('current', 'done');
+            if(taskIndex + 1 < p.tasks.length) {
+                let n = document.getElementById('task-ui-'+(taskIndex+1));
+                if(n) n.classList.add('current');
+            }
+            
+            triggerPhaseAnimation(elementId);
+            applyHints();
+            updateUI();
+
+            // Check if phase complete
+            if (state.taskProgress.length === p.tasks.length) {
+                setTimeout(finishPhase, 1000);
+            }
+        }
+
+        function triggerError(elementId, msg) {
+            playSound('error');
+            state.health -= 5;
+            state.combo = 1;
+            
+            let elSvg = document.getElementById(elementId);
+            if(elSvg) {
+                elSvg.classList.add('error-shake');
+                setTimeout(()=> elSvg.classList.remove('error-shake'), 400);
+            }
+            updateUI();
+            
+            if (state.health <= 0) {
+                triggerApoptosis();
+                return;
+            }
+            
+            state.taskFailCount = (state.taskFailCount || 0) + 1;
+
+            if (state.taskFailCount === 3) {
+                showMsg("Too many errors. Auto-advancing!");
+                state.taskFailCount = 999; // Prevent multiple triggers
+                
+                // Force-complete visuals for uncompleted tasks in this phase to prevent broken states
+                let p = phases[state.phaseIdx];
+                p.tasks.forEach((t, i) => {
+                    if (!state.taskProgress.includes(i)) {
+                        triggerPhaseAnimation(t.id);
+                    }
+                });
+                
+                // Remove interactability to prevent clicks during transition
+                document.querySelectorAll('.interactive').forEach(n => {
+                    n.classList.remove('interactive');
+                    n.onclick = null;
+                });
+                
+                setTimeout(finishPhase, 1500);
+            } else if (state.taskFailCount < 3) {
+                showMsg(msg);
+            }
+        }
+
+        function setupPhaseVisuals(p) {
+            if(p.id === 'S') document.getElementById('s-phase-tools').classList.remove('hidden-el');
+            else document.getElementById('s-phase-tools').classList.add('hidden-el');
+
+            if(p.id === 'G2') {
+                document.getElementById('microtubules').classList.remove('hidden-el');
+                document.getElementById('dna-verify').classList.remove('hidden-el');
+            } else {
+                document.getElementById('microtubules').classList.add('hidden-el');
+                document.getElementById('dna-verify').classList.add('hidden-el');
+            }
+
+            if(p.id === 'Metaphase') {
+                document.getElementById('spindles-group').classList.remove('hidden-el');
+                document.querySelectorAll('.spindle-fiber').forEach(f => f.classList.remove('active'));
+            }
+            
+            if(p.id === 'Telophase') {
+                document.getElementById('pole-target-l').classList.remove('hidden-el');
+                document.getElementById('pole-target-r').classList.remove('hidden-el');
+            } else {
+                document.getElementById('pole-target-l').classList.add('hidden-el');
+                document.getElementById('pole-target-r').classList.add('hidden-el');
+            }
+
+            if(p.id === 'Cytokinesis') {
+                document.getElementById('cleavage-target').classList.remove('hidden-el');
+            } else {
+                document.getElementById('cleavage-target').classList.add('hidden-el');
+            }
+        }
+
+        function triggerPhaseAnimation(taskId) {
+            // Hardcoded animations based on task clicked
+            if (taskId === 'nucleus-membrane') {
+                document.getElementById('nucleus-membrane').style.strokeDasharray = '10, 10';
+                setTimeout(()=> document.getElementById('nucleus-membrane').classList.add('hidden-el'), 1000);
+            }
+            if (taskId === 'nucleolus') document.getElementById('nucleolus').classList.add('hidden-el');
+            if (taskId === 'chromatin') {
+                document.getElementById('chromatin').classList.add('hidden-el');
+                document.getElementById('chromosomes-group').classList.remove('hidden-el');
+                // scatter them slightly
+                document.getElementById('chromo-1').style.transform = 'translate(400px, 350px)';
+                document.getElementById('chromo-2').style.transform = 'translate(550px, 380px)';
+                document.getElementById('chromo-3').style.transform = 'translate(450px, 600px)';
+            }
+            if (taskId.startsWith('chromo-') && state.phaseIdx === 4) { // Metaphase alignment
+                let id = taskId.split('-')[1];
+                let targetY = id === '1' ? 400 : (id === '2' ? 500 : 600);
+                document.getElementById(taskId).style.transform = `translate(500px, ${targetY}px)`;
+                // Activate spindle
+                document.getElementById('spindle-l'+id).classList.add('active');
+                document.getElementById('spindle-r'+id).classList.add('active');
+            }
+            if (taskId.startsWith('chromo-') && state.phaseIdx === 5) { // Anaphase split
+                document.getElementById('chromosomes-group').classList.add('hidden-el');
+                document.getElementById('chromatids-left').classList.remove('hidden-el');
+                document.getElementById('chromatids-right').classList.remove('hidden-el');
+                document.getElementById('spindles-group').classList.add('hidden-el');
+                
+                // Move chromatids
+                setTimeout(()=> {
+                    document.getElementById('chromatids-left').style.transform = 'translate(-200px, 0)';
+                    document.getElementById('chromatids-right').style.transform = 'translate(200px, 0)';
+                    // Begin furrow
+                    document.getElementById('cell-left').setAttribute('cx', 450);
+                    document.getElementById('cell-right').setAttribute('cx', 550);
+                }, 100);
+            }
+            if (taskId.startsWith('pole-target')) {
+                document.getElementById(taskId).setAttribute('fill', 'rgba(64, 145, 108, 0.8)');
+                if(state.taskProgress.length === 2) {
+                    document.getElementById('chromatids-left').classList.add('hidden-el');
+                    document.getElementById('chromatids-right').classList.add('hidden-el');
+                    document.getElementById('cell-left').setAttribute('cx', 350);
+                    document.getElementById('cell-right').setAttribute('cx', 650);
+                }
+            }
+            if (taskId === 'cleavage-target') {
+                document.getElementById('cell-left').setAttribute('cx', 200);
+                document.getElementById('cell-right').setAttribute('cx', 800);
+                document.getElementById('cell-left').setAttribute('r', 250);
+                document.getElementById('cell-right').setAttribute('r', 250);
+                document.getElementById('cleavage-target').classList.add('hidden-el');
+            }
+        }
+
+        function finishPhase() {
+            let p = phases[state.phaseIdx];
+            if (p.checkpoint) {
+                if (state.enz < 10) {
+                    state.health -= 15; updateUI();
+                    if(state.health <= 0) return triggerApoptosis();
+                    showMsg("Not enough Enzymes! Penalty applied.");
+                }
+                state.enz = Math.max(0, state.enz - 10);
+                startQuiz(p.checkpoint);
+            } else {
+                loadPhase(state.phaseIdx + 1);
+            }
+        }
+
+        function startQuiz(checkpointName) {
+            state.quizActive = true;
+            state.quizScore = 0;
+            state.quizIdx = 0;
+            state.currentQuiz = quizzes[checkpointName];
+            
+            el.modalTitle.innerText = "CHECKPOINT: " + checkpointName;
+            el.modal.style.display = 'flex';
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            let qData = state.currentQuiz[state.quizIdx];
+            el.modalBody.innerHTML = `
+                <div style="font-size: 0.85rem; color: var(--accent); margin-bottom: 15px; font-weight: bold; letter-spacing: 1px;">INSTRUCTION: Answer correctly to pass. Wrong answers cost health!</div>
+                <p style="font-size:1.2rem">${qData.q}</p>
+            `;
+            el.modalOpts.innerHTML = '';
+            qData.options.forEach((opt, i) => {
+                let btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.innerText = opt;
+                btn.onclick = () => handleQuizAnswer(i, btn);
+                el.modalOpts.appendChild(btn);
+            });
+        }
+
+        function handleQuizAnswer(selectedIdx, btnEl) {
+            let qData = state.currentQuiz[state.quizIdx];
+            let isCorrect = (selectedIdx === qData.a);
+            
+            document.querySelectorAll('.quiz-btn').forEach(b => b.onclick = null);
+            
+            if (isCorrect) {
+                btnEl.classList.add('correct');
+                state.quizScore++;
+                state.score += 100;
+                playSound('pass');
+            } else {
+                btnEl.classList.add('wrong');
+                state.health -= 10;
+                playSound('error');
+            }
+            updateUI();
+            if (state.health <= 0) return setTimeout(triggerApoptosis, 1000);
+
+            state.quizIdx++;
+            setTimeout(() => {
+                if (state.quizIdx < state.currentQuiz.length) {
+                    renderQuizQuestion();
+                } else {
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function finishQuiz() {
+            if (state.quizScore >= 2) {
+                // Pass
+                el.modalBody.innerHTML = `<h3 style="color:var(--success)">Checkpoint Passed! (${state.quizScore}/3)</h3>`;
+                el.modalOpts.innerHTML = `<button class="diff-btn" onclick="el.modal.style.display='none'; loadPhase(state.phaseIdx + 1);">Proceed</button>`;
+            } else {
+                // Fail
+                state.health -= 15; updateUI();
+                if (state.health <= 0) return triggerApoptosis();
+                
+                state.quizFailCount = (state.quizFailCount || 0) + 1;
+                
+                if (state.quizFailCount >= 3) {
+                    el.modalBody.innerHTML = `<h3 style="color:var(--error)">Checkpoint Failed 3 Times</h3><p>Auto-advancing to prevent getting stuck.</p>`;
+                    el.modalOpts.innerHTML = `<button class="diff-btn" onclick="el.modal.style.display='none'; loadPhase(state.phaseIdx + 1);">Proceed</button>`;
+                } else {
+                    el.modalBody.innerHTML = `<h3 style="color:var(--error)">Checkpoint Failed (${state.quizScore}/3)</h3><p>Health penalty applied.</p>`;
+                    el.modalOpts.innerHTML = `<button class="diff-btn" onclick="startQuiz('${phases[state.phaseIdx].checkpoint}')">Retake Quiz</button>`;
+                }
+            }
+        }
+
+        function gameLoop() {
+            if (state.quizActive || state.health <= 0) return;
+            
+            // Passive resource regeneration / decay
+            state.atp = Math.min(200, state.atp + 1);
+            if(state.atp <= 0) {
+                state.health -= 2;
+                document.getElementById('ui-atp').style.color = 'var(--error)';
+            } else {
+                document.getElementById('ui-atp').style.color = '#F4A261';
+            }
+            
+            updateUI();
+            if (state.health <= 0) triggerApoptosis();
+        }
+
+        function triggerApoptosis() {
+            if(state.loopTimer) clearInterval(state.loopTimer);
+            playSound('die');
+            
+            // Cancel pending interactions
+            document.querySelectorAll('.interactive').forEach(n => {
+                n.classList.remove('interactive');
+                n.onclick = null;
+            });
+            
+            el.svg.classList.add('apoptosis-sequence');
+            
+            setTimeout(() => {
+                el.modalTitle.innerText = "GAME OVER";
+                el.modalTitle.style.color = "var(--error)";
+                el.modalBody.innerHTML = `
+                    <h3>Your cell underwent Apoptosis.</h3>
+                    <p>Programmed cell death is a protective mechanism that eliminates cells with too many errors or insufficient resources.</p>
+                    <p>Final Score: ${state.score}</p>
+                `;
+                el.modalOpts.innerHTML = `<button class="diff-btn" onclick="location.reload()">Return to Menu</button>`;
+                el.modal.style.display = 'flex';
+            }, 3000);
+        }
+
+        function winGame() {
+            if(state.loopTimer) clearInterval(state.loopTimer);
+            playSound('pass');
+            
+            let accuracy = Math.min(100, (state.score / 1500) * 100).toFixed(0);
+            let stars = accuracy > 90 ? 3 : (accuracy > 70 ? 2 : (accuracy > 50 ? 1 : 0));
+            let starStr = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+
+            el.modalTitle.innerText = "DIVISION COMPLETE!";
+            el.modalTitle.style.color = "var(--success)";
+            el.modalBody.innerHTML = `
+                <h1 style="font-size:3rem; margin:10px 0;">${starStr}</h1>
+                <p>Two healthy, genetically identical daughter cells produced.</p>
+                <p>Final Score: <strong>${state.score}</strong></p>
+                <p>Accuracy Rating: <strong>${accuracy}%</strong></p>
+            `;
+            el.modalOpts.innerHTML = `<button class="diff-btn" onclick="location.reload()">Play Again</button>`;
+            el.modal.style.display = 'flex';
+        }
+
+        function showMsg(txt) {
+            el.msg.innerText = txt;
+            el.msg.style.opacity = 1;
+            setTimeout(() => el.msg.style.opacity = 0, 2000);
+        }
+
+        // Setup Controls
+        document.getElementById('btn-hint').onclick = () => {
+            if (state.score >= 50 && state.difficulty !== 'challenge') {
+                state.score -= 50; updateUI();
+                // Find next task and pulse heavily
+                let p = phases[state.phaseIdx];
+                let idx = state.taskProgress.length;
+                if(idx < p.tasks.length) {
+                    let t = document.getElementById(p.tasks[idx].id);
+                    if(t) {
+                        t.classList.add('success-flash');
+                        setTimeout(()=>t.classList.remove('success-flash'), 500);
+                    }
+                }
+            }
+        };
+
+        document.getElementById('btn-eli5').onclick = (e) => {
+            if (state.difficulty === 'challenge') return;
+            state.eli5 = !state.eli5;
+            e.target.classList.toggle('active-toggle');
+            buildSidebar();
+            buildTasks(phases[state.phaseIdx]);
+            el.phaseDesc.innerText = state.eli5 ? phases[state.phaseIdx].eli5Desc : phases[state.phaseIdx].desc;
+        };
+
+        document.getElementById('btn-restart').onclick = () => location.reload();
+
+        // Initial launch
+        el.modal.style.display = 'flex';
+    </script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+/* Un-lock the full-screen game shell so the quiz flows BELOW it instead of being clipped */
+html,body{height:auto!important;overflow:auto!important;}
+.ap-study-section{max-width:1100px;margin:26px auto 40px;padding:0 20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.35);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Commanding the Cell Cycle</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"cell-division-command", title:"Cell Division Command", unit:"Unit 4" });
+  APTools.mountHUD("#apHud","cell-division-command");
+  var BANK=[
+    { id:"cc1", bloom:"Remember", outcome:"Cell cycle stages",
+      q:"Before a cell can divide, it spends most of its life in which stage, growing and copying DNA?",
+      choices:["Interphase","Anaphase","Telophase","Cytokinesis"],
+      answer:0, why:"Interphase (G1, S, G2) is the long growth-and-preparation stage; mitosis is comparatively brief." },
+    { id:"cc2", bloom:"Understand", outcome:"S phase",
+      q:"In the game you must copy the DNA before entering mitosis. This replication occurs in:",
+      choices:["S phase","G1 checkpoint","Metaphase","Cytokinesis"],
+      answer:0, why:"DNA is synthesized in the S (synthesis) phase, producing identical sister chromatids." },
+    { id:"cc3", bloom:"Understand", outcome:"G2/M checkpoint",
+      q:"The G2/M checkpoint mainly verifies that:",
+      choices:["DNA was fully and correctly replicated","The cell has divided already","All cyclins are destroyed","The cell is hypertonic"],
+      answer:0, why:"Before mitosis, the G2/M checkpoint confirms DNA replication is complete and undamaged." },
+    { id:"cc4", bloom:"Remember", outcome:"Order mitosis",
+      q:"Which sequence correctly orders the mitotic phases you must trigger?",
+      choices:["Prophase → Metaphase → Anaphase → Telophase","Metaphase → Anaphase → Prophase → Telophase","Anaphase → Telophase → Prophase → Metaphase","Telophase → Metaphase → Anaphase → Prophase"],
+      answer:0, why:"PMAT — Prophase, Metaphase, Anaphase, Telophase." },
+    { id:"cc5", bloom:"Understand", outcome:"Metaphase alignment",
+      q:"To pass metaphase, the chromosomes must be:",
+      choices:["Lined up on the metaphase plate","Already at the poles","Decondensed","Still replicating"],
+      answer:0, why:"The spindle assembly checkpoint requires all chromosomes aligned and attached before anaphase begins." },
+    { id:"cc6", bloom:"Apply", outcome:"Apoptosis",
+      q:"In the game, if cell health hits zero the cell undergoes APOPTOSIS, which is:",
+      choices:["Programmed cell death","Uncontrolled growth","DNA replication","Cell fusion"],
+      answer:0, why:"Apoptosis is regulated 'cell suicide' that safely removes damaged or dangerous cells." },
+    { id:"cc7", bloom:"Understand", outcome:"Energy for division",
+      q:"Managing ATP matters because cell division:",
+      choices:["Requires energy for many active steps","Is entirely passive","Needs no resources","Only uses osmosis"],
+      answer:0, why:"Replication, spindle movement, and cytokinesis are energy-demanding, ATP-consuming processes." },
+    { id:"cc8", bloom:"Analyze", outcome:"Checkpoint failure",
+      q:"A cell that ignores its checkpoints and divides with damaged DNA is behaving like:",
+      choices:["A cancer cell","A red blood cell in saline","A neuron at rest","A squamous cell"],
+      answer:0, why:"Bypassing checkpoints allows damaged cells to proliferate — the core problem in cancer." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"cell-division-command", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

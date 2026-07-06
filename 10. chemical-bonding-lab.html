@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Chemical Bonding Lab — an electronegativity tug-of-war that turns sharing into stealing: nonpolar covalent, polar covalent, ionic and hydrogen bonds." />
+<title>Chemical Bonding Lab — Covalent, Ionic &amp; Hydrogen Bonds</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1" />
+<style>
+:root{
+  --primary:#1B2A4A; --accent:#2563b6; --accent-soft:#e7f0fb;
+  --bg:#eef3f9; --panel:#ffffff; --ink:#1B2A4A; --muted:#5b6b86; --line:#c9d7ea; --line-2:#e2ebf6;
+  --nonpolar:#1B7D46; --polar:#2563b6; --ionic:#8b46c0; --hbond:#c0392b;
+  --radius:14px; --shadow:0 6px 20px rgba(27,42,74,.10);
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:linear-gradient(160deg,#eef3f9,#e2ebf6);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+header.topbar{background:var(--primary);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand .logo{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,#2563b6,#8b46c0);}
+.brand h1{font-size:1.16rem;font-weight:700;}
+.brand p{font-size:.78rem;color:#c9d7ea;margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.switch{display:flex;align-items:center;gap:9px;font-size:.82rem;color:#c9d7ea;cursor:pointer;user-select:none;}
+.switch input{display:none;}
+.track{width:44px;height:24px;border-radius:20px;background:#3a4d73;position:relative;transition:.25s;flex:none;}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.25s;}
+.switch input:checked + .track{background:#4a9d6b;}
+.switch input:checked + .track::after{transform:translateX(20px);}
+.btn-link{text-decoration:none;color:#c9d7ea;font-weight:600;font-size:.82rem;border:1px solid #3a4d73;border-radius:9px;padding:8px 13px;}
+.btn-link:hover{color:#fff;border-color:#fff;}
+
+.layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;max-width:1420px;margin:0 auto;padding:20px 24px 30px;}
+@media (max-width:940px){.layout{grid-template-columns:1fr;}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.card h2{font-size:.74rem;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);font-weight:700;padding:15px 18px 0;}
+.card .body{padding:14px 18px 18px;}
+.sidebar{display:flex;flex-direction:column;gap:16px;}
+
+.slider-row label{display:flex;justify-content:space-between;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:8px;}
+.slider-row label b{color:var(--accent);font-variant-numeric:tabular-nums;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--nonpolar) 0 12%,var(--polar) 12% 52%,var(--ionic) 52% 100%);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--primary);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--primary);cursor:pointer;}
+.en-scale{display:flex;justify-content:space-between;font-size:.66rem;color:var(--muted);margin-top:5px;font-weight:600;}
+.preset-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;}
+.chip-btn{font:inherit;font-weight:650;font-size:.78rem;border:1px solid var(--line);background:#fff;color:var(--primary);border-radius:999px;padding:7px 11px;cursor:pointer;}
+.chip-btn:hover{border-color:var(--accent);color:var(--accent);}
+.chip-btn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+.viewport{display:flex;flex-direction:column;gap:16px;}
+.bond-stage{background:radial-gradient(circle at 50% 45%,#f7fbff,#eaf1fb);border-radius:12px;border:1px solid var(--line-2);}
+.bond-stage svg{display:block;width:100%;height:auto;}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:4px;}
+.ro{background:var(--accent-soft);border:1px solid var(--line-2);border-radius:11px;padding:11px 13px;}
+.ro .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;}
+.ro .v{font-size:1.1rem;font-weight:800;color:var(--primary);margin-top:2px;}
+.bond-badge{display:inline-block;padding:4px 12px;border-radius:999px;color:#fff;font-weight:800;font-size:.9rem;}
+.bond-badge.nonpolar{background:var(--nonpolar);} .bond-badge.polar{background:var(--polar);} .bond-badge.ionic{background:var(--ionic);}
+
+.cc{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:6px;}
+.cc th,.cc td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-2);vertical-align:top;}
+.cc th{background:var(--primary);color:#fff;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;}
+.cc td:first-child{font-weight:800;color:var(--accent);}
+.cc tr:nth-child(even) td{background:#f6f9fd;}
+
+.hbond-flex{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:center;}
+@media (max-width:560px){.hbond-flex{grid-template-columns:1fr;}}
+.hbond-flex svg{width:100%;height:auto;background:#f7fbff;border-radius:10px;border:1px solid var(--line-2);}
+.hbond-flex .txt{font-size:.86rem;line-height:1.5;color:var(--ink);}
+.hbond-flex .txt b{color:var(--hbond);}
+
+.eli5-note{margin-top:12px;padding:11px 14px;background:var(--accent-soft);border-radius:10px;font-size:.86rem;line-height:1.5;border-left:4px solid var(--accent);}
+footer.note{max-width:1420px;margin:0 auto;padding:4px 24px 30px;color:var(--muted);font-size:.78rem;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="7" cy="12" r="4"/><circle cx="17" cy="12" r="4"/></svg>
+    </div>
+    <div>
+      <h1>Chemical Bonding Lab</h1>
+      <p>Electronegativity tug-of-war — from sharing to stealing (Chemistry, Ch. 2)</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><span id="modeLabel">Professional</span><input type="checkbox" id="eli5Toggle"><span class="track"></span><span>ELI5</span></label>
+    <a href="index.html" class="btn-link">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <section class="card">
+      <h2>Electronegativity Difference (ΔEN)</h2>
+      <div class="body">
+        <div class="slider-row">
+          <label>ΔEN between the two atoms <b id="denLabel">0.35</b></label>
+          <input type="range" id="denSlider" min="0" max="3.3" step="0.01" value="0.35">
+          <div class="en-scale"><span>0 · nonpolar</span><span>1.7</span><span>3.3 · ionic</span></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:12px;line-height:1.45">The bigger the electronegativity gap, the more unfairly the shared electrons are pulled — sharing (covalent) becomes stealing (ionic).</p>
+        <div class="preset-row" id="presetRow"></div>
+      </div>
+    </section>
+  </aside>
+
+  <main class="viewport">
+    <section class="card">
+      <h2>Bond Between the Atoms</h2>
+      <div class="body" style="padding-top:8px">
+        <div class="bond-stage">
+          <svg id="bondSvg" viewBox="0 0 520 260" preserveAspectRatio="xMidYMid meet" aria-label="Two bonded atoms sharing electrons"></svg>
+        </div>
+        <div class="readouts">
+          <div class="ro"><div class="k">Bond type</div><div class="v"><span class="bond-badge nonpolar" id="roBond">Nonpolar covalent</span></div></div>
+          <div class="ro"><div class="k">ΔEN</div><div class="v" id="roDen">0.35</div></div>
+          <div class="ro"><div class="k">Polarity</div><div class="v" id="roPolarity">Nonpolar</div></div>
+          <div class="ro"><div class="k">Relative strength</div><div class="v" id="roStrength">Strong</div></div>
+          <div class="ro"><div class="k">Biological example</div><div class="v" id="roExample" style="font-size:.9rem">C–H in fats</div></div>
+        </div>
+        <div class="eli5-note" id="eli5Note" style="display:none"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Nonpolar vs Polar Covalent</h2>
+      <div class="body">
+        <table class="cc">
+          <thead><tr><th>Feature</th><th>Nonpolar covalent</th><th>Polar covalent</th></tr></thead>
+          <tbody>
+            <tr><td>Electron sharing</td><td>Equal (ΔEN &lt; 0.4)</td><td>Unequal (ΔEN 0.4–1.7)</td></tr>
+            <tr><td>Partial charges</td><td>None</td><td>δ+ / δ− ends</td></tr>
+            <tr><td>Example</td><td>O₂, C–H in fats</td><td>O–H in water, N–H in proteins</td></tr>
+            <tr><td>Dissolves in water?</td><td>Poorly (hydrophobic)</td><td>Well (hydrophilic)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Hydrogen Bonds — the weak team-players</h2>
+      <div class="body">
+        <div class="hbond-flex">
+          <svg viewBox="0 0 220 150" aria-label="Two water molecules joined by a hydrogen bond">
+            <!-- water 1 -->
+            <circle cx="55" cy="45" r="20" fill="#c0392b"/><text x="55" y="50" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">O</text>
+            <circle cx="30" cy="72" r="12" fill="#e2ebf6" stroke="#8595ad"/><text x="30" y="76" text-anchor="middle" font-size="10" font-weight="700">H</text>
+            <circle cx="80" cy="72" r="12" fill="#e2ebf6" stroke="#8595ad"/><text x="80" y="76" text-anchor="middle" font-size="10" font-weight="700">H</text>
+            <line x1="55" y1="45" x2="30" y2="72" stroke="#8595ad" stroke-width="3"/><line x1="55" y1="45" x2="80" y2="72" stroke="#8595ad" stroke-width="3"/>
+            <text x="70" y="30" font-size="9" fill="#c0392b" font-weight="700">δ−</text>
+            <!-- water 2 -->
+            <circle cx="165" cy="110" r="20" fill="#c0392b"/><text x="165" y="115" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">O</text>
+            <circle cx="140" cy="90" r="12" fill="#e2ebf6" stroke="#8595ad"/><text x="140" y="94" text-anchor="middle" font-size="10" font-weight="700">H</text>
+            <circle cx="190" cy="132" r="12" fill="#e2ebf6" stroke="#8595ad"/><text x="190" y="136" text-anchor="middle" font-size="10" font-weight="700">H</text>
+            <line x1="165" y1="110" x2="140" y2="90" stroke="#8595ad" stroke-width="3"/><line x1="165" y1="110" x2="190" y2="132" stroke="#8595ad" stroke-width="3"/>
+            <!-- the H-bond -->
+            <line x1="80" y1="80" x2="140" y2="90" stroke="#c0392b" stroke-width="2.5" stroke-dasharray="4 4"/>
+            <text x="98" y="78" font-size="9" fill="#c0392b" font-weight="700">H-bond</text>
+            <text x="120" y="102" font-size="9" fill="#2563b6" font-weight="700">δ+</text>
+          </svg>
+          <div class="txt">
+            A <b>hydrogen bond</b> is a weak attraction between a slightly positive H (in a polar bond) and a slightly negative atom (O, N) on another molecule. Individually weak, but collectively powerful:
+            <ul style="margin:8px 0 0 18px;line-height:1.5">
+              <li>Give <b>water</b> its cohesion, surface tension &amp; high boiling point.</li>
+              <li>Hold the two strands of <b>DNA</b> together (A=T, G≡C base pairs).</li>
+              <li>Stabilize <b>protein</b> folding (α-helix, β-sheet).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="note">
+  Educational model. Bond boundaries use the common teaching cutoffs: ΔEN &lt; 0.4 nonpolar covalent, 0.4–1.7 polar covalent, &gt; 1.7 ionic. Electronegativity values are Pauling-scale approximations.
+</footer>
+
+<script>
+"use strict";
+/* ============================================================================
+   MODEL — a single number, the electronegativity difference (ΔEN), predicts the
+   bond. Electronegativity = how strongly an atom pulls shared electrons.
+     ΔEN < 0.4        equal sharing        -> NONPOLAR covalent
+     ΔEN 0.4 – 1.7    unequal sharing      -> POLAR covalent (δ+ / δ−)
+     ΔEN > 1.7        electron transferred -> IONIC (cation + anion)
+   ========================================================================== */
+const state = { den:0.35, nameA:"C", nameB:"H", example:"C–H in fats & hydrocarbons", eli5:false };
+
+/* Preset atom pairs with Pauling electronegativities and biological examples.
+   B is always the MORE electronegative atom, so electrons shift toward B.       */
+const PRESETS = [
+  { a:"O", b:"O", ex:"O₂ — the oxygen gas we breathe" },              // ΔEN 0.00 nonpolar
+  { a:"C", b:"H", ex:"C–H in fats & hydrocarbons" },                  // 0.35 nonpolar
+  { a:"N", b:"H", ex:"N–H in proteins & DNA bases" },                 // 0.84 polar
+  { a:"C", b:"O", ex:"C=O carbonyl in sugars & CO₂" },                // 0.89 polar
+  { a:"H", b:"O", ex:"O–H in water (H₂O)" },                          // 1.24 polar
+  { a:"Na", b:"Cl", ex:"NaCl — table salt / body electrolytes" }      // 2.23 ionic
+];
+const EN = { H:2.20, C:2.55, N:3.04, O:3.44, Na:0.93, Cl:3.16 };
+const PRESET_DEN = PRESETS.map(p => +Math.abs(EN[p.b]-EN[p.a]).toFixed(2));
+
+function bondType(den){ if(den < 0.4) return "nonpolar"; if(den <= 1.7) return "polar"; return "ionic"; }
+const BOND_LABEL = { nonpolar:"Nonpolar covalent", polar:"Polar covalent", ionic:"Ionic" };
+
+function eli5Text(t){
+  if(t==="nonpolar") return "🤝 Nonpolar covalent: two kids share the toy (electrons) perfectly evenly — nobody hogs it, so no charged ends.";
+  if(t==="polar")    return "😤 Polar covalent: they share, but one kid pulls harder — the toy sits closer to them. That end gets a little negative (δ−), the other a little positive (δ+).";
+  return "😈 Ionic: one kid just takes the toy completely! One atom becomes positive (lost the electron) and the other negative (grabbed it) — opposite charges then stick together.";
+}
+
+/* ============================================================================
+   SVG — two atoms + shared electron pair whose position tracks ΔEN
+   ========================================================================== */
+const svg = document.getElementById("bondSvg");
+const AX = 175, BX = 345, AY = 130;
+
+function render(){
+  const den = state.den;
+  const type = bondType(den);
+  // shift of the shared electrons toward B (0 = centered, 1 = fully on B)
+  const shift = Math.min(den/1.7, 1);
+  const ionic = type === "ionic";
+  const gap = ionic ? 22 : 0;                       // ions drift slightly apart
+  const ax = AX - gap, bx = BX + gap;
+  const eMid = ionic ? bx - 26 : (ax + bx)/2 + (bx-ax)/2 * shift * 0.7;
+
+  const chargeA = ionic ? "＋" : (type==="polar" ? "δ+" : "");
+  const chargeB = ionic ? "－" : (type==="polar" ? "δ−" : "");
+  const colA = "#3b82f6", colB = "#c0392b";
+
+  let out = "";
+  // bond line (or none for ionic — electron fully transferred)
+  if(!ionic){
+    out += `<line x1="${ax+34}" y1="${AY}" x2="${bx-34}" y2="${AY}" stroke="#c9d7ea" stroke-width="3"/>`;
+  }
+  // atom A
+  out += `<circle cx="${ax}" cy="${AY}" r="40" fill="#eaf1fb" stroke="${colA}" stroke-width="3"/>`;
+  out += `<text x="${ax}" y="${AY+7}" text-anchor="middle" font-size="24" font-weight="800" fill="${state.nameA==='Na'||state.nameA==='Cl'?'#1B2A4A':colA}">${state.nameA}</text>`;
+  if(chargeA) out += `<text x="${ax}" y="${AY-48}" text-anchor="middle" font-size="18" font-weight="800" fill="#3b82f6">${chargeA}</text>`;
+  // atom B
+  out += `<circle cx="${bx}" cy="${AY}" r="40" fill="#fbeceb" stroke="${colB}" stroke-width="3"/>`;
+  out += `<text x="${bx}" y="${AY+7}" text-anchor="middle" font-size="24" font-weight="800" fill="${state.nameB==='Na'||state.nameB==='Cl'?'#1B2A4A':colB}">${state.nameB}</text>`;
+  if(chargeB) out += `<text x="${bx}" y="${AY-48}" text-anchor="middle" font-size="18" font-weight="800" fill="#c0392b">${chargeB}</text>`;
+  // shared electron pair (two dots)
+  out += `<circle cx="${eMid-7}" cy="${AY}" r="6" fill="#1B7D46" stroke="#fff" stroke-width="1.5"/>`;
+  out += `<circle cx="${eMid+7}" cy="${AY}" r="6" fill="#1B7D46" stroke="#fff" stroke-width="1.5"/>`;
+  // pull arrow toward B when unequal
+  if(shift > 0.05 && !ionic){
+    out += `<path d="M ${(ax+bx)/2} ${AY+58} L ${(ax+bx)/2 + 40*shift} ${AY+58}" stroke="#8b46c0" stroke-width="2.5" marker-end="url(#arrow)"/>`;
+    out += `<text x="${(ax+bx)/2}" y="${AY+52}" text-anchor="middle" font-size="10" fill="#8b46c0" font-weight="700">electrons pulled toward ${state.nameB}</text>`;
+  }
+  if(ionic){
+    out += `<text x="${(ax+bx)/2}" y="${AY+58}" text-anchor="middle" font-size="11" fill="#8b46c0" font-weight="700">electron transferred → two ions</text>`;
+  }
+  out = `<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8b46c0"/></marker></defs>` + out;
+  svg.innerHTML = out;
+
+  /* readouts */
+  document.getElementById("denLabel").textContent = den.toFixed(2);
+  document.getElementById("roDen").textContent = den.toFixed(2);
+  const badge = document.getElementById("roBond");
+  badge.className = "bond-badge " + type; badge.textContent = BOND_LABEL[type];
+  document.getElementById("roPolarity").textContent = type==="nonpolar" ? "Nonpolar (no δ charges)" : type==="polar" ? "Polar (δ+ / δ−)" : "Ions (full + / −)";
+  document.getElementById("roStrength").textContent = type==="ionic" ? "Strong (dry); dissociates in water" : "Strong covalent bond";
+  document.getElementById("roExample").textContent = state.example;
+
+  /* preset highlight */
+  document.querySelectorAll("#presetRow .chip-btn").forEach((c,i)=> c.classList.toggle("on", Math.abs(PRESET_DEN[i]-den)<0.02 && state.nameB===PRESETS[i].b && state.nameA===PRESETS[i].a));
+
+  const note = document.getElementById("eli5Note");
+  note.style.display = state.eli5 ? "" : "none";
+  if(state.eli5) note.textContent = eli5Text(type);
+}
+
+/* ============================================================================
+   CONTROLS
+   ========================================================================== */
+document.getElementById("denSlider").addEventListener("input", e=>{
+  state.den = +e.target.value; state.nameA="X"; state.nameB="Y"; state.example="—";
+  render();
+});
+// build preset chips
+const prow = document.getElementById("presetRow");
+PRESETS.forEach((p,i)=>{
+  const b = document.createElement("button");
+  b.className = "chip-btn";
+  b.textContent = p.a + "–" + p.b;
+  b.title = p.ex;
+  b.addEventListener("click", ()=>{
+    state.den = PRESET_DEN[i]; state.nameA = p.a; state.nameB = p.b; state.example = p.ex;
+    document.getElementById("denSlider").value = PRESET_DEN[i];
+    render();
+  });
+  prow.appendChild(b);
+});
+document.getElementById("eli5Toggle").addEventListener("change", e=>{
+  state.eli5 = e.target.checked;
+  document.getElementById("modeLabel").textContent = e.target.checked ? "ELI5" : "Professional";
+  render();
+});
+
+render();
+</script>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section{max-width:1420px;margin:8px auto 40px;padding:0 24px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+.ap-study-card{background:#fff;border:1px solid #d3ddec;border-radius:16px;box-shadow:0 8px 24px rgba(27,42,74,.10);padding:22px 24px;}
+.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-study-head h2{margin:0;font-size:1.15rem;color:#1B2A4A;font-weight:800;}
+.ap-hub-link{margin-left:auto;text-decoration:none;font-weight:700;font-size:.85rem;color:#2563b6;border:1.5px solid #c9d7ea;border-radius:9px;padding:8px 14px;background:#fff;}
+.ap-hub-link:hover{border-color:#2563b6;}
+.ap-study-sub{font-size:.86rem;color:#5b6b86;margin:0 0 16px;line-height:1.5;}
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Chemical Bonds</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Missed questions resurface first next time; your mastery updates live and syncs to the Hub.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"chemical-bonding", title:"Chemical Bonding Lab", unit:"Ch 2 · Chemistry" });
+  APTools.mountHUD("#apHud","chemical-bonding");
+  var BANK=[
+    { id:"cb1", bloom:"Understand", outcome:"Ionic bond mechanism",
+      q:"In an IONIC bond, electrons are:",
+      choices:["Transferred from one atom to another","Shared equally","Shared unequally","Not involved"],
+      answer:0, why:"One atom loses electron(s) (→ cation) and the other gains them (→ anion); the opposite charges attract (e.g., NaCl)." },
+    { id:"cb2", bloom:"Understand", outcome:"Covalent bond mechanism",
+      q:"A COVALENT bond forms when two atoms:",
+      choices:["Share one or more pairs of electrons","Transfer electrons completely","Attract via partial charges only","Exchange protons"],
+      answer:0, why:"Covalent bonds share electron pairs; sharing can be equal (nonpolar) or unequal (polar)." },
+    { id:"cb3", bloom:"Understand", outcome:"Nonpolar vs polar",
+      q:"A NONPOLAR covalent bond has electrons that are shared:",
+      choices:["Equally (no partial charges)","Unequally (δ+ and δ−)","Completely transferred","Only in metals"],
+      answer:0, why:"Equal electronegativity (ΔEN < ~0.4) means equal sharing and no charged ends — e.g., O₂, C–H bonds." },
+    { id:"cb4", bloom:"Apply", outcome:"Polar covalent example",
+      q:"The O–H bonds in water are polar covalent because oxygen:",
+      choices:["Pulls the shared electrons more strongly than hydrogen","Transfers electrons to hydrogen","Has the same electronegativity as hydrogen","Is a metal"],
+      answer:0, why:"Oxygen is far more electronegative, so it pulls the shared electrons closer, giving O a δ− and each H a δ+." },
+    { id:"cb5", bloom:"Understand", outcome:"Hydrogen bond mechanism",
+      q:"A HYDROGEN bond is:",
+      choices:["A weak attraction between a δ+ H and a δ− atom (O or N) on another molecule","A strong bond that shares electrons","A transfer of protons","A bond only found in metals"],
+      answer:0, why:"Hydrogen bonds are weak intermolecular attractions between a slightly positive H and a slightly negative O/N — not full bonds." },
+    { id:"cb6", bloom:"Apply", outcome:"Hydrogen bond examples",
+      q:"Hydrogen bonds are responsible for holding together:",
+      choices:["The two strands of DNA (base pairs)","The nucleus of an atom","Sodium and chloride in salt","The protons in a molecule"],
+      answer:0, why:"Complementary DNA bases (A=T, G≡C) are joined by hydrogen bonds; they also stabilize protein folding and water's properties." },
+    { id:"cb7", bloom:"Analyze", outcome:"Predict from electronegativity",
+      q:"As the electronegativity difference (ΔEN) between two atoms increases from 0 toward 3, the bond trends from:",
+      choices:["Nonpolar covalent → polar covalent → ionic","Ionic → covalent → hydrogen","Hydrogen → ionic → covalent","No change occurs"],
+      answer:0, why:"A larger ΔEN means more unequal sharing; small = nonpolar, moderate = polar, large (>~1.7) = full transfer = ionic." },
+    { id:"cb8", bloom:"Apply", outcome:"Bio example ionic",
+      q:"Table salt (NaCl) dissolving into Na⁺ and Cl⁻ in body fluids illustrates:",
+      choices:["An ionic compound separating into electrolytes","A covalent bond forming","A hydrogen bond breaking","Nonpolar sharing"],
+      answer:0, why:"Ionic compounds dissociate into their ions (electrolytes) in water, which then conduct electricity in the body." },
+    { id:"cb9", bloom:"Understand", outcome:"Relative strength",
+      q:"Compared with covalent and ionic bonds, a single hydrogen bond is:",
+      choices:["Much weaker, but important in large numbers","The strongest bond","Identical in strength","Only found in salts"],
+      answer:0, why:"Individually weak, hydrogen bonds are easily broken — but collectively they give water and biomolecules their key properties." },
+    { id:"cb10", bloom:"Apply", outcome:"Nonpolar example",
+      q:"Which is an example of a NONPOLAR covalent bond?",
+      choices:["The C–H bonds in a fat molecule","The O–H bond in water","Na⁺ attracting Cl⁻","A hydrogen bond in DNA"],
+      answer:0, why:"C and H have nearly equal electronegativity, so C–H bonds are nonpolar — a reason fats are hydrophobic." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"chemical-bonding", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+{
+  "learning_outcomes": {
+    "8.1": {
+      "title": "Types of Joints",
+      "objectives": [
+        "Explain joint classification by structural binding tissue and functional movement degree.",
+        "Describe structural features and examples of fibrous joints.",
+        "Describe structural features and examples of cartilaginous joints.",
+        "Describe the general anatomy of a synovial joint.",
+        "Distinguish the six types of synovial joints and name an example of each."
+      ],
+      "classification_intro": {
+        "definition": "Joints (articulations) are functional junctions between bones.",
+        "functions": [
+          "Bind parts of the skeletal system together",
+          "Make bone growth possible",
+          "Permit parts of the skeleton to change shape during childbirth",
+          "Enable body movement in response to skeletal muscle contractions"
+        ],
+        "structural_types": {
+          "Fibrous": "Composed of dense fibrous connective tissue; no joint cavity present.",
+          "Cartilaginous": "Composed of hyaline cartilage or fibrocartilage; no joint cavity present.",
+          "Synovial": "Contains a fluid-filled joint cavity; permits free movement."
+        },
+        "functional_types": {
+          "Synarthroses": "Immovable joints.",
+          "Amphiarthroses": "Slightly movable joints.",
+          "Diarthroses": "Freely movable joints."
+        }
+      },
+      "fibrous_joints": [
+        {
+          "name": "Syndesmosis",
+          "structure": "Bones bound by a long cord or sheet of fibrous connective tissue (ligament).",
+          "function": "Amphiarthrotic",
+          "function_detail": "Provides give or slight movement but no true active movement.",
+          "examples": [
+            {
+              "location": "Distal tibiofibular joint",
+              "bones": "Distal tibia and fibula"
+            },
+            {
+              "location": "Acromioclavicular joint",
+              "bones": "Acromial end of clavicle and acromion process of scapula"
+            }
+          ]
+        },
+        {
+          "name": "Suture",
+          "structure": "Bones bound by thin, short fibrous connective tissue fibers.",
+          "function": "Synarthrotic",
+          "function_detail": "Immovable junction locked together.",
+          "examples": [
+            {
+              "location": "Skull sutures",
+              "bones": "Flat bones of the skull"
+            }
+          ]
+        },
+        {
+          "name": "Gomphosis",
+          "structure": "Cone-shaped bony process held inside a bony socket by short periodontal ligaments.",
+          "function": "Synarthrotic",
+          "function_detail": "Immovable socket attachment.",
+          "examples": [
+            {
+              "location": "Teeth sockets",
+              "bones": "Tooth root within the alveolar fossa (socket) of mandible or maxilla"
+            }
+          ]
+        }
+      ],
+      "cartilaginous_joints": [
+        {
+          "name": "Synchondrosis",
+          "structure": "Bones bound by a temporary or permanent plate of hyaline cartilage.",
+          "function": "Synarthrotic",
+          "function_detail": "Immovable; serves as sites of bone growth in youth, which eventually ossify into synostoses.",
+          "examples": [
+            {
+              "location": "First sternocostal joint",
+              "bones": "First rib and the manubrium of the sternum"
+            },
+            {
+              "location": "Epiphyseal plate",
+              "bones": "Diaphysis and epiphysis of growing long bones"
+            }
+          ]
+        },
+        {
+          "name": "Symphysis",
+          "structure": "Bones covered by hyaline cartilage and joined by a resilient pad or plate of fibrocartilage.",
+          "function": "Amphiarthrotic",
+          "function_detail": "Slightly movable; acts as a compressible shock absorber.",
+          "examples": [
+            {
+              "location": "Pubic symphysis",
+              "bones": "Pubic portions of the coxal bones"
+            },
+            {
+              "location": "Intervertebral discs",
+              "bones": "Adjacent vertebrae of the spinal column"
+            }
+          ]
+        }
+      ],
+      "synovial_joint_anatomy": {
+        "general_features": [
+          {
+            "part": "Articular cartilage",
+            "description": "A thin layer of hyaline cartilage covering the articulating surface of each bone to reduce wear and friction."
+          },
+          {
+            "part": "Joint capsule",
+            "description": "A double-layered sheath enclosing the joint cavity. Consists of an outer tough fibrous capsule (continuous with periosteum) and an inner synovial membrane."
+          },
+          {
+            "part": "Synovial membrane",
+            "description": "Loose connective tissue lining the inner fibrous capsule. Covers all internal joint surfaces except articular cartilage. Secretes synovial fluid."
+          },
+          {
+            "part": "Synovial cavity",
+            "description": "The potential space between articulating bones filled with lubricating fluid."
+          },
+          {
+            "part": "Synovial fluid",
+            "description": "A viscous, clear lubricating fluid that reduces friction, provides lubrication, nourishes the articular cartilage, and contains phagocytes."
+          },
+          {
+            "part": "Reinforcing ligaments",
+            "description": "Strong cords of fibrous tissue that bind bone to bone, strengthening the joint capsule (can be intrinsic/capsular thickenings)."
+          }
+        ],
+        "accessory_structures": [
+          {
+            "name": "Fatty pads",
+            "description": "Adipose tissue collections that act as cushions, found in hip and knee joints."
+          },
+          {
+            "name": "Menisci",
+            "description": "Articular discs of fibrocartilage that partially or completely divide the joint cavity into compartments to distribute weight and absorb shock.",
+            "locations": ["Knee", "Jaw", "Sternoclavicular joint"]
+          },
+          {
+            "name": "Bursa",
+            "description": "Flattened fibrous sacs lined with synovial membrane and containing fluid. Act as ball bearings to cushion muscles, tendons, ligaments, and skin over bony projections.",
+            "locations": ["Under skin rubbing over bone", "Between muscle, tendon, ligament and bone"]
+          }
+        ]
+      },
+      "synovial_joint_types": [
+        {
+          "type": "Ball-and-socket",
+          "description": "The globular head of one bone fits into the cup-shaped socket of another.",
+          "movement_capability": "Multiaxial; most freely movable synovial type. Allows all angular movements and rotation.",
+          "movements_allowed": ["Flexion", "Extension", "Abduction", "Adduction", "Circumduction", "Rotation"],
+          "examples": [
+            {
+              "joint": "Glenohumeral joint (Shoulder)",
+              "articulation": "Head of humerus and glenoid cavity of scapula"
+            },
+            {
+              "joint": "Coxal joint (Hip)",
+              "articulation": "Head of femur and acetabulum of coxal bone"
+            }
+          ]
+        },
+        {
+          "type": "Condyloid",
+          "description": "Ovoid condyle of one bone fits into the elliptical cavity of another.",
+          "movement_capability": "Biaxial; permits all angular motions except rotation.",
+          "movements_allowed": ["Flexion", "Extension", "Abduction", "Adduction", "Circumduction"],
+          "examples": [
+            {
+              "joint": "Wrist joints",
+              "articulation": "Radius/ulna and carpal bones"
+            },
+            {
+              "joint": "Knuckles (Metacarpophalangeal joints)",
+              "articulation": "Metacarpals and phalanges"
+            },
+            {
+              "joint": "Tibiofemoral condylar joints (Knee)",
+              "articulation": "Medial and lateral condyles of femur and tibia"
+            }
+          ]
+        },
+        {
+          "type": "Plane",
+          "description": "Articulating surfaces are nearly flat or slightly curved, permitting sliding or back-and-forth motion.",
+          "movement_capability": "Nonaxial; gliding movements only.",
+          "movements_allowed": ["Gliding"],
+          "examples": [
+            {
+              "joint": "Intercarpal joints",
+              "articulation": "Between wrist carpal bones"
+            },
+            {
+              "joint": "Intertarsal joints",
+              "articulation": "Between ankle tarsal bones"
+            },
+            {
+              "joint": "Femoropatellar joint",
+              "articulation": "Patellar surface of femur and patella"
+            },
+            {
+              "joint": "Humeroradial gliding joint",
+              "articulation": "Capitulum of humerus and head of radius"
+            }
+          ]
+        },
+        {
+          "type": "Hinge",
+          "description": "Convex surface of one bone fits into the concave surface of another, restricting movement to a single plane.",
+          "movement_capability": "Uniaxial; permits bending and straightening actions.",
+          "movements_allowed": ["Flexion", "Extension"],
+          "examples": [
+            {
+              "joint": "Humeroulnar joint (Elbow)",
+              "articulation": "Trochlea of humerus and trochlear notch of ulna"
+            },
+            {
+              "joint": "Knee joint (Functional classification)",
+              "articulation": "Femur and tibia condyles acting together as a hinge"
+            }
+          ]
+        },
+        {
+          "type": "Pivot",
+          "description": "Cylindrical surface of one bone rotates within a ring formed of bone and ligament.",
+          "movement_capability": "Uniaxial; limits movement to rotation around a central axis.",
+          "movements_allowed": ["Rotation"],
+          "examples": [
+            {
+              "joint": "Atlantoaxial joint",
+              "articulation": "First and second cervical vertebrae (Atlas and Axis)"
+            }
+          ]
+        },
+        {
+          "type": "Saddle",
+          "description": "Articulating surfaces have both concave and convex regions, resembling a saddle on a rider.",
+          "movement_capability": "Biaxial; allows various angular movements and specialized opposition.",
+          "movements_allowed": ["Flexion", "Extension", "Abduction", "Adduction", "Circumduction", "Opposition"],
+          "examples": [
+            {
+              "joint": "First carpometacarpal joint (Thumb)",
+              "articulation": "Trapezius (carpal) and first metacarpal bone"
+            }
+          ]
+        }
+      ]
+    },
+    "8.2": {
+      "title": "Types of Joint Movements",
+      "objectives": [
+        "Explain how skeletal muscles contract across joints, pulling insertion toward origin.",
+        "Identify and define types of joint movements."
+      ],
+      "mechanics": {
+        "origin": "Part of muscle attached to the immovable or anchored bone.",
+        "insertion": "Part of muscle attached to the movable bone across a joint.",
+        "contraction_principle": "When a muscle contracts, its insertion is pulled toward its origin, producing movement at the joint."
+      },
+      "movement_dictionary": [
+        {
+          "term": "Flexion",
+          "definition": "Decreasing the angle between two articulating bones (e.g., bending the head toward the chest, bending the elbow)."
+        },
+        {
+          "term": "Extension",
+          "definition": "Increasing the angle between two articulating bones (e.g., straightening the knee, straightening the elbow)."
+        },
+        {
+          "term": "Hyperextension",
+          "definition": "Increasing the angle greater than the normal anatomical position (e.g., bending the head backward)."
+        },
+        {
+          "term": "Dorsiflexion",
+          "definition": "Movement at the ankle that brings the toes upward, closer to the shin."
+        },
+        {
+          "term": "Plantar flexion",
+          "definition": "Movement at the ankle that points the toes downward, toward the sole of the foot."
+        },
+        {
+          "term": "Abduction",
+          "definition": "Moving a limb or body part away from the midline of the body (e.g., raising arm laterally)."
+        },
+        {
+          "term": "Adduction",
+          "definition": "Moving a limb or body part toward the midline of the body (e.g., lowering arm back to trunk)."
+        },
+        {
+          "term": "Rotation",
+          "definition": "Turning a bone along its own longitudinal axis (e.g., shaking the head 'no')."
+        },
+        {
+          "term": "Circumduction",
+          "definition": "Moving a limb in a circular, cone-shaped path where the distal end moves in a circle while the proximal end remains stable."
+        },
+        {
+          "term": "Supination",
+          "definition": "Rotation of the forearm so the palm faces upward or anteriorly (e.g., thumbs up position)."
+        },
+        {
+          "term": "Pronation",
+          "definition": "Rotation of the forearm so the palm faces downward or posteriorly (e.g., thumbs down position)."
+        },
+        {
+          "term": "Eversion",
+          "definition": "Turning the sole of the foot outward, laterally."
+        },
+        {
+          "term": "Inversion",
+          "definition": "Turning the sole of the foot inward, medially."
+        },
+        {
+          "term": "Protraction",
+          "definition": "Moving a body part forward in a horizontal plane (e.g., thrusting the chin forward)."
+        },
+        {
+          "term": "Retraction",
+          "definition": "Moving a body part backward in a horizontal plane (e.g., pulling the head back into anatomical alignment)."
+        },
+        {
+          "term": "Elevation",
+          "definition": "Raising a body part vertically (e.g., shrugging the shoulders)."
+        },
+        {
+          "term": "Depression",
+          "definition": "Lowering a body part vertically (e.g., opening the mouth, depressing the mandible)."
+        }
+      ]
+    },
+    "8.3": {
+      "title": "Examples of Synovial Joints",
+      "objectives": [
+        "Describe the structures and supporting ligaments of the shoulder joint.",
+        "Describe the structural features of the elbow, hip, and knee joints."
+      ],
+      "major_joints": [
+        {
+          "name": "Shoulder Joint",
+          "components": [
+            {
+              "type": "Glenohumeral joint",
+              "structure_class": "Synovial (Ball-and-socket)",
+              "articulation": "Glenoid cavity of scapula and head of humerus.",
+              "details": "Most freely movable joint. Surrounded by the rotator cuff (tendons/muscles) and multiple bursae. Allowed movements in any angular plane."
+            },
+            {
+              "type": "Acromioclavicular joint",
+              "structure_class": "Fibrous (Syndesmosis)",
+              "articulation": "Acromial end of clavicle and acromion process of scapula."
+            }
+          ]
+        },
+        {
+          "name": "Elbow Joint",
+          "components": [
+            {
+              "type": "Humeroulnar joint",
+              "structure_class": "Synovial (Hinge)",
+              "articulation": "Trochlea of humerus and trochlear notch of ulna.",
+              "details": "Extremely stable, reinforced by many ligaments. Restricts movement to flexion and extension."
+            },
+            {
+              "type": "Humeroradial joint",
+              "structure_class": "Synovial (Gliding/Plane)",
+              "articulation": "Capitulum of humerus and head of radius."
+            }
+          ]
+        },
+        {
+          "name": "Hip Joint (Coxal Joint)",
+          "components": [
+            {
+              "type": "Coxofemoral articulation",
+              "structure_class": "Synovial (Ball-and-socket)",
+              "articulation": "Head of femur and acetabulum of coxal bone.",
+              "details": "Features the fovea capitis on the femur head. Highly stable due to deep socket and large reinforcing ligaments. Allows same movements as shoulder but with a reduced range."
+            }
+          ]
+        },
+        {
+          "name": "Knee Joint",
+          "components": [
+            {
+              "type": "Femorotibial condylar joints",
+              "structure_class": "Synovial (Double condyloid)",
+              "articulation": "Medial condyles of femur and tibia (one joint), lateral condyles of femur and tibia (second joint).",
+              "details": "Functionally works as a hinge. Permits flexion, extension, and slight rotation."
+            },
+            {
+              "type": "Femoropatellar joint",
+              "structure_class": "Synovial (Gliding)",
+              "articulation": "Patellar surface of femur and patella."
+            }
+          ],
+          "reinforcing_structures": {
+            "extracapsular_ligaments": [
+              "Patellar ligament",
+              "Tibial (medial) collateral ligament (MCL)",
+              "Fibular (lateral) collateral ligament (LCL)"
+            ],
+            "intracapsular_ligaments": [
+              "Anterior cruciate ligament (ACL)"
+            ],
+            "menisci": [
+              "Medial meniscus (C-shaped fibrocartilage pad)",
+              "Lateral meniscus (C-shaped fibrocartilage pad)"
+            ],
+            "details": "Menisci reshape tibial condyles for a better fit and act as shock absorbers. Multiple bursae lubricate the joint."
+          }
+        }
+      ]
+    },
+    "8.4": {
+      "title": "Life-Span Changes",
+      "objectives": [
+        "Describe age-related changes occurring in joints across the life span."
+      ],
+      "changes": [
+        {
+          "age_range": "First 2 years of life",
+          "change": "Fontanels (fibrous joints) of the skull close and harden."
+        },
+        {
+          "age_range": "14-20 years of age",
+          "change": "Epiphyseal plates (synchondroses) ossify and harden, stopping bone growth."
+        },
+        {
+          "age_range": "Age 30 onwards",
+          "change": "Collagen structures change, causing progressive stiffening of the joints."
+        },
+        {
+          "age_range": "General adulthood",
+          "change": "Fibrocartilage pads lose water content, decreasing the flexibility of the intervertebral joints and knees."
+        },
+        {
+          "lifestyle_factor": "Exercise",
+          "impact": "Regular physical activity decreases the onset and severity of joint stiffening."
+        }
+      ]
+    }
+  }
+}

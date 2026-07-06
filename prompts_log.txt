@@ -1,0 +1,149 @@
+ANATOMICAL IMAGE ARCHITECTURE & FALLBACK SVG SPECIFICATION
+==========================================================
+
+This document logs the 12 medical-grade DALL-E 3 image prompts required for Chapter 8: Joints, alongside their fallback Python SVG generation scripts or rendering blueprints for clean schematic diagrams.
+
+--------------------------------------------------------------------------------
+1. General Synovial Joint Structure
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a typical synovial joint cross-section, showing two articulating bone ends, articular hyaline cartilage covering bone ends, a double-layered joint capsule enclosing a synovial cavity, fibrous layer continuous with periosteum, and a loose connective tissue synovial membrane lining. High detail, labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw two vertical bone ends using round-rect shapes, colored bone-white (#FAF5E8) with a grey outline.
+- Add light blue caps (#B6E2FD) on both bone ends to represent articular cartilage.
+- Draw a double-layered enclosing capsule using curves (#115E59) joining the periosteum of both bones.
+- Inner layer colored pink (#FDA4AF) for the synovial membrane.
+- Fill the cavity with transparent light teal (#E0F2FE).
+- Draw labels with lines pointing to: Articular Cartilage, Joint Capsule, Synovial Membrane, Synovial Cavity.
+
+--------------------------------------------------------------------------------
+2. Fibrous Joint: Suture (Skull)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a skull suture joint, showing two flat cranial bones locked together by short interlocking fibrous connective tissue fibers. Detailed close-up view, labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw two flat bone slabs (#F8FAF5) with wavy, interlocking zig-zag edges in the middle.
+- Add small grey stitches/lines inside the zig-zag margins representing the short collagen fibers.
+- Labeled: Cranial Bones, Suture Fibers.
+
+--------------------------------------------------------------------------------
+3. Fibrous Joint: Syndesmosis (Distal Tibiofibular)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a syndesmosis fibrous joint, close-up on the distal tibiofibular joint, showing the tibia and fibula bones bound by a dense interosseous ligament cord. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw distal ends of the tibia (wider, left) and fibula (narrower, right) in bone-white.
+- Draw a thick connecting band (#0D9488) of parallel fibrous lines bridging the gap between them near the distal end.
+- Labeled: Tibia, Fibula, Interosseous Ligament.
+
+--------------------------------------------------------------------------------
+4. Fibrous Joint: Gomphosis (Tooth Socket)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a gomphosis joint, showing a close-up cross-section of a tooth root anchored inside the alveolar socket of the mandible bone by short periodontal ligaments. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw tooth shape with crown, neck, and root in enamel white (#FFF).
+- Draw surrounding bone socket in porous bone styling (#E2E8F0).
+- Add thin cross-hatched red/grey fibers (#FDA4AF) in the periodontal space between the root and bone.
+- Labeled: Tooth Root, Mandible Alveolar Fossa, Periodontal Ligament.
+
+--------------------------------------------------------------------------------
+5. Cartilaginous Joint: Synchondrosis (Epiphyseal Growth Plate)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a synchondrosis cartilaginous joint, close-up of a long bone epiphyseal growth plate, showing the hyaline cartilage plate separating the epiphysis and diaphysis of a young growing bone. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw a bone end (epiphysis) and shaft (diaphysis) separated by a horizontal blue-grey slice (#A5F3FC) representing the epiphyseal plate.
+- Highlight cellular cartilage zones in a zoomed inset if desired.
+- Labeled: Epiphysis, Diaphysis, Epiphyseal Plate (Hyaline Cartilage).
+
+--------------------------------------------------------------------------------
+6. Cartilaginous Joint: Symphysis (Pubic Symphysis)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a symphysis cartilaginous joint, close-up of the pubic symphysis, showing left and right pubic bones joined by a thick, resilient fibrocartilage shock-absorbing pad. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw two pelvis bone segments on left and right (#E2E8F0).
+- In the center, draw a dense, multi-layered blue-grey oval pad (#38BDF8) representing fibrocartilage.
+- Show cartilage fibers running horizontally for texture.
+- Labeled: Pubic Bone, Fibrocartilage Disc.
+
+--------------------------------------------------------------------------------
+7. Synovial Joint: Ball-and-Socket (Shoulder / Glenohumeral)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a ball-and-socket synovial joint, showing the head of the humerus fitting into the glenoid cavity of the scapula. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw a curved socket cup (#E2E8F0) (Glenoid Cavity).
+- Draw a rounded sphere head (#FAF5E8) (Humerus Head) fitting inside the cup.
+- Color the articulating surfaces light blue (#B6E2FD) (Articular Cartilage).
+- Enclose the joint capsule.
+- Labeled: Glenoid Cavity, Head of Humerus, Articular Cartilage.
+
+--------------------------------------------------------------------------------
+8. Synovial Joint: Hinge (Elbow)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a hinge synovial joint, showing the trochlea of the humerus articulating with the trochlear notch of the ulna. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw a spool-shaped bone end (Trochlea of Humerus).
+- Draw a C-shaped hook bone end (Trochlear notch of Ulna) wrapping around the spool.
+- Outline allowed flexion/extension movements with a curved double-headed arrow.
+- Labeled: Trochlea of Humerus, Trochlear Notch of Ulna.
+
+--------------------------------------------------------------------------------
+9. Synovial Joint: Pivot (Atlantoaxial)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a pivot synovial joint, showing the dens process of the axis rotating within the ring formed by the atlas vertebra and a transverse ligament. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw a vertical peg shape (Dens of Axis).
+- Draw a horizontal ring shape (Atlas vertebra) circling the peg.
+- Draw a band-like ligament locking the peg in place.
+- Draw a circular rotational arrow around the peg to indicate motion.
+- Labeled: Atlas Vertebra, Dens of Axis, Transverse Ligament.
+
+--------------------------------------------------------------------------------
+10. Synovial Joint: Condyloid (Metacarpophalangeal / Knuckle)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a condyloid synovial joint, showing the oval-shaped condyle of a metacarpal bone fitting into the shallow elliptical cavity of a phalanx. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw an oval dome-like bone end (Condyle of Metacarpal).
+- Draw a shallow egg-cup bone socket (Base of Phalanx) receiving the dome.
+- Highlight articulating surfaces in hyaline-blue.
+- Labeled: Metacarpal Condyle, Elliptical Cavity of Phalanx.
+
+--------------------------------------------------------------------------------
+11. Synovial Joint: Saddle (Thumb CMC)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a saddle synovial joint, showing the saddle-shaped carpometacarpal joint of the thumb, with interlocking concave and convex surfaces. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw a saddle-shaped bone end (Trapezius carpal bone).
+- Draw a matching rider-shaped bone base (First Metacarpal) sitting on the saddle.
+- Render curves showing concavo-convex alignment.
+- Labeled: Trapezius Carpal, First Metacarpal.
+
+--------------------------------------------------------------------------------
+12. Synovial Joint: Plane / Gliding (Intercarpal)
+--------------------------------------------------------------------------------
+DALL-E 3 Prompt:
+"Anatomical illustration of a plane synovial joint, showing flat articulating surfaces of wrist carpal bones sliding against each other. Labeled parts style, medical textbook aesthetic, isolated on a clean white background."
+
+Fallback SVG Generation Blueprint:
+- Draw two flat-faced cubes (#E2E8F0) placed next to each other.
+- Highlight the narrow flat gap between them containing blue cartilage lines.
+- Add straight double-headed arrows pointing left-right and up-down to indicate gliding.
+- Labeled: Carpal Bones, Flat Articular Facets.

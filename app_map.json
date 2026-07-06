@@ -1,0 +1,171 @@
+{
+  "app_name": "JointScribe: Skeletal Joints Study Guide",
+  "version": "1.0.0",
+  "theme": {
+    "primary": "#0f766e",
+    "secondary": "#14b8a6",
+    "background": "#f8fafc",
+    "text": "#0f172a",
+    "card_bg": "#ffffff",
+    "accent": "#f59e0b"
+  },
+  "ux_flow": {
+    "initial_route": "WelcomeScreen",
+    "navigation_type": "TabNavigator",
+    "tabs": [
+      {
+        "name": "Taxonomy",
+        "icon": "grid",
+        "screen": "TaxonomyScreen",
+        "description": "Classification matrix linking structures and functions of joints."
+      },
+      {
+        "name": "Synovial Deep Dive",
+        "icon": "eye",
+        "screen": "SynovialDeepDiveScreen",
+        "description": "Cross-sectional visualization and anatomical parts definitions."
+      },
+      {
+        "name": "Motion Lab",
+        "icon": "activity",
+        "screen": "MotionLabScreen",
+        "description": "Interactive movement dictionary and synovial joint mechanical maps."
+      },
+      {
+        "name": "Quiz Mode",
+        "icon": "award",
+        "screen": "QuizScreen",
+        "description": "Predictive learning exercises based on structural classifications and ranges of motion."
+      }
+    ]
+  },
+  "content_hierarchy": {
+    "WelcomeScreen": {
+      "title": "Anatomy Study Guide: Chapter 8 (Joints)",
+      "sub": "Master structural classifications, functional ranges, and mechanics.",
+      "actions": [
+        {
+          "label": "Start Learning",
+          "target": "TaxonomyScreen"
+        },
+        {
+          "label": "Quick Quiz",
+          "target": "QuizScreen"
+        }
+      ]
+    },
+    "TaxonomyScreen": {
+      "sections": [
+        {
+          "id": "structural_tabs",
+          "title": "Structural Categories",
+          "description": "Classification by binding tissue.",
+          "items": [
+            "Fibrous",
+            "Cartilaginous",
+            "Synovial"
+          ]
+        },
+        {
+          "id": "functional_tabs",
+          "title": "Functional Categories",
+          "description": "Classification by degree of movement.",
+          "items": [
+            "Synarthroses (Immovable)",
+            "Amphiarthroses (Slightly Movable)",
+            "Diarthroses (Freely Movable)"
+          ]
+        },
+        {
+          "id": "interactive_matrix",
+          "title": "Taxonomy Matrix",
+          "description": "Interactive intersection grid mapping structure to function."
+        }
+      ]
+    },
+    "SynovialDeepDiveScreen": {
+      "sections": [
+        {
+          "id": "general_structure",
+          "title": "Synovial Anatomy Model",
+          "description": "Schematic and definition list of general synovial joint layers.",
+          "structures": [
+            "Articular cartilage",
+            "Joint capsule",
+            "Synovial membrane",
+            "Synovial cavity",
+            "Synovial fluid",
+            "Reinforcing ligaments"
+          ]
+        },
+        {
+          "id": "accessory_features",
+          "title": "Accessory Structures",
+          "description": "Cushions, shock absorbers, and friction reduction layers.",
+          "structures": [
+            "Menisci (Medial & Lateral C-shaped fibrocartilage)",
+            "Bursae (Fluid-filled lubricating sacs)",
+            "Fatty pads (Knee & Hip protective buffers)"
+          ]
+        }
+      ]
+    },
+    "MotionLabScreen": {
+      "sections": [
+        {
+          "id": "movement_dictionary",
+          "title": "Synovial Movement Dictionary",
+          "description": "Definitions and visual directions for joint actions.",
+          "items": [
+            "Flexion",
+            "Extension",
+            "Hyperextension",
+            "Dorsiflexion",
+            "Plantar flexion",
+            "Abduction",
+            "Adduction",
+            "Rotation",
+            "Circumduction",
+            "Supination",
+            "Pronation",
+            "Eversion",
+            "Inversion",
+            "Protraction",
+            "Retraction",
+            "Elevation",
+            "Depression"
+          ]
+        },
+        {
+          "id": "synovial_mechanical_mapping",
+          "title": "Synovial Types & Allowed Motions",
+          "description": "Explore the 6 structural forms of synovial articulations and their mechanics.",
+          "items": [
+            "Ball-and-socket",
+            "Condyloid",
+            "Plane",
+            "Hinge",
+            "Pivot",
+            "Saddle"
+          ]
+        }
+      ]
+    },
+    "QuizScreen": {
+      "modes": [
+        {
+          "id": "predictive_learning",
+          "title": "Structure-to-Motion Predictor",
+          "type": "multiple_choice",
+          "prompt": "Given the structural features and bones of a joint, predict the specific movement allowed."
+        },
+        {
+          "id": "anatomical_identification",
+          "title": "Identification Review",
+          "type": "matching",
+          "prompt": "Match the joint name to its structural classification and functional class."
+        }
+      ]
+    }
+  }
+}

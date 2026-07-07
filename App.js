@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,8 +8,24 @@ import {
   ScrollView,
   FlatList,
   StatusBar,
-  Dimensions
+  Image
 } from 'react-native';
+
+// Local Image Assets Catalog mapping directly to assets/ folder
+const JOINT_IMAGES = {
+  synovial_joint: require('./assets/ch8-synovial_joint.png'),
+  suture: require('./assets/ch8-joint_suture.png'),
+  syndesmosis: require('./assets/ch08-joint_syndesmosis.png'),
+  gomphosis: require('./assets/ch8-joint_gomphosis.png'),
+  synchondrosis: require('./assets/ch8-epiphyseal-plate.png'),
+  symphysis: require('./assets/ch8-pubic-symphysis.png'),
+  'ball-and-socket': require('./assets/ch8-joint-ball_socket.png'),
+  condyloid: require('./assets/ch8-condyloid_joint.png'),
+  plane: require('./assets/ch8-plane-synovail-joint.png'),
+  hinge: require('./assets/ch8-hinge-elbow-joint.png'),
+  pivot: require('./assets/ch8-pivot-c1-c2-joint.png'),
+  saddle: require('./assets/ch8-saddle-joint.png')
+};
 
 // Imported data model (mocked here based on content.json for single-file deployment)
 const JOINT_DATA = {
@@ -31,22 +47,22 @@ const JOINT_DATA = {
       { type: 'Pivot', description: 'Cylindrical surface rotates inside ring', movement: 'Uniaxial', examples: 'Atlantoaxial joint (neck)', actions: ['Rotation'] },
       { type: 'Saddle', description: 'Interlocking concavo-convex surfaces', movement: 'Biaxial', examples: 'Thumb carpometacarpal', actions: ['Flexion', 'Extension', 'Abduction', 'Adduction', 'Circumduction', 'Opposition'] }
     ]
-  },
-  movements: [
-    { term: 'Flexion', desc: 'Decreasing the angle between 2 bones' },
-    { term: 'Extension', desc: 'Increasing the angle between 2 bones' },
-    { term: 'Hyperextension', desc: 'Increasing the angle greater than anatomical position' },
-    { term: 'Abduction', desc: 'Moving a limb away from the midline' },
-    { term: 'Adduction', desc: 'Moving a limb toward the midline' },
-    { term: 'Rotation', desc: 'Turning a bone along its long axis' },
-    { term: 'Circumduction', desc: 'Moving a limb in a circular, cone-shaped path' },
-    { term: 'Opposition', desc: 'Specialized movement of the thumb touching other fingers' }
-  ]
+  }
 };
 
 // 1. Module Taxonomy Screen
 const TaxonomyScreen = () => {
   const [activeTab, setActiveTab] = useState('structure');
+  const [expandedJoint, setExpandedJoint] = useState(null);
+
+  const toggleExpand = (name) => {
+    if (expandedJoint === name) {
+      setExpandedJoint(null);
+    } else {
+      setExpandedJoint(name);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>The Taxonomy of Joints</Text>
@@ -68,15 +84,28 @@ const TaxonomyScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scroll}>
         {activeTab === 'structure' ? (
           <View>
-            <Text style={styles.subtext}>Classified by the type of tissue binding the bones together:</Text>
+            <Text style={styles.subtext}>Classified by the type of tissue binding the bones together. Tap any joint to inspect its anatomical illustration:</Text>
             
             <View style={styles.card}>
               <Text style={styles.cardHeader}>Fibrous Joints</Text>
               <Text style={styles.cardSub}>No joint cavity; held by dense connective tissue.</Text>
               {JOINT_DATA.taxonomy.fibrous.map((item, idx) => (
-                <View key={idx} style={styles.itemRow}>
-                  <Text style={styles.itemLabel}>{item.name}:</Text>
-                  <Text style={styles.itemVal}>{item.example} ({item.function})</Text>
+                <View key={idx}>
+                  <TouchableOpacity style={styles.itemRow} onPress={() => toggleExpand(item.name)}>
+                    <Text style={styles.itemLabel}>{item.name} {expandedJoint === item.name ? '▲' : '▼'}</Text>
+                    <Text style={styles.itemVal}>{item.example}</Text>
+                  </TouchableOpacity>
+                  {expandedJoint === item.name && (
+                    <View style={styles.expandedContainer}>
+                      <Image 
+                        source={JOINT_IMAGES[item.name.toLowerCase()]} 
+                        style={styles.expandedImage} 
+                        resizeMode="contain"
+                      />
+                      <Text style={styles.expandedText}><Text style={styles.boldText}>Structure:</Text> {item.structure}</Text>
+                      <Text style={styles.expandedText}><Text style={styles.boldText}>Function:</Text> {item.function} ({item.movement})</Text>
+                    </View>
+                  )}
                 </View>
               ))}
             </View>
@@ -85,9 +114,22 @@ const TaxonomyScreen = () => {
               <Text style={styles.cardHeader}>Cartilaginous Joints</Text>
               <Text style={styles.cardSub}>No joint cavity; bound by hyaline cartilage or fibrocartilage.</Text>
               {JOINT_DATA.taxonomy.cartilaginous.map((item, idx) => (
-                <View key={idx} style={styles.itemRow}>
-                  <Text style={styles.itemLabel}>{item.name}:</Text>
-                  <Text style={styles.itemVal}>{item.example} ({item.function})</Text>
+                <View key={idx}>
+                  <TouchableOpacity style={styles.itemRow} onPress={() => toggleExpand(item.name)}>
+                    <Text style={styles.itemLabel}>{item.name} {expandedJoint === item.name ? '▲' : '▼'}</Text>
+                    <Text style={styles.itemVal}>{item.example}</Text>
+                  </TouchableOpacity>
+                  {expandedJoint === item.name && (
+                    <View style={styles.expandedContainer}>
+                      <Image 
+                        source={JOINT_IMAGES[item.name.toLowerCase()]} 
+                        style={styles.expandedImage} 
+                        resizeMode="contain"
+                      />
+                      <Text style={styles.expandedText}><Text style={styles.boldText}>Structure:</Text> {item.structure}</Text>
+                      <Text style={styles.expandedText}><Text style={styles.boldText}>Function:</Text> {item.function} ({item.movement})</Text>
+                    </View>
+                  )}
                 </View>
               ))}
             </View>
@@ -98,17 +140,17 @@ const TaxonomyScreen = () => {
             
             <View style={styles.card}>
               <Text style={styles.cardHeader}>Synarthroses (Immovable)</Text>
-              <Text style={styles.cardSub}>Examples: Sutures, Gomphosis, and Synchondrosis once ossified.</Text>
+              <Text style={styles.cardSub}>Examples: Sutures (skull bones), Gomphosis (teeth sockets), and Synchondrosis (first rib/manubrium, epiphyseal plate) once ossified.</Text>
             </View>
 
             <View style={styles.card}>
               <Text style={styles.cardHeader}>Amphiarthroses (Slightly Movable)</Text>
-              <Text style={styles.cardSub}>Examples: Symphysis (Pubic symphysis, vertebrae) and Syndesmosis.</Text>
+              <Text style={styles.cardSub}>Examples: Symphysis (Pubic symphysis, vertebrae) and Syndesmosis (distal tibiofibular joint).</Text>
             </View>
 
             <View style={styles.card}>
               <Text style={styles.cardHeader}>Diarthroses (Freely Movable)</Text>
-              <Text style={styles.cardSub}>Examples: All Synovial joints (Ball-and-socket, hinge, saddle, etc.)</Text>
+              <Text style={styles.cardSub}>Examples: All Synovial joints (Ball-and-socket, hinge, saddle, condyloid, plane, pivot joints).</Text>
             </View>
           </View>
         )}
@@ -121,12 +163,15 @@ const TaxonomyScreen = () => {
 const SynovialAnatomyScreen = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.sectionTitle}>Synovial Joint Deep Dive</Text>
-      <Text style={styles.subtext}>Typical anatomical structures that constitute a freely movable synovial joint:</Text>
+      <Text style={styles.sectionTitle}>Synovial Joint Anatomy</Text>
+      <Text style={styles.subtext}>Anatomy of a typical synovial (diarthrotic) joint cross-section:</Text>
       
       <View style={styles.anatomyModelContainer}>
-        {/* Placeholder for the schematic SVG / Diagram */}
-        <Text style={styles.anatomyModelText}>[ Synovial Joint Cross-Section Diagram ]</Text>
+        <Image 
+          source={JOINT_IMAGES.synovial_joint} 
+          style={styles.anatomyModelImage} 
+          resizeMode="contain"
+        />
       </View>
 
       <View style={styles.card}>
@@ -134,22 +179,22 @@ const SynovialAnatomyScreen = () => {
         
         <View style={styles.featureBlock}>
           <Text style={styles.featureName}>Articular Cartilage</Text>
-          <Text style={styles.featureDesc}>Hyaline cartilage covering bone ends to absorb shock and reduce friction.</Text>
+          <Text style={styles.featureDesc}>A thin layer of hyaline cartilage covering bone ends to absorb shock and minimize friction.</Text>
         </View>
 
         <View style={styles.featureBlock}>
           <Text style={styles.featureName}>Joint Capsule</Text>
-          <Text style={styles.featureDesc}>Outer fibrous layer continuous with periosteum + inner synovial membrane.</Text>
+          <Text style={styles.featureDesc}>A double-layered sheath. Consists of a tough fibrous capsule (outer) and a loose connective tissue synovial membrane (inner).</Text>
         </View>
 
         <View style={styles.featureBlock}>
           <Text style={styles.featureName}>Synovial Membrane & Fluid</Text>
-          <Text style={styles.featureDesc}>Secretes clear, viscous fluid that lubricates and nourishes cartilage.</Text>
+          <Text style={styles.featureDesc}>Synovial membrane covers all internal joint surfaces (except cartilage) and secretes clear, viscous fluid that lubricates and nourishes the joint.</Text>
         </View>
 
         <View style={styles.featureBlock}>
           <Text style={styles.featureName}>Reinforcing Ligaments</Text>
-          <Text style={styles.featureDesc}>Fibrous bands joining bone to bone to reinforce the articular capsule.</Text>
+          <Text style={styles.featureDesc}>Strong cords of fibrous tissue that bind bone to bone, strengthening the articular capsule.</Text>
         </View>
       </View>
     </ScrollView>
@@ -161,7 +206,7 @@ const MotionLabScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Synovial Joint Motion Lab</Text>
-      <Text style={styles.subtext}>Dictionary of range of motion and synovial joint mechanical structures:</Text>
+      <Text style={styles.subtext}>Dictionary of structural classifications and synovial joint mechanics:</Text>
       
       <FlatList 
         data={JOINT_DATA.taxonomy.synovial}
@@ -174,7 +219,14 @@ const MotionLabScreen = () => {
               <Text style={styles.badge}>{item.movement}</Text>
             </View>
             <Text style={styles.cardSub}>{item.description}</Text>
-            <Text style={styles.cardText}><b>Examples:</b> {item.examples}</Text>
+            
+            <Image 
+              source={JOINT_IMAGES[item.type.toLowerCase()]} 
+              style={styles.jointTypeImage} 
+              resizeMode="contain"
+            />
+            
+            <Text style={styles.cardText}><Text style={styles.boldText}>Examples:</Text> {item.examples}</Text>
             <View style={styles.actionsContainer}>
               {item.actions.map((act, i) => (
                 <Text key={i} style={styles.actionChip}>{act}</Text>
@@ -199,19 +251,22 @@ const QuizScreen = () => {
       question: "Which type of synovial joint permits all angular movements and rotation (multiaxial)?",
       options: ["Hinge", "Ball-and-socket", "Pivot", "Saddle"],
       answer: "Ball-and-socket",
-      rationale: "Ball-and-socket joints, like the shoulder and hip, allow the most freedom of movement in all planes."
+      imageKey: "ball-and-socket",
+      rationale: "Ball-and-socket joints, like the shoulder and hip, allow the most freedom of movement in all planes (multiaxial)."
     },
     {
       question: "Given a joint made of a flat or slightly curved surface permitting only sliding or back-and-forth movement, what is the movement type?",
       options: ["Biaxial", "Uniaxial", "Nonaxial (Gliding)", "Multiaxial"],
       answer: "Nonaxial (Gliding)",
+      imageKey: "plane",
       rationale: "Plane/gliding joints are nonaxial, allowing flat bones (like carpals) to slide past each other."
     },
     {
       question: "Which of the following describes the joint between the first rib and the manubrium?",
       options: ["Symphysis", "Synchondrosis", "Syndesmosis", "Suture"],
       answer: "Synchondrosis",
-      rationale: "A synchondrosis consists of a temporary plate of hyaline cartilage, such as the 1st rib to manubrium articulation."
+      imageKey: "synchondrosis",
+      rationale: "A synchondrosis consists of a temporary plate of hyaline cartilage, such as the 1st rib to manubrium articulation or the epiphyseal plate."
     }
   ];
 
@@ -280,6 +335,15 @@ const QuizScreen = () => {
           <View style={styles.rationaleBox}>
             <Text style={styles.rationaleHeader}>Rationale:</Text>
             <Text style={styles.rationaleText}>{activeQuestion.rationale}</Text>
+            
+            {activeQuestion.imageKey && (
+              <Image 
+                source={JOINT_IMAGES[activeQuestion.imageKey]} 
+                style={styles.quizRationaleImage} 
+                resizeMode="contain"
+              />
+            )}
+            
             <TouchableOpacity style={styles.nextBtn} onPress={handleNext}>
               <Text style={styles.nextBtnText}>
                 {currentQ === quizQuestions.length - 1 ? "Restart Quiz" : "Next Question"}
@@ -457,6 +521,9 @@ const styles = StyleSheet.create({
     color: '#0f172a',
     marginBottom: 8,
   },
+  boldText: {
+    fontWeight: '800',
+  },
   cardTitleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -476,7 +543,7 @@ const styles = StyleSheet.create({
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 6,
+    paddingVertical: 10,
     borderBottomWidth: 0.5,
     borderBottomColor: '#cbd5e1',
   },
@@ -492,20 +559,41 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     marginLeft: 10,
   },
+  expandedContainer: {
+    backgroundColor: '#f8fafc',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 6,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+  },
+  expandedImage: {
+    width: '100%',
+    height: 120,
+    marginBottom: 8,
+  },
+  expandedText: {
+    fontSize: 12,
+    color: '#334155',
+    lineHeight: 16,
+    marginBottom: 4,
+  },
   anatomyModelContainer: {
     height: 180,
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#ffffff',
     borderWidth: 1.5,
     borderColor: '#0f172a',
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+    overflow: 'hidden',
+    padding: 10,
   },
-  anatomyModelText: {
-    color: '#64748b',
-    fontWeight: '700',
-    fontSize: 13,
+  anatomyModelImage: {
+    width: '100%',
+    height: '100%',
   },
   featureBlock: {
     marginBottom: 12,
@@ -523,6 +611,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#475569',
     lineHeight: 16,
+  },
+  jointTypeImage: {
+    width: '100%',
+    height: 140,
+    marginBottom: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -606,7 +702,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#334155',
     lineHeight: 16,
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  quizRationaleImage: {
+    width: '100%',
+    height: 130,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    marginBottom: 14,
   },
   nextBtn: {
     backgroundColor: '#0f766e',

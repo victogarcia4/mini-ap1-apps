@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skeletal Muscle Structure Explorer | Chapter 9 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-700: #1d4ed8;
+  --blue-600: #2563eb;
+  --blue-500: #3b82f6;
+  --blue-100: #dbeafe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(29, 78, 216, 0.04);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image: 
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(37, 99, 235, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--blue-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--blue-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--blue-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Grid systems */
+.explorer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.list-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.item-card {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.item-card:hover { background: var(--slate-100); }
+.item-card.active {
+  border-color: var(--blue-700);
+  background: var(--blue-100);
+  outline: 1.5px solid var(--blue-700);
+}
+.item-card h3 { margin: 0 0 4px; font-size: 0.95rem; font-weight: 800; color: var(--slate-900); }
+.item-card p { margin: 0; font-size: 0.78rem; color: var(--slate-500); }
+
+.detail-panel {
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 380px;
+  justify-content: center;
+}
+.detail-img-container {
+  width: 100%;
+  height: 200px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  margin-bottom: 14px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.detail-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.detail-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--blue-700);
+  margin-bottom: 6px;
+}
+.detail-desc { font-size: 0.84rem; color: var(--slate-700); margin: 0 0 10px; line-height: 1.45; }
+.detail-meta {
+  font-size: 0.76rem;
+  background: var(--slate-100);
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  width: 100%;
+  text-align: left;
+}
+
+/* Footer Section */
+.footer-note {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 24px 30px;
+  font-size: 0.74rem;
+  color: var(--slate-500);
+}
+
+/* APTools study block styling */
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--blue-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+  .explorer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Skeletal Muscle Structure Explorer</h1>
+    <p>Macro Hierarchy · Connective Tissue Coverings · Sarcomere Anatomy · Ch 9</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Structure & Function Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">Select tabs and click on anatomical structures to examine them in detail.</p>
+        <div class="info-box" id="infoBox">
+          <b>Muscle Tissue Structure</b><br>
+          Skeletal muscles are organs composed of muscle fibers (cells), connective tissue sheaths, blood vessels, and nerves. Use the tabs on the right to drill down from macroanatomy to molecular structures.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('hierarchy', this)">Nested Hierarchy</button>
+      <button class="tab-btn" onclick="switchTab('sheaths', this)">Connective Sheaths</button>
+      <button class="tab-btn" onclick="switchTab('sarcomere', this)">Sarcomere & Filaments</button>
+    </div>
+
+    <!-- Tab 1: Nested Hierarchy -->
+    <div id="hierarchy" class="tab-content active">
+      <section class="panel">
+        <h2>Organizational Levels — Macro to Micro</h2>
+        <div class="body">
+          <p style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0;">Click on a structural level to inspect its relative size and properties:</p>
+          <div class="explorer-grid">
+            <div class="list-group">
+              <div class="item-card active" onclick="selectItem('hierarchy', 'muscle', this)">
+                <h3>Skeletal Muscle (Organ)</h3>
+                <p>Belly of the muscle containing multiple fascicles</p>
+              </div>
+              <div class="item-card" onclick="selectItem('hierarchy', 'fascicle', this)">
+                <h3>Muscle Fascicle (Bundle)</h3>
+                <p>Internal bundle of muscle cells</p>
+              </div>
+              <div class="item-card" onclick="selectItem('hierarchy', 'fiber', this)">
+                <h3>Muscle Fiber (Cell)</h3>
+                <p>Elongated, multinucleated cellular unit</p>
+              </div>
+              <div class="item-card" onclick="selectItem('hierarchy', 'myofibril', this)">
+                <h3>Myofibril (Organelle)</h3>
+                <p>Contractile cylinder running through the cell</p>
+              </div>
+              <div class="item-card" onclick="selectItem('hierarchy', 'sarcomere', this)">
+                <h3>Sarcomere (Functional Unit)</h3>
+                <p>Contractile segment between Z-lines</p>
+              </div>
+            </div>
+            <div class="detail-panel" id="hierarchyDetail">
+              <div class="detail-img-container">
+                <img id="hierarchyImg" class="detail-img" src="assets/ch9-muscle-nested-organization.png" alt="Skeletal Muscle">
+              </div>
+              <div class="detail-title" id="hierarchyTitle">Skeletal Muscle</div>
+              <p class="detail-desc" id="hierarchyDesc">An entire skeletal muscle acts as an organ, consisting of skeletal muscle fibers, connective tissue coverings, nerves, and blood vessels.</p>
+              <div class="detail-meta" id="hierarchyMeta">
+                <b>Scale:</b> Entire Organ (Centimeters)<br>
+                <b>Key Components:</b> Fascicles, Epimysium, Deep Fascia, Blood vessels
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Connective Sheaths -->
+    <div id="sheaths" class="tab-content">
+      <section class="panel">
+        <h2>Connective Tissue Coverings</h2>
+        <div class="body">
+          <p style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0;">Click a connective sheath to view its location and binding properties:</p>
+          <div class="explorer-grid">
+            <div class="list-group">
+              <div class="item-card active" onclick="selectItem('sheaths', 'fascia', this)">
+                <h3>Deep Fascia</h3>
+                <p>Tough outer sheet surrounding muscles</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sheaths', 'epimysium', this)">
+                <h3>Epimysium</h3>
+                <p>Wraps the entire muscle belly</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sheaths', 'perimysium', this)">
+                <h3>Perimysium</h3>
+                <p>Wraps each muscle fascicle</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sheaths', 'endomysium', this)">
+                <h3>Endomysium</h3>
+                <p>Wraps each individual muscle cell</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sheaths', 'tendon', this)">
+                <h3>Tendon / Aponeurosis</h3>
+                <p>Extensions that anchor muscle to bone</p>
+              </div>
+            </div>
+            <div class="detail-panel" id="sheathsDetail">
+              <div class="detail-img-container">
+                <img id="sheathsImg" class="detail-img" src="assets/ch9-muscle-nested-organization.png" alt="Deep Fascia">
+              </div>
+              <div class="detail-title" id="sheathsTitle">Deep Fascia</div>
+              <p class="detail-desc" id="sheathsDesc">A sheet of dense connective tissue that surrounds the entire muscle and groups of muscles, separating them into compartments.</p>
+              <div class="detail-meta" id="sheathsMeta">
+                <b>Layer:</b> Outer Compartmental Cover<br>
+                <b>Primary Fiber Type:</b> Dense irregular collagenous tissue
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Sarcomere & Filaments -->
+    <div id="sarcomere" class="tab-content">
+      <section class="panel">
+        <h2>Sarcomere & Myofilaments</h2>
+        <div class="body">
+          <p style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0;">Click a filament or zone to explore molecular anatomy:</p>
+          <div class="explorer-grid">
+            <div class="list-group">
+              <div class="item-card active" onclick="selectItem('sarcomere', 'thick', this)">
+                <h3>Thick Filament (Myosin)</h3>
+                <p>Bundles of myosin with double globular heads</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'thin', this)">
+                <h3>Thin Filament (Actin)</h3>
+                <p>Twisted strands of actin containing binding sites</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'tropomyosin', this)">
+                <h3>Tropomyosin</h3>
+                <p>Regulatory band blocking myosin-binding sites</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'troponin', this)">
+                <h3>Troponin</h3>
+                <p>Regulatory protein with calcium binding sites</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'zline', this)">
+                <h3>Z-Line / Disc</h3>
+                <p>Boundary anchor for thin filaments</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'aband', this)">
+                <h3>A-Band (Dark Band)</h3>
+                <p>Full length of the thick filaments</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'iband', this)">
+                <h3>I-Band (Light Band)</h3>
+                <p>Thin filaments only, crossing Z-lines</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'hzone', this)">
+                <h3>H-Zone</h3>
+                <p>Thick filaments only, in center of A-band</p>
+              </div>
+              <div class="item-card" onclick="selectItem('sarcomere', 'mline', this)">
+                <h3>M-Line</h3>
+                <p>Protein line supporting thick filaments</p>
+              </div>
+            </div>
+            <div class="detail-panel" id="sarcomereDetail">
+              <div class="detail-img-container">
+                <img id="sarcomereImg" class="detail-img" src="assets/ch9-muscle-nested-organization.png" alt="Thick Filament">
+              </div>
+              <div class="detail-title" id="sarcomereTitle">Thick Filament (Myosin)</div>
+              <p class="detail-desc" id="sarcomereDesc">Composed of myosin molecules. The tails point toward the M-line while the heads form cross-bridges with actin active sites.</p>
+              <div class="detail-meta" id="sarcomereMeta">
+                <b>Main Protein:</b> Myosin<br>
+                <b>Key feature:</b> Binding sites for Actin and ATP
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Muscle Fiber Hierarchy & Sheaths</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Predict relative sizes, sheath functions, and sarcomere zones to demonstrate active mastery.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Images referenced are sourced from the course catalog. Designed for BIOL 2401 (A&P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+const APP_DATA = {
+  hierarchy: {
+    muscle: {
+      title: "Skeletal Muscle (Organ)",
+      desc_prof: "An entire skeletal muscle acts as an organ, consisting of skeletal muscle fibers (cells), connective tissue coverings, nerves, and blood vessels. Examples include the Biceps brachii and Gluteus maximus.",
+      desc_eli5: "The whole muscle organ (like your biceps). It is made of bundles of smaller fibers, has its own blood supply, and pulls on bones to make you move.",
+      meta_prof: "<b>Scale:</b> Entire Organ (Centimeters)<br><b>Key Components:</b> Fascicles, Epimysium, Deep Fascia, Blood vessels",
+      meta_eli5: "<b>Size:</b> Big enough to see and touch.<br><b>Made of:</b> Smaller bundles called fascicles.",
+      info: "<b>Skeletal Muscle Organ</b><br>The macro-anatomical layer. It contains thousands of muscle fibers that work in harmony."
+    },
+    fascicle: {
+      title: "Muscle Fascicle (Bundle)",
+      desc_prof: "A discrete bundle of skeletal muscle fibers segregated from other bundles by a connective tissue layer called the perimysium. Fascicle arrangements determine the muscle shape and range of motion.",
+      desc_eli5: "A bundle of muscle cells packed together, wrapped in its own protective layer like a bundle of wires inside a thick power cord.",
+      meta_prof: "<b>Scale:</b> Bundle Level (0.5 mm - 1 mm)<br><b>Key Components:</b> Muscle fibers, Perimysium",
+      meta_eli5: "<b>Size:</b> Can be seen with squinting eyes.<br><b>Made of:</b> Muscle fibers (cells).",
+      info: "<b>Muscle Fascicle</b><br>Fascicle structure varies: circular, convergent, parallel, or pennate configurations."
+    },
+    fiber: {
+      title: "Muscle Fiber (Cell)",
+      desc_prof: "An individual, elongated, multinucleated cell ranging from 10 to 100 micrometers in diameter, but stretching up to 30 cm long. Enclosed by the sarcolemma (cell membrane) and endomysium.",
+      desc_eli5: "A single, super long muscle cell that has many control centers (nuclei) and is wrapped in a delicate hair-thin layer.",
+      meta_prof: "<b>Scale:</b> Cellular Level (10 - 100 µm)<br><b>Key Components:</b> Sarcolemma, Sarcoplasm, Myofibrils, Mitochondria",
+      meta_eli5: "<b>Size:</b> Thinner than a single hair strand.<br><b>Key parts:</b> Contains hundreds of contractile rods (myofibrils).",
+      info: "<b>Muscle Fiber</b><br>Because they develop from fused embryonic cells, muscle fibers are multinucleated and unable to divide."
+    },
+    myofibril: {
+      title: "Myofibril (Organelle)",
+      desc_prof: "A dense, rod-like contractile organelle that runs parallel along the entire length of the muscle fiber. Its structure is packed with repeating segments called sarcomeres.",
+      desc_eli5: "A long, thin rod running inside the muscle cell. It is made of thousands of tiny engines linked end-to-end.",
+      meta_prof: "<b>Scale:</b> Subcellular Organelle (1 - 2 µm)<br><b>Key Components:</b> Sarcomeres, Myofilaments (thick & thin)",
+      meta_eli5: "<b>Size:</b> Microscopic organelle.<br><b>Made of:</b> Thick and thin protein chains.",
+      info: "<b>Myofibril</b><br>Myofibrils fill up the majority of a muscle cell's volume, pushing nuclei to the periphery."
+    },
+    sarcomere: {
+      title: "Sarcomere (Functional Unit)",
+      desc_prof: "The basic contractile and functional unit of skeletal muscle, extending from one Z-line to the next. The highly organized placement of overlapping actin and myosin filaments creates light and dark bands (striations).",
+      desc_eli5: "The smallest engine of the muscle. When these tiny segments shorten all at once, the whole muscle contracts.",
+      meta_prof: "<b>Scale:</b> Molecular Unit (2 - 2.5 µm at rest)<br><b>Key Components:</b> Z-lines, A-band, I-band, Myofilaments",
+      meta_eli5: "<b>Size:</b> Molecular level.<br><b>Function:</b> Contracts to pull Z-lines closer together.",
+      info: "<b>Sarcomere</b><br>The sliding filament mechanism occurs at this level, where actin is pulled past myosin."
+    }
+  },
+  sheaths: {
+    fascia: {
+      title: "Deep Fascia",
+      desc_prof: "A thick sheet of dense connective tissue that wraps individual muscles and groups of muscles together, separating them into compartments and anchoring them to surrounding structures.",
+      desc_eli5: "A super tough outer wrapping that binds muscles together, keeps them in place, and tapers off into tendons to glue them to bones.",
+      meta_prof: "<b>Layer:</b> Compartmental Cover<br><b>Tissue Class:</b> Dense irregular connective tissue",
+      meta_eli5: "<b>Layer:</b> The outer heavy-duty coat.<br><b>Function:</b> Holds whole muscle groups together.",
+      info: "<b>Deep Fascia</b><br>Deep fascia contains nerves and lymph vessels and helps transmit mechanical tension."
+    },
+    epimysium: {
+      title: "Epimysium",
+      desc_prof: "An outer sheath of dense connective tissue that closely surrounds the entire skeletal muscle belly. It blends directly into the deep fascia and anchors the muscle belly securely.",
+      desc_eli5: "The tight skin of the muscle itself. It protects the outer surface and blends into the surrounding tissues.",
+      meta_prof: "<b>Layer:</b> Outer Muscle Sheath<br><b>Tissue Class:</b> Dense irregular collagenous tissue",
+      meta_eli5: "<b>Layer:</b> The muscle's personal wrapper.<br><b>Function:</b> Encases the whole muscle belly.",
+      info: "<b>Epimysium</b><br>Epimysium protects the muscle from friction against other muscles and bone."
+    },
+    perimysium: {
+      title: "Perimysium",
+      desc_prof: "A central layer of connective tissue that partitions the muscle belly internally into bundles of muscle cells called fascicles. It provides access for blood vessels and nerves.",
+      desc_eli5: "The wrapping paper for each bundle (fascicle) of muscle cells. It also acts as a highway for blood vessels and nerves.",
+      meta_prof: "<b>Layer:</b> Inter-fascicular Partitions<br><b>Tissue Class:</b> Collagenous connective tissue",
+      meta_eli5: "<b>Layer:</b> Middle divider.<br><b>Function:</b> Wraps each fascicle bundle.",
+      info: "<b>Perimysium</b><br>The perimysium is vital for transmitting lateral contractile forces along the muscle."
+    },
+    endomysium: {
+      title: "Endomysium",
+      desc_prof: "A delicate sheath of loose connective tissue that surrounds each individual muscle fiber. It contains capillary beds and nerve terminals to support the muscle cell.",
+      desc_eli5: "A thin, soft sock wrapping each individual muscle cell to insulate it and feed it with tiny blood vessels.",
+      meta_prof: "<b>Layer:</b> Intra-fascicular Cellular Sheath<br><b>Tissue Class:</b> Fine reticular connective tissue",
+      meta_eli5: "<b>Layer:</b> The innermost, thinnest layer.<br><b>Function:</b> Insulates and feeds each single cell.",
+      info: "<b>Endomysium</b><br>The endomysium carries capillaries that supply oxygen and nutrients directly to the cell membrane."
+    },
+    tendon: {
+      title: "Tendon / Aponeurosis",
+      desc_prof: "Extensions of all four connective tissue layers beyond the muscle belly fibers. Cord-like extensions are tendons, whereas broad flat sheets are aponeuroses. They interlace with bone periosteum.",
+      desc_eli5: "The strong ropes (tendon) or flat sheets (aponeurosis) at the ends of a muscle that anchor it tightly to a bone.",
+      meta_prof: "<b>Form:</b> Cord-like (Tendon) or Sheet-like (Aponeurosis)<br><b>Tissue Class:</b> Dense regular connective tissue",
+      meta_eli5: "<b>Form:</b> Tough ropes or sheets.<br><b>Function:</b> Glues muscle to bone periosteum.",
+      info: "<b>Tendon & Aponeurosis</b><br>These structures are highly collagenous and contain very few cells or blood vessels, resulting in slow healing."
+    }
+  },
+  sarcomere: {
+    thick: {
+      title: "Thick Filament (Myosin)",
+      desc_prof: "Composed of roughly 300 myosin proteins. Each myosin molecule features a rod-like tail pointing toward the center, and two globular heads (cross-bridges) containing binding sites for actin and ATP.",
+      desc_eli5: "A thick bundle of proteins with tiny golf-club-like heads sticking out. These heads grab onto the thin filaments and pull them.",
+      meta_prof: "<b>Main Protein:</b> Myosin<br><b>Key Feature:</b> Globular heads function as ATPase enzymes",
+      meta_eli5: "<b>Main Protein:</b> Myosin.<br><b>Action:</b> Clutches and crawls along actin.",
+      info: "<b>Thick Filament</b><br>Myosin heads hydrolyze ATP to ADP and inorganic phosphate, cocking the head into position."
+    },
+    thin: {
+      title: "Thin Filament (Actin)",
+      desc_prof: "Composed primarily of globular actin (G-actin) molecules polymerized into double-helical strands (F-actin). Each actin subunit possesses a binding site for myosin heads.",
+      desc_eli5: "A thin twisted strand of proteins (like two strings of pearls) containing targets for the thick filament's heads.",
+      meta_prof: "<b>Main Protein:</b> F-Actin (subunits of G-actin)<br><b>Key Feature:</b> Houses active myosin-binding sites",
+      meta_eli5: "<b>Main Protein:</b> Actin.<br><b>Action:</b> Slips toward the center when pulled.",
+      info: "<b>Thin Filament</b><br>The thin filaments are anchored directly to the Z-lines on both ends of the sarcomere."
+    },
+    tropomyosin: {
+      title: "Tropomyosin",
+      desc_prof: "A rod-shaped regulatory protein that spirals around the F-actin helix. When the muscle is relaxed, tropomyosin blocks the myosin-binding sites on actin to prevent contraction.",
+      desc_eli5: "A long ribbon that wraps around the actin strand, covering up the targets so the muscle can stay relaxed.",
+      meta_prof: "<b>Class:</b> Regulatory Protein<br><b>Resting Function:</b> Blocks cross-bridge attachment",
+      meta_eli5: "<b>Class:</b> Gatekeeper.<br><b>State:</b> Blocks the active sites when muscle is at rest.",
+      info: "<b>Tropomyosin</b><br>In a relaxed fiber, tropomyosin physically blocks actin active sites, preventing contraction."
+    },
+    troponin: {
+      title: "Troponin",
+      desc_prof: "A regulatory protein complex of three subunits attached to tropomyosin. One subunit binds actin, another binds tropomyosin, and the third binds calcium ions (Ca²⁺) to initiate contraction.",
+      desc_eli5: "The lock on the tropomyosin ribbon. When calcium (the key) enters, it unlocks troponin, pulling the ribbon away to start contraction.",
+      meta_prof: "<b>Class:</b> Regulatory Protein Complex<br><b>Trigger:</b> Binds Calcium to cause structural shift",
+      meta_eli5: "<b>Class:</b> Lock.<br><b>Activated by:</b> Calcium ions.",
+      info: "<b>Troponin</b><br>Binding of Ca²⁺ causes troponin to change shape, shifting tropomyosin off the actin binding sites."
+    },
+    zline: {
+      title: "Z-Line / Disc",
+      desc_prof: "A dark plate of proteins (α-actinin) that marks the boundary of each sarcomere and anchors the thin filaments in place.",
+      desc_eli5: "The boundary walls at each end of the sarcomere engine, separating one engine from the next.",
+      meta_prof: "<b>Sarcomere Location:</b> Boundaries on both ends<br><b>Structural Function:</b> Anchors actin filaments",
+      meta_eli5: "<b>Location:</b> Outer boundaries.<br><b>Function:</b> Anchors thin actin lines.",
+      info: "<b>Z-Line</b><br>During contraction, Z-lines are pulled closer together, reducing total sarcomere length."
+    },
+    aband: {
+      title: "A-Band (Dark Band)",
+      desc_prof: "The dark region of the striation pattern. Its width corresponds to the full length of the thick (myosin) filaments, including areas of thin filament overlap. Its length remains constant during contraction.",
+      desc_eli5: "The dark stripe marking the full width of the thick filaments. It stays the same size during contraction.",
+      meta_prof: "<b>Striation Region:</b> Anisotropic dark band<br><b>Behavior in Contraction:</b> Length remains unchanged",
+      meta_eli5: "<b>Striation:</b> Dark band.<br><b>Behavior:</b> Width never changes.",
+      info: "<b>A-Band</b><br>The constant width of the A-band during contraction was crucial evidence for the sliding filament theory."
+    },
+    iband: {
+      title: "I-Band (Light Band)",
+      desc_prof: "The light region of the striation pattern, containing thin (actin) filaments only. It spans across the Z-line into two adjacent sarcomeres and narrows or disappears during contraction.",
+      desc_eli5: "The light stripe where only thin strands hang out. It shrinks when the muscle contracts.",
+      meta_prof: "<b>Striation Region:</b> Isotropic light band<br><b>Behavior in Contraction:</b> Narrows/disappears as overlap increases",
+      meta_eli5: "<b>Striation:</b> Light band.<br><b>Behavior:</b> Shrinks during contraction.",
+      info: "<b>I-Band</b><br>The I-band light color is due to the lack of dense thick filaments."
+    },
+    hzone: {
+      title: "H-Zone",
+      desc_prof: "The lighter central region of the dark A-band, containing thick (myosin) filaments only (no thin filament overlap). It narrows and disappears during full contraction.",
+      desc_eli5: "The middle zone of the dark stripe where only thick strands lie. It vanishes when the muscle contracts and the thin strands slide in.",
+      meta_prof: "<b>Sarcomere Location:</b> Center of A-band<br><b>Behavior in Contraction:</b> Narrows/disappears",
+      meta_eli5: "<b>Location:</b> Mid-A-band.<br><b>Behavior:</b> Disappears when fully contracted.",
+      info: "<b>H-Zone</b><br>As thin filaments are pulled inward, they overlap the thick filaments in the H-zone, causing it to narrow."
+    },
+    mline: {
+      title: "M-Line",
+      desc_prof: "A dark line in the center of the H-zone, composed of structural proteins (myomesin) that bind thick filaments together and keep them aligned.",
+      desc_eli5: "The center line holding the thick filaments together in the middle of the sarcomere.",
+      meta_prof: "<b>Sarcomere Location:</b> Exact center of H-zone<br><b>Structural Function:</b> Anchors and aligns thick filaments",
+      meta_eli5: "<b>Location:</b> Dead center.<br><b>Function:</b> Grid line keeping myosin aligned.",
+      info: "<b>M-Line</b><br>The M-line proteins prevent lateral shifting of thick filaments during contraction."
+    }
+  }
+};
+
+let eli5Mode = false;
+let currentTab = "hierarchy";
+let currentSelections = {
+  hierarchy: "muscle",
+  sheaths: "fascia",
+  sarcomere: "thick"
+};
+
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+const infoBox = document.getElementById("infoBox");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateTexts();
+});
+
+function updateTexts() {
+  const activeSelection = currentSelections[currentTab];
+  const data = APP_DATA[currentTab][activeSelection];
+  
+  const titleEl = document.getElementById(`${currentTab}Title`);
+  const descEl = document.getElementById(`${currentTab}Desc`);
+  const metaEl = document.getElementById(`${currentTab}Meta`);
+  
+  if (titleEl) titleEl.textContent = data.title;
+  if (descEl) descEl.textContent = eli5Mode ? data.desc_eli5 : data.desc_prof;
+  if (metaEl) metaEl.innerHTML = eli5Mode ? data.meta_eli5 : data.meta_prof;
+  
+  infoBox.innerHTML = eli5Mode ? `<b>ELI5 Mode:</b><br>${data.info}` : `<b>Anatomy Guide:</b><br>${data.info}`;
+}
+
+window.switchTab = function(tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  updateTexts();
+};
+
+window.selectItem = function(tabId, key, el) {
+  const group = el.parentElement;
+  group.querySelectorAll(".item-card").forEach(card => card.classList.remove("active"));
+  el.classList.add("active");
+  
+  currentSelections[tabId] = key;
+  updateTexts();
+};
+
+// Initial text population
+updateTexts();
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"skeletal-muscle-structure", title:"Skeletal Muscle Structure Explorer", unit:"Ch 9 · Muscular System" });
+  APTools.mountHUD("#apHud","skeletal-muscle-structure");
+  var BANK=[
+    { id:"ms1", bloom:"Remember", outcome:"Epimysium",
+      q:"Which connective tissue layer wraps the entire skeletal muscle belly?",
+      choices:["Epimysium","Perimysium","Endomysium","Deep fascia"],
+      answer:0, why:"The epimysium is the dense outer connective tissue layer wrapping the entire muscle belly." },
+    { id:"ms2", bloom:"Remember", outcome:"Fascicle",
+      q:"A muscle fascicle is composed of a bundle of:",
+      choices:["Muscle fibers (cells)","Myofibrils","Myofilaments","Sarcomeres"],
+      answer:0, why:"Fascicles are distinct bundles of individual muscle fibers (cells) wrapped in perimysium." },
+    { id:"ms3", bloom:"Understand", outcome:"Muscle Hierarchy",
+      q:"Which represents the correct hierarchical order from macro-to-micro scale?",
+      choices:["Muscle → Fascicle → Muscle fiber → Myofibril → Sarcomere","Muscle → Muscle fiber → Fascicle → Myofibril → Sarcomere","Muscle → Fascicle → Myofibril → Muscle fiber → Sarcomere","Fascicle → Muscle → Muscle fiber → Myofibril → Sarcomere"],
+      answer:0, why:"Skeletal muscles contain fascicles, which house muscle fibers (cells), which are packed with myofibrils, which consist of repeating sarcomeres." },
+    { id:"ms4", bloom:"Remember", outcome:"Endomysium",
+      q:"The delicate sheath of connective tissue wrapping an individual muscle fiber is the:",
+      choices:["Endomysium","Perimysium","Epimysium","Deep fascia"],
+      answer:0, why:"Endomysium is a fine, loose connective tissue layer wrapping around each individual muscle cell." },
+    { id:"ms5", bloom:"Understand", outcome:"Sarcomere Boundary",
+      q:"What structural boundary defines the limits of a single sarcomere?",
+      choices:["Z-line (Z-disc)","M-line","H-zone","A-band"],
+      answer:0, why:"A sarcomere is the structural and functional unit of contraction extending from one Z-line to the next." },
+    { id:"ms6", bloom:"Remember", outcome:"H-Zone",
+      q:"Which zone of the sarcomere contains ONLY thick filaments with no thin filament overlap at rest?",
+      choices:["H-zone","I-band","A-band","M-line"],
+      answer:0, why:"The H-zone is the central portion of the A-band containing only thick (myosin) filaments." },
+    { id:"ms7", bloom:"Understand", outcome:"A-Band",
+      q:"The dark bands observed in skeletal muscle striations are called:",
+      choices:["A-bands","I-bands","Z-lines","H-zones"],
+      answer:0, why:"A-bands are the dark bands, representing the entire width of the thick filaments." },
+    { id:"ms8", bloom:"Remember", outcome:"Tropomyosin",
+      q:"Which regulatory protein blocks active myosin-binding sites on actin in a relaxed muscle?",
+      choices:["Tropomyosin","Troponin","Calmodulin","Actomyosin"],
+      answer:0, why:"Tropomyosin forms a rod-shaped band spiraling around actin to block active binding sites at rest." },
+    { id:"ms9", bloom:"Understand", outcome:"Troponin Complex",
+      q:"The troponin complex contains binding sites for:",
+      choices:["Actin, tropomyosin, and calcium ions","Actin, myosin, and ATP","Myosin, ATP, and calcium ions","Tropomyosin, myosin, and calcium ions"],
+      answer:0, why:"Troponin attaches to actin, hooks to tropomyosin, and binds calcium ions to trigger muscle contraction." },
+    { id:"ms10", bloom:"Remember", outcome:"Deep Fascia",
+      q:"Which connective tissue layer is a tough, compartmental outer sheet that wraps groups of muscles and extends to form tendons?",
+      choices:["Deep fascia","Epimysium","Perimysium","Endomysium"],
+      answer:0, why:"Deep fascia is the outer sheet of dense tissue that wraps muscles and muscle groups, extending past them to become tendons." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"skeletal-muscle-structure", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

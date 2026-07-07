@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muscle Contraction Lab | Chapter 9 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-700: #1d4ed8;
+  --blue-600: #2563eb;
+  --blue-500: #3b82f6;
+  --blue-100: #dbeafe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(29, 78, 216, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --purple-600: #9333ea;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(37, 99, 235, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--blue-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--blue-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--blue-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--blue-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Controls */
+.step-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.step-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.step-btn:hover {
+  background: var(--slate-100);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+}
+.step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.step-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  border-color: var(--blue-700);
+}
+.step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number {
+  font-weight: 800;
+  color: var(--blue-700);
+  font-size: 0.88rem;
+}
+.step-desc {
+  font-size: 0.84rem;
+  color: var(--slate-700);
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
+
+/* NMJ Visualization */
+.nmj-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.nmj-diagram {
+  width: 100%;
+  max-width: 600px;
+  height: 250px;
+  position: relative;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: linear-gradient(to bottom, #f8fafc 0%, #e2e8f0 100%);
+  overflow: hidden;
+}
+
+.neuron {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  background: var(--purple-600);
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+}
+
+.axon {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 60px;
+  background: var(--purple-600);
+}
+
+.terminal {
+  position: absolute;
+  top: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 40px;
+  background: var(--purple-600);
+  border-radius: 20px;
+  border: 2px solid var(--border-color);
+}
+
+.synaptic-cleft {
+  position: absolute;
+  top: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 20px;
+  background: var(--amber-500);
+  opacity: 0.3;
+}
+
+.muscle-fiber-nmj {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 50px;
+  background: var(--red-600);
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+}
+
+.vesicle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--green-600);
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+.ach-molecule {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--green-600);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+/* Calcium Animation */
+.calcium-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.calcium-diagram {
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  position: relative;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.t-tubule {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 240px;
+  background: var(--blue-500);
+  opacity: 0.4;
+  border: 2px solid var(--blue-700);
+}
+
+.sr-terminal {
+  position: absolute;
+  width: 80px;
+  height: 60px;
+  background: var(--purple-600);
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+}
+
+.sr-left {
+  top: 80px;
+  left: 80px;
+}
+
+.sr-right {
+  top: 80px;
+  right: 80px;
+}
+
+.calcium-ion {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--amber-500);
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+/* Cross-Bridge Cycle */
+.crossbridge-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.crossbridge-diagram {
+  width: 100%;
+  max-width: 600px;
+  height: 280px;
+  position: relative;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.thick-filament {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 40px;
+  background: var(--purple-600);
+  border-radius: 20px;
+  border: 2px solid var(--border-color);
+}
+
+.thin-filament {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  height: 20px;
+  background: var(--red-600);
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+}
+
+.myosin-head {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background: var(--green-600);
+  border-radius: 50% 50% 0 0;
+  border: 2px solid var(--border-color);
+  transition: all 0.6s ease;
+}
+
+.atp-molecule {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--amber-500);
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  font-size: 8px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+/* Sliding Filament Animation */
+.sliding-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.sarcomere-container {
+  width: 100%;
+  max-width: 700px;
+  height: 200px;
+  position: relative;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.z-line {
+  position: absolute;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--slate-900);
+  transition: all 0.8s ease;
+}
+
+.z-line-left { left: 50px; }
+.z-line-right { right: 50px; }
+
+.thick-filament-slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 40px;
+  background: var(--purple-600);
+  border-radius: 20px;
+  border: 2px solid var(--border-color);
+  transition: all 0.8s ease;
+}
+
+.thin-filament-left, .thin-filament-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+  height: 20px;
+  background: var(--red-600);
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  transition: all 0.8s ease;
+}
+
+.thin-filament-left { left: 50px; }
+.thin-filament-right { right: 50px; }
+
+.sarcomere-label {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--slate-700);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+/* Reference animation (GIF) block */
+.video-ref {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.video-ref-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--blue-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+.video-ref-frame {
+  width: 100%;
+  max-width: 560px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  overflow: hidden;
+  background: #1e1e2e;
+  line-height: 0;
+}
+.video-ref-frame img,
+.video-ref-frame video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.video-ref-caption {
+  max-width: 560px;
+  font-size: 0.82rem;
+  color: var(--slate-700);
+  line-height: 1.45;
+  margin: 12px 0 0;
+  text-align: center;
+}
+
+/* Footer Section */
+.footer-note {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 24px 30px;
+  font-size: 0.74rem;
+  color: var(--slate-500);
+}
+
+/* APTools study block styling */
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--blue-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Muscle Contraction Lab</h1>
+    <p>Excitation-Contraction Coupling · Sliding Filament Mechanism · Ch 9</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Contraction Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">Use the interactive tabs to explore each stage of muscle contraction. Click through steps to see animations.</p>
+        <div class="info-box" id="infoBox">
+          <b>Muscle Contraction Process</b><br>
+          Muscle contraction begins at the neuromuscular junction and ends with the sliding of filaments. This lab visualizes each critical step in the excitation-contraction coupling process.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('nmj', this)">Neuromuscular Junction</button>
+      <button class="tab-btn" onclick="switchTab('coupling', this)">E-C Coupling</button>
+      <button class="tab-btn" onclick="switchTab('crossbridge', this)">Cross-Bridge Cycle</button>
+      <button class="tab-btn" onclick="switchTab('sliding', this)">Sliding Filament</button>
+    </div>
+
+    <!-- Tab 1: Neuromuscular Junction -->
+    <div id="nmj" class="tab-content active">
+      <section class="panel">
+        <h2>Neuromuscular Junction Events</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">NMJ Signal Transmission</h3>
+            <div class="step-display">
+              <div class="step-number" id="nmjStepNum">Step 1 of 5</div>
+              <div class="step-desc" id="nmjStepDesc">Action potential arrives at axon terminal</div>
+            </div>
+            <div class="nmj-stage">
+              <div class="nmj-diagram" id="nmjDiagram">
+                <div class="neuron"></div>
+                <div class="axon"></div>
+                <div class="terminal"></div>
+                <div class="synaptic-cleft"></div>
+                <div class="muscle-fiber-nmj"></div>
+              </div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="nmjPrevStep()">← Previous</button>
+              <button class="step-btn active" onclick="nmjGoToStep(1)">1</button>
+              <button class="step-btn" onclick="nmjGoToStep(2)">2</button>
+              <button class="step-btn" onclick="nmjGoToStep(3)">3</button>
+              <button class="step-btn" onclick="nmjGoToStep(4)">4</button>
+              <button class="step-btn" onclick="nmjGoToStep(5)">5</button>
+              <button class="step-btn" onclick="nmjNextStep()">Next →</button>
+              <button class="step-btn" onclick="nmjReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+
+            <!-- Reference animation (GIF) -->
+            <div class="video-ref">
+              <h4 class="video-ref-title">Animation — ACh Release & End-Plate Depolarization</h4>
+              <div class="video-ref-frame" style="max-width: 480px;">
+                <img src="assets/Neuromuscular_Junction_animation.gif"
+                     alt="Neuromuscular junction animation: axon terminal releasing acetylcholine into the synaptic cleft, binding motor end-plate receptors and spreading depolarization"
+                     loading="lazy">
+              </div>
+              <p class="video-ref-caption" id="nmjRefCaption">The axon terminal releases acetylcholine (orange) into the synaptic cleft. ACh binds receptors on the motor end plate, and the depolarization wave (yellow arrows) spreads across the sarcolemma.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: E-C Coupling -->
+    <div id="coupling" class="tab-content">
+      <section class="panel">
+        <h2>Excitation-Contraction Coupling</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">T-Tubule & Sarcoplasmic Reticulum</h3>
+            <div class="step-display">
+              <div class="step-number" id="ecStepNum">Step 1 of 4</div>
+              <div class="step-desc" id="ecStepDesc">Action potential spreads along sarcolemma and into T-tubules</div>
+            </div>
+            <div class="calcium-stage">
+              <div class="calcium-diagram" id="calciumDiagram">
+                <div class="t-tubule"></div>
+                <div class="sr-terminal sr-left"></div>
+                <div class="sr-terminal sr-right"></div>
+              </div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="ecPrevStep()">← Previous</button>
+              <button class="step-btn active" onclick="ecGoToStep(1)">1</button>
+              <button class="step-btn" onclick="ecGoToStep(2)">2</button>
+              <button class="step-btn" onclick="ecGoToStep(3)">3</button>
+              <button class="step-btn" onclick="ecGoToStep(4)">4</button>
+              <button class="step-btn" onclick="ecNextStep()">Next →</button>
+              <button class="step-btn" onclick="ecReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+
+            <!-- Reference video -->
+            <div class="video-ref">
+              <h4 class="video-ref-title">Video — Excitation-Contraction Coupling</h4>
+              <div class="video-ref-frame">
+                <video controls loop muted playsinline preload="metadata">
+                  <source src="assets/Excitation_Contraction_Coupling.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <p class="video-ref-caption" id="ecRefCaption">Follow the action potential down the T-tubule, the voltage sensors triggering the SR, the Ca²⁺ flood into the sarcoplasm, and calcium binding troponin to launch contraction.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Cross-Bridge Cycle -->
+    <div id="crossbridge" class="tab-content">
+      <section class="panel">
+        <h2>Cross-Bridge Cycle (Power Stroke)</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Myosin-Actin Interaction</h3>
+            <div class="step-display">
+              <div class="step-number" id="cbStepNum">Step 1 of 4</div>
+              <div class="step-desc" id="cbStepDesc">Myosin head is cocked and ready (energized by ATP hydrolysis)</div>
+            </div>
+            <div class="crossbridge-stage">
+              <div class="crossbridge-diagram" id="crossbridgeDiagram">
+                <div class="thin-filament"></div>
+                <div class="thick-filament"></div>
+                <div class="myosin-head" id="myosinHead"></div>
+              </div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="cbPrevStep()">← Previous</button>
+              <button class="step-btn active" onclick="cbGoToStep(1)">1</button>
+              <button class="step-btn" onclick="cbGoToStep(2)">2</button>
+              <button class="step-btn" onclick="cbGoToStep(3)">3</button>
+              <button class="step-btn" onclick="cbGoToStep(4)">4</button>
+              <button class="step-btn" onclick="cbNextStep()">Next →</button>
+              <button class="step-btn" onclick="cbReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+
+            <!-- Reference diagram (molecular detail) -->
+            <div class="video-ref">
+              <h4 class="video-ref-title">Molecular Detail — Cross-Bridge Attachment</h4>
+              <div class="video-ref-frame" style="max-width: 460px;">
+                <img src="assets/ch9-cross-bridge-muscular-contraction.png"
+                     alt="Cross-bridge: myosin head bound to actin with troponin, Ca²⁺, ADP and Pi labeled"
+                     loading="lazy">
+              </div>
+              <p class="video-ref-caption" id="cbRefCaption">Ca²⁺ binds troponin (green) on the actin filament (purple), exposing the binding site. The myosin head (red) attaches, still carrying ADP + Pi from the previous ATP hydrolysis, ready for the power stroke.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Sliding Filament -->
+    <div id="sliding" class="tab-content">
+      <section class="panel">
+        <h2>Sliding Filament Mechanism</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Sarcomere Contraction & Relaxation</h3>
+            <div class="step-display">
+              <div class="step-number" id="slideStepNum">Relaxed State</div>
+              <div class="step-desc" id="slideStepDesc">Sarcomere at resting length (~2.4 μm). Thin filaments partially overlap thick filaments.</div>
+            </div>
+            <div class="sliding-stage">
+              <div class="sarcomere-container" id="sarcomereContainer">
+                <div class="sarcomere-label" id="sarcomereLabel">Sarcomere Length: 2.4 μm</div>
+                <div class="z-line z-line-left"></div>
+                <div class="z-line z-line-right"></div>
+                <div class="thick-filament-slide" id="thickFilament"></div>
+                <div class="thin-filament-left" id="thinLeft"></div>
+                <div class="thin-filament-right" id="thinRight"></div>
+              </div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="slideContract()">Contract</button>
+              <button class="step-btn" onclick="slideRelax()">Relax</button>
+              <button class="step-btn" onclick="slideReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+
+            <!-- Reference animation (GIF) -->
+            <div class="video-ref">
+              <h4 class="video-ref-title">3D Molecular Animation — Cross-Bridges in Motion</h4>
+              <div class="video-ref-frame">
+                <img src="assets/Muscle_contraction_Sliding_filament_model_animation_for_A_level_biology.gif"
+                     alt="Sliding filament model animation showing myosin heads binding actin with Ca²⁺ and ATP"
+                     loading="lazy">
+              </div>
+              <p class="video-ref-caption" id="videoRefCaption">Watch the myosin heads (pink) grab the actin filament (blue), pivot during the power stroke, and reset — powered by ATP and triggered by Ca²⁺. The inset tracks sarcomere shortening.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Muscle Contraction & Coupling</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master the neuromuscular junction, calcium release, cross-bridge cycle, and sliding filament theory.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive animations demonstrate the molecular events of muscle contraction. Designed for BIOL 2401 (A&P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "nmj";
+
+// NMJ Animation State
+let nmjStep = 1;
+const nmjSteps = [
+  {
+    num: 1,
+    desc_prof: "Action potential arrives at axon terminal, depolarizing the membrane",
+    desc_eli5: "An electrical signal races down the nerve and reaches the ending",
+    info: "<b>Step 1:</b> The nerve impulse reaches the axon terminal."
+  },
+  {
+    num: 2,
+    desc_prof: "Voltage-gated calcium channels open; Ca²⁺ floods into the terminal",
+    desc_eli5: "Calcium gates open and calcium rushes into the nerve ending",
+    info: "<b>Step 2:</b> Calcium ions enter the axon terminal through voltage-gated channels."
+  },
+  {
+    num: 3,
+    desc_prof: "Synaptic vesicles fuse with membrane and release acetylcholine (ACh) into the synaptic cleft",
+    desc_eli5: "Tiny bubbles burst and spray chemical messenger (ACh) into the gap",
+    info: "<b>Step 3:</b> ACh is released into the synaptic cleft via exocytosis."
+  },
+  {
+    num: 4,
+    desc_prof: "ACh binds to nicotinic receptors on the motor end plate, opening ligand-gated sodium channels",
+    desc_eli5: "The chemical keys unlock doors on the muscle, letting sodium rush in",
+    info: "<b>Step 4:</b> ACh binds to receptors on the muscle fiber membrane."
+  },
+  {
+    num: 5,
+    desc_prof: "Sodium influx depolarizes the sarcolemma, triggering an action potential that spreads across the muscle fiber",
+    desc_eli5: "The muscle cell gets excited and the electric wave spreads everywhere",
+    info: "<b>Step 5:</b> The muscle fiber action potential initiates contraction."
+  }
+];
+
+// E-C Coupling State
+let ecStep = 1;
+const ecSteps = [
+  {
+    num: 1,
+    desc_prof: "Action potential spreads along sarcolemma and into T-tubules",
+    desc_eli5: "The electric signal dives deep into the muscle through tiny tunnels",
+    info: "<b>Step 1:</b> T-tubules carry the action potential deep into the fiber."
+  },
+  {
+    num: 2,
+    desc_prof: "Voltage sensors in T-tubule membrane detect depolarization and mechanically pull on SR calcium release channels",
+    desc_eli5: "Sensors in the tunnel walls pull on nearby calcium gates to open them",
+    info: "<b>Step 2:</b> DHP receptors trigger ryanodine receptors in the SR."
+  },
+  {
+    num: 3,
+    desc_prof: "Sarcoplasmic reticulum releases massive amounts of Ca²⁺ into the sarcoplasm",
+    desc_eli5: "Calcium floods out of storage tanks into the muscle cell",
+    info: "<b>Step 3:</b> Calcium concentration in the cytoplasm rises 100-fold."
+  },
+  {
+    num: 4,
+    desc_prof: "Calcium binds to troponin, causing tropomyosin to shift and expose myosin-binding sites on actin",
+    desc_eli5: "Calcium unlocks the troponin lock, moving the blocking ribbon away from actin targets",
+    info: "<b>Step 4:</b> Contraction begins as myosin heads bind to actin."
+  }
+];
+
+// Cross-Bridge Cycle State
+let cbStep = 1;
+const cbSteps = [
+  {
+    num: 1,
+    desc_prof: "Myosin head is cocked and energized (ADP + Pi attached) after ATP hydrolysis",
+    desc_eli5: "The myosin head is loaded like a spring, holding energy from broken-down ATP",
+    info: "<b>Step 1:</b> Myosin is in the high-energy 'cocked' position."
+  },
+  {
+    num: 2,
+    desc_prof: "Myosin head binds to exposed active site on actin, forming a cross-bridge",
+    desc_eli5: "The myosin head grabs onto the actin strand",
+    info: "<b>Step 2:</b> Cross-bridge attachment occurs."
+  },
+  {
+    num: 3,
+    desc_prof: "Power stroke: myosin head pivots, pulling actin toward the M-line and releasing ADP + Pi",
+    desc_eli5: "The myosin head swivels like an oar, dragging the actin strand inward",
+    info: "<b>Step 3:</b> The power stroke slides the thin filament."
+  },
+  {
+    num: 4,
+    desc_prof: "New ATP binds to myosin head, causing it to detach from actin. ATP is then hydrolyzed, re-cocking the head for another cycle",
+    desc_eli5: "Fresh ATP arrives, making myosin let go and reload for another pull",
+    info: "<b>Step 4:</b> ATP binding causes detachment and resets the cycle."
+  }
+];
+
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+const infoBox = document.getElementById("infoBox");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  if (currentTab === "nmj") updateNMJText();
+  if (currentTab === "coupling") updateECText();
+  if (currentTab === "crossbridge") updateCBText();
+  if (currentTab === "sliding") updateSlideText();
+}
+
+// NMJ Functions
+function updateNMJText() {
+  const step = nmjSteps[nmjStep - 1];
+  document.getElementById("nmjStepNum").textContent = `Step ${step.num} of 5`;
+  document.getElementById("nmjStepDesc").textContent = eli5Mode ? step.desc_eli5 : step.desc_prof;
+  infoBox.innerHTML = step.info;
+
+  // Update active button
+  document.querySelectorAll("#nmj .step-btn").forEach((btn, i) => {
+    if (i > 0 && i < 6) btn.classList.toggle("active", i === nmjStep);
+  });
+
+  const nmjCap = document.getElementById("nmjRefCaption");
+  if (nmjCap) {
+    nmjCap.textContent = eli5Mode
+      ? "The nerve ending sprays out its chemical messenger (ACh, orange) into the tiny gap. The messenger lands on the muscle's doors, and the electric wave (yellow arrows) spreads out across the muscle."
+      : "The axon terminal releases acetylcholine (orange) into the synaptic cleft. ACh binds receptors on the motor end plate, and the depolarization wave (yellow arrows) spreads across the sarcolemma.";
+  }
+}
+
+function nmjGoToStep(step) {
+  nmjStep = step;
+  updateNMJText();
+  animateNMJ();
+}
+
+function nmjNextStep() {
+  if (nmjStep < 5) nmjGoToStep(nmjStep + 1);
+}
+
+function nmjPrevStep() {
+  if (nmjStep > 1) nmjGoToStep(nmjStep - 1);
+}
+
+function nmjReset() {
+  nmjGoToStep(1);
+}
+
+function animateNMJ() {
+  const diagram = document.getElementById("nmjDiagram");
+  // Clear previous animations
+  diagram.querySelectorAll(".vesicle, .ach-molecule").forEach(el => el.remove());
+
+  if (nmjStep >= 3) {
+    // Show vesicles
+    for (let i = 0; i < 3; i++) {
+      const vesicle = document.createElement("div");
+      vesicle.className = "vesicle";
+      vesicle.style.left = `calc(50% - 40px + ${i * 20}px)`;
+      vesicle.style.top = "170px";
+      diagram.appendChild(vesicle);
+      setTimeout(() => vesicle.style.opacity = "1", 100 * i);
+    }
+  }
+
+  if (nmjStep >= 4) {
+    // Show ACh molecules in cleft
+    for (let i = 0; i < 8; i++) {
+      const ach = document.createElement("div");
+      ach.className = "ach-molecule";
+      ach.style.left = `calc(50% - 50px + ${i * 14}px)`;
+      ach.style.top = "205px";
+      diagram.appendChild(ach);
+      setTimeout(() => {
+        ach.style.opacity = "1";
+        ach.style.top = "215px";
+      }, 200 + 80 * i);
+    }
+  }
+}
+
+// E-C Coupling Functions
+function updateECText() {
+  const step = ecSteps[ecStep - 1];
+  document.getElementById("ecStepNum").textContent = `Step ${step.num} of 4`;
+  document.getElementById("ecStepDesc").textContent = eli5Mode ? step.desc_eli5 : step.desc_prof;
+  infoBox.innerHTML = step.info;
+
+  document.querySelectorAll("#coupling .step-btn").forEach((btn, i) => {
+    if (i > 0 && i < 5) btn.classList.toggle("active", i === ecStep);
+  });
+
+  const ecCap = document.getElementById("ecRefCaption");
+  if (ecCap) {
+    ecCap.textContent = eli5Mode
+      ? "The electric signal dives into the tiny T-tubule tunnels, opens the calcium storage tanks (SR), and calcium floods out. The calcium then flips the switch on troponin to start the muscle pulling."
+      : "Follow the action potential down the T-tubule, the voltage sensors triggering the SR, the Ca²⁺ flood into the sarcoplasm, and calcium binding troponin to launch contraction.";
+  }
+}
+
+function ecGoToStep(step) {
+  ecStep = step;
+  updateECText();
+  animateEC();
+}
+
+function ecNextStep() {
+  if (ecStep < 4) ecGoToStep(ecStep + 1);
+}
+
+function ecPrevStep() {
+  if (ecStep > 1) ecGoToStep(ecStep - 1);
+}
+
+function ecReset() {
+  ecGoToStep(1);
+}
+
+function animateEC() {
+  const diagram = document.getElementById("calciumDiagram");
+  diagram.querySelectorAll(".calcium-ion").forEach(el => el.remove());
+
+  if (ecStep >= 3) {
+    // Calcium release from SR
+    const positions = [
+      {x: 100, y: 100}, {x: 120, y: 110}, {x: 105, y: 125},
+      {x: 480, y: 100}, {x: 460, y: 110}, {x: 475, y: 125}
+    ];
+
+    positions.forEach((pos, i) => {
+      const ca = document.createElement("div");
+      ca.className = "calcium-ion";
+      ca.style.left = pos.x + "px";
+      ca.style.top = pos.y + "px";
+      diagram.appendChild(ca);
+
+      setTimeout(() => {
+        ca.style.opacity = "1";
+        ca.style.top = (pos.y + 50) + "px";
+        ca.style.left = (pos.x + (Math.random() - 0.5) * 40) + "px";
+      }, 100 + i * 100);
+    });
+  }
+}
+
+// Cross-Bridge Cycle Functions
+function updateCBText() {
+  const step = cbSteps[cbStep - 1];
+  document.getElementById("cbStepNum").textContent = `Step ${step.num} of 4`;
+  document.getElementById("cbStepDesc").textContent = eli5Mode ? step.desc_eli5 : step.desc_prof;
+  infoBox.innerHTML = step.info;
+
+  document.querySelectorAll("#crossbridge .step-btn").forEach((btn, i) => {
+    if (i > 0 && i < 5) btn.classList.toggle("active", i === cbStep);
+  });
+
+  const cbCap = document.getElementById("cbRefCaption");
+  if (cbCap) {
+    cbCap.textContent = eli5Mode
+      ? "Calcium (Ca²⁺) sticks to troponin (green), which pulls the blocker off the actin rope (purple). Now the myosin hook (red) can grab on — it's still holding the leftover pieces (ADP + Pi) from burning ATP, and it's about to pull."
+      : "Ca²⁺ binds troponin (green) on the actin filament (purple), exposing the binding site. The myosin head (red) attaches, still carrying ADP + Pi from the previous ATP hydrolysis, ready for the power stroke.";
+  }
+}
+
+function cbGoToStep(step) {
+  cbStep = step;
+  updateCBText();
+  animateCB();
+}
+
+function cbNextStep() {
+  if (cbStep < 4) cbGoToStep(cbStep + 1);
+}
+
+function cbPrevStep() {
+  if (cbStep > 1) cbGoToStep(cbStep - 1);
+}
+
+function cbReset() {
+  cbGoToStep(1);
+}
+
+function animateCB() {
+  const head = document.getElementById("myosinHead");
+  const diagram = document.getElementById("crossbridgeDiagram");
+
+  // Clear ATP molecules
+  diagram.querySelectorAll(".atp-molecule").forEach(el => el.remove());
+
+  if (cbStep === 1) {
+    // Cocked position
+    head.style.bottom = "100px";
+    head.style.left = "50%";
+    head.style.transform = "translateX(-50%) rotate(0deg)";
+  } else if (cbStep === 2) {
+    // Attached
+    head.style.bottom = "78px";
+    head.style.left = "50%";
+    head.style.transform = "translateX(-50%) rotate(0deg)";
+  } else if (cbStep === 3) {
+    // Power stroke
+    head.style.bottom = "78px";
+    head.style.left = "calc(50% + 20px)";
+    head.style.transform = "translateX(-50%) rotate(-30deg)";
+  } else if (cbStep === 4) {
+    // ATP binding & detachment
+    head.style.bottom = "100px";
+    head.style.left = "calc(50% + 30px)";
+    head.style.transform = "translateX(-50%) rotate(0deg)";
+
+    // Show ATP
+    const atp = document.createElement("div");
+    atp.className = "atp-molecule";
+    atp.textContent = "ATP";
+    atp.style.left = "calc(50% + 10px)";
+    atp.style.top = "120px";
+    diagram.appendChild(atp);
+    setTimeout(() => atp.style.opacity = "1", 100);
+  }
+}
+
+// Sliding Filament Functions
+let slideState = "relaxed"; // relaxed, contracted
+
+function updateSlideText() {
+  if (slideState === "relaxed") {
+    document.getElementById("slideStepNum").textContent = "Relaxed State";
+    document.getElementById("slideStepDesc").textContent = eli5Mode
+      ? "The sarcomere is stretched out. Thin filaments only partly overlap the thick filament."
+      : "Sarcomere at resting length (~2.4 μm). Thin filaments partially overlap thick filaments.";
+    infoBox.innerHTML = "<b>Relaxed:</b> Minimal overlap, I-bands and H-zone are visible.";
+  } else {
+    document.getElementById("slideStepNum").textContent = "Contracted State";
+    document.getElementById("slideStepDesc").textContent = eli5Mode
+      ? "The sarcomere is squeezed shorter. Thin filaments slide deep into the middle."
+      : "Sarcomere contracted (~1.8 μm). Thin filaments slide toward M-line, H-zone disappears.";
+    infoBox.innerHTML = "<b>Contracted:</b> Maximum overlap, I-bands narrow, H-zone disappears.";
+  }
+  const cap = document.getElementById("videoRefCaption");
+  if (cap) {
+    cap.textContent = eli5Mode
+      ? "The pink myosin 'hooks' grab the blue actin rope and pull it inward, over and over, using ATP as fuel. Calcium (Ca²⁺) is the signal that starts it. The little screen shows the sarcomere getting shorter."
+      : "Watch the myosin heads (pink) grab the actin filament (blue), pivot during the power stroke, and reset — powered by ATP and triggered by Ca²⁺. The inset tracks sarcomere shortening.";
+  }
+}
+
+function slideContract() {
+  slideState = "contracted";
+  document.getElementById("thinLeft").style.left = "150px";
+  document.getElementById("thinRight").style.right = "150px";
+  document.getElementById("sarcomereLabel").textContent = "Sarcomere Length: 1.8 μm";
+  updateSlideText();
+}
+
+function slideRelax() {
+  slideState = "relaxed";
+  document.getElementById("thinLeft").style.left = "50px";
+  document.getElementById("thinRight").style.right = "50px";
+  document.getElementById("sarcomereLabel").textContent = "Sarcomere Length: 2.4 μm";
+  updateSlideText();
+}
+
+function slideReset() {
+  slideRelax();
+}
+
+// Tab Switching
+window.switchTab = function(tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  updateAllTexts();
+};
+
+// Initialize
+updateNMJText();
+animateNMJ();
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"muscle-contraction", title:"Muscle Contraction Lab", unit:"Ch 9 · Muscular System" });
+  APTools.mountHUD("#apHud","muscle-contraction");
+  var BANK=[
+    { id:"mc1", bloom:"Remember", outcome:"NMJ Transmitter",
+      q:"Which neurotransmitter is released at the neuromuscular junction?",
+      choices:["Acetylcholine (ACh)","Norepinephrine","Dopamine","GABA"],
+      answer:0, why:"Acetylcholine (ACh) is the neurotransmitter released by motor neurons to stimulate skeletal muscle fibers." },
+    { id:"mc2", bloom:"Understand", outcome:"ACh Receptor",
+      q:"When ACh binds to receptors on the motor end plate, which ion enters the muscle fiber?",
+      choices:["Sodium (Na⁺)","Calcium (Ca²⁺)","Potassium (K⁺)","Chloride (Cl⁻)"],
+      answer:0, why:"Nicotinic ACh receptors are ligand-gated sodium channels. Sodium influx depolarizes the sarcolemma." },
+    { id:"mc3", bloom:"Remember", outcome:"T-Tubules",
+      q:"T-tubules are extensions of which membrane?",
+      choices:["Sarcolemma (cell membrane)","Sarcoplasmic reticulum","Mitochondrial membrane","Nuclear envelope"],
+      answer:0, why:"T-tubules (transverse tubules) are deep invaginations of the sarcolemma that carry action potentials into the fiber." },
+    { id:"mc4", bloom:"Understand", outcome:"Calcium Source",
+      q:"During excitation-contraction coupling, calcium ions are released from:",
+      choices:["Sarcoplasmic reticulum (SR)","T-tubules","Mitochondria","Extracellular fluid"],
+      answer:0, why:"The SR stores calcium ions. When triggered by voltage sensors in T-tubules, the SR releases Ca²⁺ into the sarcoplasm." },
+    { id:"mc5", bloom:"Apply", outcome:"Troponin Role",
+      q:"Calcium ions bind to which regulatory protein to initiate contraction?",
+      choices:["Troponin","Tropomyosin","Actin","Myosin"],
+      answer:0, why:"Calcium binds to the troponin complex, causing a conformational change that shifts tropomyosin off actin's binding sites." },
+    { id:"mc6", bloom:"Understand", outcome:"Cross-Bridge Formation",
+      q:"A cross-bridge forms when:",
+      choices:["Myosin head binds to actin active site","Actin binds to tropomyosin","Troponin binds to calcium","ATP binds to myosin head"],
+      answer:0, why:"A cross-bridge is the physical attachment of the myosin head to an exposed active site on the actin filament." },
+    { id:"mc7", bloom:"Understand", outcome:"Power Stroke",
+      q:"During the power stroke, which event occurs?",
+      choices:["Myosin head pivots, pulling actin toward M-line","ATP is hydrolyzed into ADP + Pi","Myosin detaches from actin","Calcium is pumped back into SR"],
+      answer:0, why:"The power stroke is when the myosin head pivots, sliding the thin filament toward the center and releasing ADP + Pi." },
+    { id:"mc8", bloom:"Remember", outcome:"ATP Role",
+      q:"What is the primary role of ATP in the cross-bridge cycle?",
+      choices:["Detach myosin from actin and re-cock the myosin head","Bind calcium to troponin","Release ACh from vesicles","Open sodium channels"],
+      answer:0, why:"ATP binding causes myosin to release actin. Hydrolysis of ATP then re-energizes the myosin head for the next cycle." },
+    { id:"mc9", bloom:"Understand", outcome:"Rigor Mortis",
+      q:"Rigor mortis (muscle stiffness after death) occurs because:",
+      choices:["No ATP is available to detach myosin from actin","Calcium levels drop to zero","Troponin degrades","ACh is depleted"],
+      answer:0, why:"Without ATP, myosin heads remain bound to actin in a permanent cross-bridge state, causing stiffness." },
+    { id:"mc10", bloom:"Apply", outcome:"Sliding Filament",
+      q:"During contraction, which sarcomere zone(s) narrow or disappear?",
+      choices:["I-band and H-zone","A-band and M-line","Z-lines","A-band only"],
+      answer:0, why:"The I-band (thin filaments only) and H-zone (thick filaments only) narrow as thin filaments slide inward. The A-band stays constant." },
+    { id:"mc11", bloom:"Understand", outcome:"E-C Coupling",
+      q:"Excitation-contraction coupling refers to:",
+      choices:["The link between action potential and calcium release","The binding of myosin to actin","The formation of the neuromuscular junction","The reuptake of calcium into the SR"],
+      answer:0, why:"E-C coupling is the process where the electrical signal (action potential) triggers the mechanical event (calcium release and contraction)." },
+    { id:"mc12", bloom:"Remember", outcome:"Relaxation",
+      q:"Muscle relaxation occurs when:",
+      choices:["Calcium is actively pumped back into the SR","ACh is broken down by acetylcholinesterase","ATP binds to myosin","Action potentials cease"],
+      answer:0, why:"Calcium pumps (Ca²⁺-ATPase) in the SR membrane actively transport calcium back into storage, allowing tropomyosin to re-block binding sites." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"muscle-contraction", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

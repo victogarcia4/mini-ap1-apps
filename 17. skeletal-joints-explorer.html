@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skeletal Joints Explorer | Chapter 8 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-500: #14b8a6;
+  --teal-100: #ccfbf1;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(15, 118, 110, 0.04);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image: 
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(13, 148, 136, 0.05), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--teal-100);
+  color: var(--teal-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Grid systems */
+.taxonomy-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+}
+.joint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.joint-item {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.joint-item:hover { background: var(--slate-100); }
+.joint-item.active {
+  border-color: var(--teal-700);
+  background: var(--teal-100);
+  outline: 1.5px solid var(--teal-700);
+}
+.joint-item h3 { margin: 0 0 4px; font-size: 0.95rem; font-weight: 800; color: var(--slate-900); }
+.joint-item p { margin: 0; font-size: 0.78rem; color: var(--slate-500); }
+
+.detail-panel {
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 380px;
+  justify-content: center;
+}
+.detail-img {
+  max-width: 100%;
+  height: 180px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  margin-bottom: 14px;
+}
+.detail-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin-bottom: 6px;
+}
+.detail-desc { font-size: 0.84rem; color: var(--slate-700); margin: 0 0 10px; line-height: 1.45; }
+.detail-meta {
+  font-size: 0.76rem;
+  background: var(--slate-100);
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  width: 100%;
+  text-align: left;
+}
+
+/* Synovial Anatomy Deep Dive */
+.anatomy-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.anatomy-img-container {
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+.anatomy-img-container img {
+  max-width: 100%;
+  max-height: 320px;
+  display: block;
+}
+.anatomy-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.anatomy-part {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #fff;
+  transition: 0.1s;
+}
+.anatomy-part:hover { background: var(--slate-100); }
+.anatomy-part.active {
+  background: var(--teal-100);
+  border-color: var(--teal-700);
+  color: var(--teal-700);
+}
+
+/* Motion Lab */
+.motion-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+}
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.motion-card {
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px;
+  cursor: pointer;
+}
+.motion-card.active {
+  background: var(--teal-100);
+  border-color: var(--teal-700);
+}
+.motion-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--teal-700);
+}
+.motion-card p {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--slate-500);
+  line-height: 1.35;
+}
+
+.action-chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.action-chip {
+  font-size: 0.68rem;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 600;
+}
+
+/* Footer Section */
+.footer-note {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 24px 30px;
+  font-size: 0.74rem;
+  color: var(--slate-500);
+}
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+  .taxonomy-grid { grid-template-columns: 1fr; }
+  .anatomy-layout { grid-template-columns: 1fr; }
+  .motion-layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>The Skeletal Joints Explorer</h1>
+    <p>Taxonomy Matrix · Synovial Anatomy · Motion Lab · Ch 8</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Structure & Function Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">Select tabs and interactive objects on the right to examine anatomical details.</p>
+        <div class="info-box" id="infoBox">
+          <b>Joints Overview</b><br>
+          Joints are functional junctions between bones. Move through the taxonomy to observe how structural tissues correlate with functional mobility.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('taxonomy', this)">Taxonomy Matrix</button>
+      <button class="tab-btn" onclick="switchTab('anatomy', this)">Synovial Anatomy</button>
+      <button class="tab-btn" onclick="switchTab('motion', this)">Motion Lab</button>
+    </div>
+
+    <!-- Tab 1: Taxonomy -->
+    <div id="taxonomy" class="tab-content active">
+      <section class="panel">
+        <h2>Taxonomy Matrix — Structure and Function</h2>
+        <div class="body">
+          <p style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0;">Tap a structural joint classification to inspect its histological properties and example:</p>
+          <div class="taxonomy-grid">
+            <div class="joint-list">
+              <div class="joint-item active" onclick="selectJoint('suture', this)">
+                <h3>Suture</h3>
+                <p>Fibrous Structure · Synarthrotic (Immovable)</p>
+              </div>
+              <div class="joint-item" onclick="selectJoint('syndesmosis', this)">
+                <h3>Syndesmosis</h3>
+                <p>Fibrous Structure · Amphiarthrotic (Slightly Movable)</p>
+              </div>
+              <div class="joint-item" onclick="selectJoint('gomphosis', this)">
+                <h3>Gomphosis</h3>
+                <p>Fibrous Structure · Synarthrotic (Immovable)</p>
+              </div>
+              <div class="joint-item" onclick="selectJoint('synchondrosis', this)">
+                <h3>Synchondrosis</h3>
+                <p>Cartilaginous Structure · Synarthrotic (Immovable)</p>
+              </div>
+              <div class="joint-item" onclick="selectJoint('symphysis', this)">
+                <h3>Symphysis</h3>
+                <p>Cartilaginous Structure · Amphiarthrotic (Slightly Movable)</p>
+              </div>
+            </div>
+            <div class="detail-panel" id="jointDetail">
+              <img id="detailImg" class="detail-img" src="assets/ch8-joint_suture.png" alt="Suture illustration">
+              <div class="detail-title" id="detailTitle">Suture</div>
+              <p class="detail-desc" id="detailDesc">Flat skull bones are bound together by short interlocking collagen fibers. Prevents movement completely to protect the brain.</p>
+              <div class="detail-meta" id="detailMeta">
+                <b>Articulating Bones:</b> skull bones<br>
+                <b>Structural Tissue:</b> short fibrous connective tissue fibers
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Synovial Anatomy -->
+    <div id="anatomy" class="tab-content">
+      <section class="panel">
+        <h2>Synovial Anatomy — Deep Dive</h2>
+        <div class="body">
+          <p style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0;">Click on any component of a synovial joint structure to view its anatomical description:</p>
+          <div class="anatomy-layout">
+            <div class="anatomy-img-container">
+              <img src="assets/ch8-synovial_joint.png" alt="Synovial Joint anatomy">
+            </div>
+            <div class="anatomy-controls">
+              <div class="anatomy-part active" onclick="selectPart('cartilage', this)">Articular Cartilage</div>
+              <div class="anatomy-part" onclick="selectPart('capsule', this)">Joint Capsule</div>
+              <div class="anatomy-part" onclick="selectPart('membrane', this)">Synovial Membrane</div>
+              <div class="anatomy-part" onclick="selectPart('cavity', this)">Synovial Cavity & Fluid</div>
+              <div class="anatomy-part" onclick="selectPart('ligament', this)">Reinforcing Ligaments</div>
+              <div class="anatomy-part" onclick="selectPart('meniscus', this)">Menisci (Accessory)</div>
+              <div class="anatomy-part" onclick="selectPart('bursa', this)">Bursa (Accessory)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Motion Lab -->
+    <div id="motion" class="tab-content">
+      <section class="panel">
+        <h2>Motion Lab — Synovial Mechanical Classification</h2>
+        <div class="body">
+          <p style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0;">Click a mechanical class to inspect its range of motion, allowable directions, and structural example:</p>
+          <div class="motion-layout">
+            <div class="motion-grid">
+              <div class="motion-card active" onclick="selectMotion('ball-and-socket', this)">
+                <h3>Ball-and-Socket</h3>
+                <p>Multiaxial · Freely Movable</p>
+                <div class="action-chip-container">
+                  <span class="action-chip">Flexion</span><span class="action-chip">Extension</span><span class="action-chip">Abduction</span><span class="action-chip">Adduction</span><span class="action-chip">Circumduction</span><span class="action-chip">Rotation</span>
+                </div>
+              </div>
+              <div class="motion-card" onclick="selectMotion('condyloid', this)">
+                <h3>Condyloid</h3>
+                <p>Biaxial · Angular movements (no rotation)</p>
+                <div class="action-chip-container">
+                  <span class="action-chip">Flexion</span><span class="action-chip">Extension</span><span class="action-chip">Abduction</span><span class="action-chip">Adduction</span><span class="action-chip">Circumduction</span>
+                </div>
+              </div>
+              <div class="motion-card" onclick="selectMotion('plane', this)">
+                <h3>Plane / Gliding</h3>
+                <p>Nonaxial · Sliding movement</p>
+                <div class="action-chip-container">
+                  <span class="action-chip">Gliding</span>
+                </div>
+              </div>
+              <div class="motion-card" onclick="selectMotion('hinge', this)">
+                <h3>Hinge</h3>
+                <p>Uniaxial · Flexion and Extension only</p>
+                <div class="action-chip-container">
+                  <span class="action-chip">Flexion</span><span class="action-chip">Extension</span>
+                </div>
+              </div>
+              <div class="motion-card" onclick="selectMotion('pivot', this)">
+                <h3>Pivot</h3>
+                <p>Uniaxial · Rotation only</p>
+                <div class="action-chip-container">
+                  <span class="action-chip">Rotation</span>
+                </div>
+              </div>
+              <div class="motion-card" onclick="selectMotion('saddle', this)">
+                <h3>Saddle</h3>
+                <p>Biaxial · Allows opposition</p>
+                <div class="action-chip-container">
+                  <span class="action-chip">Flexion</span><span class="action-chip">Extension</span><span class="action-chip">Abduction</span><span class="action-chip">Adduction</span><span class="action-chip">Circumduction</span><span class="action-chip">Opposition</span>
+                </div>
+              </div>
+            </div>
+            <div class="detail-panel" id="motionDetail">
+              <img id="motionImg" class="detail-img" src="assets/ch8-joint-ball_socket.png" alt="Ball and socket illustration">
+              <div class="detail-title" id="motionTitle">Ball-and-Socket</div>
+              <p class="detail-desc" id="motionDesc">Head of humerus fitting into the glenoid cavity of scapula (shoulder), or femur head in acetabulum (hip). Permits the greatest freedom of range of motion.</p>
+              <div class="detail-meta" id="motionMeta">
+                <b>Articulating Bones:</b> Shoulder (Humerus + Scapula); Hip (Femur + Coxal)<br>
+                <b>Movement Class:</b> Multiaxial (any angular plane + rotation)
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ============ APTools study block ============ -->
+<style>
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+</style>
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Joint Taxonomy & Mechanics</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">A scored, spaced-repetition check. Correctly predict joint movement, structural class, and life-span changes to raise your mastery level.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<script>
+"use strict";
+
+const TAXONOMY_DATA = {
+  suture: {
+    title: "Suture",
+    desc: "Skull bones are bound tightly by short interlocking collagen fibers. These joints are immovable, providing maximal protection for the brain.",
+    bones: "Flat bones of the skull",
+    tissue: "Short fibrous connective tissue fibers",
+    img: "assets/ch8-joint_suture.png",
+    info: "<b>Suture (Fibrous Suture)</b><br>Structural class: Fibrous.<br>Functional class: Synarthrotic (Immovable).<br>Found exclusively in the skull."
+  },
+  syndesmosis: {
+    title: "Syndesmosis",
+    desc: "Bones are bound by a longer sheet or bundle of dense connective tissue called an interosseous ligament. This allows a slight 'give' or twist, but no active motion.",
+    bones: "Distal tibia and fibula; clavicle and acromion process",
+    tissue: "Ligament or fibrous cord sheet",
+    img: "assets/ch08-joint_syndesmosis.png",
+    info: "<b>Syndesmosis (Fibrous Syndesmosis)</b><br>Structural class: Fibrous.<br>Functional class: Amphiarthrotic (Slightly Movable).<br>Provides essential stability at the ankle joint."
+  },
+  gomphosis: {
+    title: "Gomphosis",
+    desc: "A peg-in-socket joint where a tooth root fits into its bony socket and is secured in place by short periodontal ligaments.",
+    bones: "Mandible/maxilla tooth root inside alveolar socket",
+    tissue: "Short periodontal ligaments",
+    img: "assets/ch8-joint_gomphosis.png",
+    info: "<b>Gomphosis (Fibrous Gomphosis)</b><br>Structural class: Fibrous.<br>Functional class: Synarthrotic (Immovable).<br>Mandibular and maxillary alveolar processes."
+  },
+  synchondrosis: {
+    title: "Synchondrosis",
+    desc: "Bones are united by a flat plate or bar of hyaline cartilage. These are typically growth centers during youth that later ossify into bone.",
+    bones: "First rib and the manubrium of the sternum; epiphyseal plates of long bones",
+    tissue: "Hyaline cartilage plate",
+    img: "assets/ch8-epiphyseal-plate.png",
+    info: "<b>Synchondrosis (Cartilaginous)</b><br>Structural class: Cartilaginous.<br>Functional class: Synarthrotic (Immovable).<br>Ossifies in late adolescence into a synostosis."
+  },
+  symphysis: {
+    title: "Symphysis",
+    desc: "Bones are covered by hyaline cartilage and fused to a broad, resilient pad of fibrocartilage. Designed for weight-bearing and shock absorption.",
+    bones: "Adjacent vertebrae of the spinal column; pubic bones of pelvis",
+    tissue: "Fibrocartilage compressible pad",
+    img: "assets/ch8-pubic-symphysis.png",
+    info: "<b>Symphysis (Cartilaginous Symphysis)</b><br>Structural class: Cartilaginous.<br>Functional class: Amphiarthrotic (Slightly Movable).<br>Shock absorber of the vertebral column."
+  }
+};
+
+const ANATOMY_DATA = {
+  cartilage: "<b>Articular Cartilage:</b> Thin, glassy hyaline cartilage layer covering the articulating surfaces of each bone. Its smooth surface absorbs compression forces, protects bone ends, and reduces friction during movements.",
+  capsule: "<b>Joint Capsule:</b> A double-layered envelope enclosing the synovial cavity. The external layer is a tough, flexible fibrous capsule continuous with the periosteum of the bones, preventing dislocation.",
+  membrane: "<b>Synovial Membrane:</b> The inner layer of the joint capsule, made of loose connective tissue. It lines all inner joint cavities except over articular cartilage. Richly vascular, it secretes synovial fluid.",
+  cavity: "<b>Synovial Cavity & Fluid:</b> Synovial cavity is the potential space containing lubricating, viscous fluid. Synovial fluid reduces friction between cartilages, provides nutrients to cartilage chondrocytes, and contains phagocytes.",
+  ligament: "<b>Reinforcing Ligaments:</b> Bands of dense fibrous connective tissue that connect bone to bone, reinforcing the joint capsule. They can be capsular (thickened parts of capsule) or separate extracapsular/intracapsular bands.",
+  meniscus: "<b>Menisci (Articular Discs):</b> Fibrocartilage pads (like C-shaped discs in the knee) that separate the joint cavity into compartments. They cushion joint surfaces, guide articulation paths, and absorb impact shocks.",
+  bursa: "<b>Bursae:</b> Flattened, fluid-filled sacs lined with synovial membrane, acting as 'ball bearings' to ease friction where tendons, ligaments, skin, or muscles rub over bony prominences."
+};
+
+const MOTION_DATA = {
+  "ball-and-socket": {
+    title: "Ball-and-Socket Joint",
+    desc: "Globular head of humerus fits into glenoid cavity of scapula (shoulder), or femur head fits into hip acetabulum. Offers highest range of motion.",
+    bones: "Shoulder (Humerus + Scapula); Hip (Femur + Coxal)",
+    class: "Multiaxial (Allows flexion, extension, abduction, adduction, circumduction, rotation)",
+    img: "assets/ch8-joint-ball_socket.png"
+  },
+  condyloid: {
+    title: "Condyloid Joint (Ellipsoidal)",
+    desc: "An ovoid condyle of one bone fits into an elliptical cavity of another. Allows all angular movements (flexion, extension, abduction, adduction, circumduction) but prevents rotation.",
+    bones: "Wrists (Radius + Carpals); Knuckles (Metacarpals + Phalanges)",
+    class: "Biaxial (Flexion/extension & abduction/adduction)",
+    img: "assets/ch8-condyloid_joint.png"
+  },
+  plane: {
+    title: "Plane / Gliding Joint",
+    desc: "Flat or slightly curved articulating surfaces slide past one another. Moves back-and-forth or side-to-side without angular deviation.",
+    bones: "Intercarpals (wrist bones); Intertarsals (ankle bones); Patellofemur (patella + femur)",
+    class: "Nonaxial (Gliding movements only)",
+    img: "assets/ch8-plane-synovail-joint.png"
+  },
+  hinge: {
+    title: "Hinge Joint",
+    desc: "A cylindrical protrusion fits into a trough-like socket. Operates in a single plane like a door hinge, restricting motion to bending and straightening.",
+    bones: "Elbow (Trochlea of humerus + Trochlear notch of ulna); Knee (Functional hinge classification)",
+    class: "Uniaxial (Flexion and Extension only)",
+    img: "assets/ch8-hinge-elbow-joint.png"
+  },
+  pivot: {
+    title: "Pivot Joint",
+    desc: "A rounded or pointed process of one bone rotates inside a ring formed of bone and a ligament. Permits rotational movements around a single axis.",
+    bones: "Atlantoaxial joint (Atlas rotates around dens process of Axis)",
+    class: "Uniaxial (Rotation only)",
+    img: "assets/ch8-pivot-c1-c2-joint.png"
+  },
+  saddle: {
+    title: "Saddle Joint",
+    desc: "Interlocking saddle-shaped surfaces with both concave and convex curves. Allows angular movement in two planes and opposition (thumb touching fingers).",
+    bones: "Carpometacarpal joint of the thumb (Trapezius + First Metacarpal)",
+    class: "Biaxial (Flexion, extension, abduction, adduction, opposition)",
+    img: "assets/ch8-saddle-joint.png"
+  }
+};
+
+let eli5Mode = false;
+
+// Mode toggles
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+const infoBox = document.getElementById("infoBox");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateTexts();
+});
+
+function updateTexts() {
+  const currentTab = document.querySelector(".tab-btn.active").textContent;
+  if (currentTab.includes("Taxonomy")) {
+    const activeJoint = document.querySelector(".joint-item.active").getAttribute("onclick").match(/'([^']+)'/)[1];
+    updateTaxonomyDetail(activeJoint);
+  } else if (currentTab.includes("Anatomy")) {
+    const activePart = document.querySelector(".anatomy-part.active").getAttribute("onclick").match(/'([^']+)'/)[1];
+    updateAnatomyDetail(activePart);
+  } else if (currentTab.includes("Motion")) {
+    const activeMotion = document.querySelector(".motion-card.active").getAttribute("onclick").match(/'([^']+)'/)[1];
+    updateMotionDetail(activeMotion);
+  }
+}
+
+// Tab switcher
+window.switchTab = function(tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  updateTexts();
+};
+
+// Selection handlers
+window.selectJoint = function(key, el) {
+  document.querySelectorAll(".joint-item").forEach(item => item.classList.remove("active"));
+  el.classList.add("active");
+  updateTaxonomyDetail(key);
+};
+
+function updateTaxonomyDetail(key) {
+  const data = TAXONOMY_DATA[key];
+  document.getElementById("detailImg").src = data.img;
+  document.getElementById("detailTitle").textContent = data.title;
+  
+  if (eli5Mode) {
+    if (key === 'suture') {
+      document.getElementById("detailDesc").textContent = "Skull bones stitched together by short strings. Locks the skull tight so the brain stays safe inside.";
+    } else if (key === 'syndesmosis') {
+      document.getElementById("detailDesc").textContent = "Bones tied together with a strong rubber band. Allows a little wiggle room but no active joint movement.";
+    } else if (key === 'gomphosis') {
+      document.getElementById("detailDesc").textContent = "A peg in a hole — just like a tooth root held in the jaw socket by tiny anchor fibers.";
+    } else if (key === 'synchondrosis') {
+      document.getElementById("detailDesc").textContent = "Bones held by a solid plate of smooth cartilage. Serves as growth spots in kids that later turn to solid bone.";
+    } else if (key === 'symphysis') {
+      document.getElementById("detailDesc").textContent = "Bones joined by a spongy, compressible pad. Acts like a cushion to absorb bumps in the spine and pelvis.";
+    }
+  } else {
+    document.getElementById("detailDesc").textContent = data.desc;
+  }
+  
+  document.getElementById("detailMeta").innerHTML = `
+    <b>Articulating Bones:</b> ${data.bones}<br>
+    <b>Structural Tissue:</b> ${data.tissue}
+  `;
+  infoBox.innerHTML = data.info;
+}
+
+window.selectPart = function(key, el) {
+  document.querySelectorAll(".anatomy-part").forEach(item => item.classList.remove("active"));
+  el.classList.add("active");
+  updateAnatomyDetail(key);
+};
+
+function updateAnatomyDetail(key) {
+  const desc = ANATOMY_DATA[key];
+  if (eli5Mode) {
+    if (key === 'cartilage') {
+      infoBox.innerHTML = "<b>Articular Cartilage:</b> The rubbery blue caps on the bone ends. Stops bone-on-bone grinding and absorbs bumps.";
+    } else if (key === 'capsule') {
+      infoBox.innerHTML = "<b>Joint Capsule:</b> A two-layer sleeve wrapping the joint. Outer layer is tough skin, inner layer makes lubricating juice.";
+    } else if (key === 'membrane') {
+      infoBox.innerHTML = "<b>Synovial Membrane:</b> The inner lining of the joint capsule. Acts like a small sponge that secretes slick fluid.";
+    } else if (key === 'cavity') {
+      infoBox.innerHTML = "<b>Synovial Cavity & Fluid:</b> The empty space filled with egg-white-like fluid. Keeps things wet and feeds the cartilage.";
+    } else if (key === 'ligament') {
+      infoBox.innerHTML = "<b>Reinforcing Ligaments:</b> Tough straps connecting bone to bone so the joint doesn't bend the wrong way.";
+    } else if (key === 'meniscus') {
+      infoBox.innerHTML = "<b>Menisci (Articular Discs):</b> Extra cartilage pads that reshape the joint surfaces for a better fit (like knee washers).";
+    } else if (key === 'bursa') {
+      infoBox.innerHTML = "<b>Bursae:</b> Tiny fluid-filled bags that act like ball bearings to protect tendons from rubbing against bones.";
+    }
+  } else {
+    infoBox.innerHTML = desc;
+  }
+}
+
+window.selectMotion = function(key, el) {
+  document.querySelectorAll(".motion-card").forEach(item => item.classList.remove("active"));
+  el.classList.add("active");
+  updateMotionDetail(key);
+};
+
+function updateMotionDetail(key) {
+  const data = MOTION_DATA[key];
+  document.getElementById("motionImg").src = data.img;
+  document.getElementById("motionTitle").textContent = data.title;
+  
+  if (eli5Mode) {
+    if (key === 'ball-and-socket') {
+      document.getElementById("motionDesc").textContent = "A ball sitting in a cup. Allows you to swing and twist your arms and hips in every possible direction.";
+    } else if (key === 'condyloid') {
+      document.getElementById("motionDesc").textContent = "An egg-shape in an oval cup. Let's you swing back-and-forth and side-to-side (like knuckles), but no twisting.";
+    } else if (key === 'plane') {
+      document.getElementById("motionDesc").textContent = "Two flat surfaces sliding past each other. Allows bones to glide side-to-side (like wrist bones).";
+    } else if (key === 'hinge') {
+      document.getElementById("motionDesc").textContent = "Works just like a door hinge. Allows open-and-close bending only (elbows and knees).";
+    } else if (key === 'pivot') {
+      document.getElementById("motionDesc").textContent = "A peg spinning inside a ring. Only allows rotation twisting, like turning your head side-to-side.";
+    } else if (key === 'saddle') {
+      document.getElementById("motionDesc").textContent = "Like a rider on a saddle. Allows thumb opposition so you can grip things tightly.";
+    }
+  } else {
+    document.getElementById("motionDesc").textContent = data.desc;
+  }
+  
+  document.getElementById("motionMeta").innerHTML = `
+    <b>Articulating Bones:</b> ${data.bones}<br>
+    <b>Movement Class:</b> ${data.class}
+  `;
+  infoBox.innerHTML = `<b>${data.title}</b><br>Classified as a diarthrotic synovial joint structure.`;
+}
+
+// Initial populate
+updateTaxonomyDetail('suture');
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"skeletal-joints", title:"Skeletal Joints Explorer", unit:"Ch 8 · Skeletal — Joints" });
+  APTools.mountHUD("#apHud","skeletal-joints");
+  var BANK=[
+    { id:"j1", bloom:"Remember", outcome:"Fibrous Joints",
+      q:"Bones of fibrous joints are held together mainly by:",
+      choices:["Dense connective tissue (collagen)","Hyaline cartilage","Fibrocartilage","Synovial fluid"],
+      answer:0, why:"Fibrous joints lack a joint cavity and are bound tightly by dense fibrous connective tissue." },
+    { id:"j2", bloom:"Remember", outcome:"Syndesmosis",
+      q:"The distal tibiofibular joint is an example of a:",
+      choices:["Syndesmosis","Suture","Symphysis","Synchondrosis"],
+      answer:0, why:"A syndesmosis is a fibrous joint bound by a sheet or cord of dense tissue (ligaments)." },
+    { id:"j3", bloom:"Understand", outcome:"Cartilaginous Joints",
+      q:"A symphysis is characterized by having articulating bone surfaces joined by a pad of:",
+      choices:["Fibrocartilage","Hyaline cartilage","Elastic cartilage","Synovial membrane"],
+      answer:0, why:"Symphyses, like the pubic symphysis or intervertebral discs, use fibrocartilage as shock absorbers." },
+    { id:"j4", bloom:"Understand", outcome:"Synchondrosis",
+      q:"The epiphyseal plate in a growing child is classified as a:",
+      choices:["Synchondrosis","Symphysis","Syndesmosis","Gomphosis"],
+      answer:0, why:"The epiphyseal plate consists of hyaline cartilage and functions as a synchondrosis cartilaginous joint." },
+    { id:"j5", bloom:"Remember", outcome:"Synovial Membrane",
+      q:"Which synovial joint component lines the inner joint capsule but does NOT cover the articular cartilage?",
+      choices:["Synovial membrane","Fibrous capsule","Meniscus","Bursa"],
+      answer:0, why:"The synovial membrane covers all internal joint structures except the articular hyaline cartilage surfaces." },
+    { id:"j6", bloom:"Apply", outcome:"Menisci",
+      q:"The medial and lateral menisci of the knee function to:",
+      choices:["Reshape tibial condyles for fit and absorb shock","Secret synovial fluid","Form growth plate junctions","Lubricate skin over bones"],
+      answer:0, why:"Menisci are C-shaped pads of fibrocartilage that cushion impact and ensure a tighter condylar fit." },
+    { id:"j7", bloom:"Remember", outcome:"Rotator Cuff",
+      q:"The glenohumeral (shoulder) joint is reinforced by tendons collectively called the:",
+      choices:["Rotator cuff","Meniscus","Cruciate ligaments","Periodontal ligaments"],
+      answer:0, why:"The rotator cuff is a ring of tendons and muscles that stabilizes the freely movable glenohumeral joint." },
+    { id:"j8", bloom:"Apply", outcome:"Pivot Joint",
+      q:"Which joint classification allows you to rotate your head side-to-side to shake your head 'no'?",
+      choices:["Pivot","Hinge","Condyloid","Plane"],
+      answer:0, why:"The atlantoaxial joint between atlas (C1) and axis (C2) is a uniaxial pivot joint allowing rotation." },
+    { id:"j9", bloom:"Understand", outcome:"Abduction",
+      q:"Moving a limb or arm laterally away from the midline of the body is called:",
+      choices:["Abduction","Adduction","Flexion","Circumduction"],
+      answer:0, why:"Abduction is movement away from the midline. Adduction is movement toward the midline." },
+    { id:"j10", bloom:"Understand", outcome:"Life-span changes",
+      q:"Which of the following occurs as a normal life-span change in joints?",
+      choices:["Fibrocartilage loses water content, reducing knee/vertebral flexibility","Collagen becomes more elastic, increasing flex","Epiphyseal plates open up at age 30","Fontanels of skull close in late adulthood"],
+      answer:0, why:"With age, fibrocartilage pads lose water, leading to stiffening. Epiphyseal plates close in youth (14-20 years), and fontanels close in infancy." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"skeletal-joints", bank:BANK, length:8 });
+})();
+</script>
+</body>
+</html>

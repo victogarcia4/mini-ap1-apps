@@ -26,7 +26,7 @@ The applications are built as lightweight static HTML pages running directly in 
 
 ---
 
-## 🗺️ Current Module Registry (22 Apps)
+## 🗺️ Current Module Registry (24 Apps)
 
 The mini-apps are organized sequentially, corresponding to the A&P I course curriculum. Here is the list of apps built so far:
 
@@ -69,6 +69,8 @@ The mini-apps are organized sequentially, corresponding to the A&P I course curr
 ### Chapter 9: Muscular System *(In Progress)*
 - **App 9.1:** [Skeletal Muscle Structure Explorer](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/18.%20muscle-structure-explorer.html) (`18. muscle-structure-explorer.html`) *(Active)*
 - **App 9.2:** [Muscle Contraction Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/19.%20contraction-coupling-lab.html) (`19. contraction-coupling-lab.html`) *(Active)*
+- **App 9.3:** [Muscular Responses Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/20.%20muscular-responses-lab.html) (`20. muscular-responses-lab.html`) *(Active)*
+- **App 9.4:** [Smooth & Cardiac Muscle Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/21.%20smooth-cardiac-muscle-lab.html) (`21. smooth-cardiac-muscle-lab.html`) *(Active)*
 
 ---
 

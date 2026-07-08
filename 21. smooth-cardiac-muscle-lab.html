@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smooth &amp; Cardiac Muscle Lab | Chapter 9 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-700: #1d4ed8;
+  --blue-600: #2563eb;
+  --blue-500: #3b82f6;
+  --blue-100: #dbeafe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(29, 78, 216, 0.04);
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --purple-600: #9333ea;
+  --teal-600: #0e7490;
+  --teal-700: #155e63;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(37, 99, 235, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--blue-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--blue-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--blue-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--blue-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Controls */
+.step-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.step-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.step-btn:hover {
+  background: var(--slate-100);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+}
+.step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.step-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  border-color: var(--blue-700);
+}
+.step-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--blue-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* ---- Tab 1: Multiunit vs Visceral ---- */
+.smooth-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 8px; }
+.smooth-card { border: 2px solid var(--border-color); border-radius: 10px; padding: 16px; background: #fff; }
+.smooth-card.multiunit { border-left: 8px solid var(--purple-600); }
+.smooth-card.visceral { border-left: 8px solid var(--teal-600); }
+.smooth-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 10px; font-size: 0.98rem; }
+.smooth-card.multiunit h4 { color: var(--purple-600); }
+.smooth-card.visceral h4 { color: var(--teal-600); }
+.smooth-card table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.smooth-card td { padding: 5px 4px; border-bottom: 1px solid var(--slate-100); vertical-align: top; }
+.smooth-card td:first-child { font-weight: 700; color: var(--slate-500); width: 40%; }
+.smooth-bar-row { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 12px; }
+.smooth-bar-track { width: 100%; height: 16px; border: 1.5px solid var(--border-color); border-radius: 8px; background: var(--slate-100); overflow: hidden; }
+.smooth-bar-fill { height: 100%; width: 0%; transition: width 0.25s ease; }
+.smooth-bar-fill.multiunit-fill { background: linear-gradient(90deg, #a855f7, var(--purple-600)); }
+.smooth-bar-fill.visceral-fill { background: linear-gradient(90deg, #22b8c4, var(--teal-700)); }
+.smooth-bar-label { font-size: 0.72rem; color: var(--slate-500); }
+@media (max-width: 700px) { .smooth-compare { grid-template-columns: 1fr; } }
+
+/* ---- Tab 2: Peristalsis ---- */
+.peri-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.peri-svg { width: 100%; max-width: 660px; height: auto; border: 1.5px solid var(--border-color); border-radius: 8px; background: #fff; }
+.peri-legend { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; font-size: 0.76rem; color: var(--slate-600); }
+.peri-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.peri-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; border: 1px solid var(--border-color); }
+
+/* ---- Tab 3: Smooth Muscle Mechanism ---- */
+.mechanism-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 18px 0; }
+.mechanism-node { flex: 1 1 130px; max-width: 150px; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 12px 8px; text-align: center; background: var(--slate-100); transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease; }
+.mechanism-node.active { background: var(--blue-100); border-color: var(--blue-700); transform: translateY(-3px); }
+.mechanism-node .node-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--slate-500); color: #fff; font-weight: 800; font-size: 0.78rem; margin-bottom: 6px; }
+.mechanism-node.active .node-num { background: var(--blue-700); }
+.mechanism-node .node-label { font-size: 0.76rem; font-weight: 800; color: var(--slate-700); line-height: 1.25; }
+.mechanism-arrow { font-size: 1.3rem; color: var(--slate-500); font-weight: 900; }
+.compare-callout { background: #fef9c3; border: 1.5px solid var(--border-color); border-radius: 8px; padding: 12px 14px; font-size: 0.82rem; line-height: 1.5; margin-top: 14px; }
+.compare-callout b { color: var(--red-600); }
+
+/* ---- Tab 4: Cardiac Muscle ---- */
+.cardiac-controls { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 16px; }
+.cardiac-controls input[type=range] { width: 100%; max-width: 400px; accent-color: var(--blue-700); }
+.bpm-readout { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; color: var(--blue-700); font-size: 1.05rem; }
+.cardiac-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 480px; margin: 0 auto 16px; }
+.cardiac-cell { aspect-ratio: 1; border: 1.5px solid var(--border-color); border-radius: 6px; background: var(--slate-100); transition: background 0.15s ease, transform 0.15s ease; }
+.cardiac-cell.firing { background: var(--red-600); transform: scale(1.08); }
+.cardiac-cell.pacemaker { outline: 2.5px dashed var(--amber-500); outline-offset: 2px; }
+
+/* ---- Tab 5: Three-Way Comparison ---- */
+.compare3-wrap { overflow-x: auto; }
+.compare3-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 560px; }
+.compare3-table th, .compare3-table td { border: 1.5px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: top; }
+.compare3-table thead th { background: var(--blue-100); color: var(--blue-700); font-family: "Bricolage Grotesque", sans-serif; }
+.compare3-table td:first-child { font-weight: 700; color: var(--slate-500); background: var(--slate-100); white-space: nowrap; }
+.compare3-table tr:hover td { background: #eff6ff; }
+
+/* Reference / footer sections (shared) */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--blue-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Smooth &amp; Cardiac Muscle Lab</h1>
+    <p>Multiunit/Visceral · Peristalsis · Calmodulin Mechanism · Intercalated Discs · Ch 9</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Muscle Tissue Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">Skeletal muscle isn't the only muscle tissue. Explore how smooth and cardiac muscle are built and controlled differently.</p>
+        <div class="info-box" id="infoBox">
+          <b>Smooth &amp; Cardiac Muscle</b><br>
+          Smooth muscle lines organs and vessels; cardiac muscle powers the heart. Both are involuntary, but each has a distinct structure and contraction mechanism.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('smoothtypes', this)">Multiunit vs Visceral</button>
+      <button class="tab-btn" onclick="switchTab('peristalsis', this)">Peristalsis</button>
+      <button class="tab-btn" onclick="switchTab('mechanism', this)">Contraction Mechanism</button>
+      <button class="tab-btn" onclick="switchTab('cardiac', this)">Cardiac Muscle</button>
+      <button class="tab-btn" onclick="switchTab('compare3', this)">3-Way Comparison</button>
+    </div>
+
+    <!-- Tab 1: Multiunit vs Visceral Smooth Muscle -->
+    <div id="smoothtypes" class="tab-content active">
+      <section class="panel">
+        <h2>Two Types of Smooth Muscle</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Multiunit vs. Visceral Smooth Muscle</h3>
+            <div class="smooth-compare">
+              <div class="smooth-card multiunit">
+                <h4>Multiunit Smooth Muscle</h4>
+                <table>
+                  <tr><td>Location</td><td>Iris of the eye, walls of blood vessels</td></tr>
+                  <tr><td>Fiber arrangement</td><td>Individual units, each independently innervated</td></tr>
+                  <tr><td>Contraction</td><td>Rapid and vigorous — similar to skeletal muscle</td></tr>
+                </table>
+                <div class="smooth-bar-row">
+                  <div class="smooth-bar-track"><div class="smooth-bar-fill multiunit-fill" id="multiunitBar"></div></div>
+                  <div class="smooth-bar-label" id="multiunitLabel">Tension over time</div>
+                </div>
+                <div class="step-controls"><button class="step-btn" onclick="contractMultiunit()">Demo Contraction</button></div>
+              </div>
+              <div class="smooth-card visceral">
+                <h4>Visceral Smooth Muscle</h4>
+                <table>
+                  <tr><td>Location</td><td>Walls of hollow organs (GI tract, etc.)</td></tr>
+                  <tr><td>Fiber arrangement</td><td>Sheets with random actin/myosin arrangement; inner circular &amp; outer longitudinal layers</td></tr>
+                  <tr><td>Contraction</td><td>Slow and sustained; shows rhythmicity (repeated wave-like contractions)</td></tr>
+                </table>
+                <div class="smooth-bar-row">
+                  <div class="smooth-bar-track"><div class="smooth-bar-fill visceral-fill" id="visceralBar"></div></div>
+                  <div class="smooth-bar-label" id="visceralLabel">Tension over time</div>
+                </div>
+                <div class="step-controls"><button class="step-btn" onclick="contractVisceral()">Demo Contraction</button></div>
+              </div>
+            </div>
+            <div class="step-display">
+              <div class="step-desc" id="smoothTypesDesc">Click "Demo Contraction" on each card to compare how quickly tension rises and falls.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Peristalsis -->
+    <div id="peristalsis" class="tab-content">
+      <section class="panel">
+        <h2>Peristalsis in Visceral Smooth Muscle</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Wave-Like Motion Pushes Contents Along</h3>
+            <div class="step-display">
+              <div class="step-desc" id="periDesc">Click "Run Peristalsis" to watch a traveling constriction push the bolus forward.</div>
+            </div>
+            <div class="peri-stage">
+              <svg id="periSvg" viewBox="0 0 640 180" class="peri-svg"></svg>
+              <div class="peri-legend">
+                <span><span class="peri-dot" style="background:#0e7490"></span>Inner circular layer (constricts behind the bolus)</span>
+                <span><span class="peri-dot" style="background:#f1f5f9;border-color:#0f172a"></span>Outer longitudinal layer (relaxed segment ahead)</span>
+                <span><span class="peri-dot" style="background:#f59e0b"></span>Bolus</span>
+              </div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn active" id="periRunBtn" onclick="runPeristalsis()">▶ Run Peristalsis</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Smooth Muscle Contraction Mechanism -->
+    <div id="mechanism" class="tab-content">
+      <section class="panel">
+        <h2>Smooth Muscle Contraction Mechanism</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Calcium-Calmodulin Pathway (No Troponin)</h3>
+            <div class="step-display">
+              <div class="step-number" id="mechStepNum">Step 1 of 4</div>
+              <div class="step-desc" id="mechStepDesc">Calcium ions enter mainly from the extracellular fluid (the SR is greatly reduced).</div>
+            </div>
+            <div class="mechanism-flow" id="mechFlow">
+              <div class="mechanism-node" id="mechNode1"><div class="node-num">1</div><div class="node-label">Ca²⁺ enters from extracellular fluid</div></div>
+              <div class="mechanism-arrow">→</div>
+              <div class="mechanism-node" id="mechNode2"><div class="node-num">2</div><div class="node-label">Ca²⁺ binds calmodulin (no troponin)</div></div>
+              <div class="mechanism-arrow">→</div>
+              <div class="mechanism-node" id="mechNode3"><div class="node-num">3</div><div class="node-label">Complex activates myosin light-chain kinase (MLCK)</div></div>
+              <div class="mechanism-arrow">→</div>
+              <div class="mechanism-node" id="mechNode4"><div class="node-num">4</div><div class="node-label">Cross-bridge cycling — slow &amp; sustained</div></div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="mechPrevStep()">← Previous</button>
+              <button class="step-btn active" onclick="mechGoToStep(1)">1</button>
+              <button class="step-btn" onclick="mechGoToStep(2)">2</button>
+              <button class="step-btn" onclick="mechGoToStep(3)">3</button>
+              <button class="step-btn" onclick="mechGoToStep(4)">4</button>
+              <button class="step-btn" onclick="mechNextStep()">Next →</button>
+              <button class="step-btn" onclick="mechReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+            <div class="compare-callout" id="mechCallout">
+              <b>Compare to skeletal muscle:</b> Skeletal fibers rely on a well-developed sarcoplasmic reticulum and troponin. Smooth muscle has a much smaller SR and no troponin — calcium instead activates calmodulin, which turns on MLCK to phosphorylate myosin.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Cardiac Muscle -->
+    <div id="cardiac" class="tab-content">
+      <section class="panel">
+        <h2>Cardiac Muscle — The Functional Syncytium</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Intercalated Discs &amp; Gap Junctions Spread the Signal</h3>
+            <div class="step-display">
+              <div class="step-desc" id="cardiacDesc">Click "Fire Pacemaker" to watch the electrical signal spread cell-to-cell through the whole network — all or nothing.</div>
+            </div>
+            <div class="cardiac-controls">
+              <div class="bpm-readout" id="bpmReadout">72 bpm</div>
+              <input type="range" id="bpmSlider" min="60" max="100" value="72" oninput="onBpmInput(this.value)">
+            </div>
+            <div class="cardiac-grid" id="cardiacGrid"></div>
+            <div class="step-controls">
+              <button class="step-btn active" id="fireOnceBtn" onclick="propagateWave()">⚡ Fire Pacemaker</button>
+              <button class="step-btn" id="rhythmBtn" onclick="toggleRhythm()">▶ Start Autorhythmicity</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 5: Three-Way Muscle Comparison -->
+    <div id="compare3" class="tab-content">
+      <section class="panel">
+        <h2>Skeletal vs. Smooth vs. Cardiac</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Characteristics of Muscle Tissues</h3>
+            <div class="compare3-wrap">
+              <table class="compare3-table">
+                <thead><tr><th>Feature</th><th>Skeletal</th><th>Smooth</th><th>Cardiac</th></tr></thead>
+                <tbody>
+                  <tr><td>Location</td><td>Attached to bones</td><td>Walls of hollow organs, vessels, iris</td><td>Heart wall only</td></tr>
+                  <tr><td>Control</td><td>Voluntary</td><td>Involuntary</td><td>Involuntary</td></tr>
+                  <tr><td>Striations</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+                  <tr><td>Nuclei per cell</td><td>Multiple, peripheral</td><td>Single, central</td><td>Single (occasionally two), central</td></tr>
+                  <tr><td>Fiber shape</td><td>Long, cylindrical</td><td>Small, spindle-shaped</td><td>Branched, joined end-to-end</td></tr>
+                  <tr><td>Cell junctions</td><td>None (independent fibers)</td><td>Some gap junctions (visceral)</td><td>Intercalated discs with gap junctions</td></tr>
+                  <tr><td>Speed of contraction</td><td>Fast</td><td>Slow</td><td>Moderate, rhythmic</td></tr>
+                  <tr><td>Fatigue resistance</td><td>Fiber-type dependent</td><td>High</td><td>Very high — essentially never fatigues</td></tr>
+                  <tr><td>Regulatory protein</td><td>Troponin / tropomyosin</td><td>Calmodulin (no troponin)</td><td>Troponin / tropomyosin</td></tr>
+                  <tr><td>Main Ca²⁺ source</td><td>Sarcoplasmic reticulum</td><td>Mostly extracellular fluid (reduced SR)</td><td>SR + extracellular fluid</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Smooth &amp; Cardiac Muscle</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master multiunit/visceral smooth muscle, peristalsis, the calmodulin contraction pathway, intercalated discs, and the three-way muscle tissue comparison.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive animations model the physiology of smooth and cardiac muscle tissue. Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "smoothtypes";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  if (currentTab === "mechanism") updateMechText();
+  if (currentTab === "cardiac") updateCardiacInfo();
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  if (currentTab === "smoothtypes") {
+    infoBox.innerHTML = "<b>Smooth &amp; Cardiac Muscle</b><br>Smooth muscle lines organs and vessels; cardiac muscle powers the heart. Both are involuntary, but each has a distinct structure and contraction mechanism.";
+  } else if (currentTab === "peristalsis") {
+    infoBox.innerHTML = "<b>Peristalsis:</b> Alternating contraction of circular and longitudinal smooth muscle layers creates a traveling wave that pushes contents through a tube.";
+  } else if (currentTab === "compare3") {
+    infoBox.innerHTML = "<b>Three Muscle Tissues:</b> Skeletal, smooth, and cardiac muscle share the actin-myosin sliding mechanism but differ sharply in structure, control, and regulation.";
+  }
+  updateAllTexts();
+};
+
+/* =========================================================
+   TAB 1 — Multiunit vs. Visceral Smooth Muscle
+   ========================================================= */
+function contractMultiunit() {
+  const bar = document.getElementById("multiunitBar");
+  document.getElementById("smoothTypesDesc").textContent = eli5Mode
+    ? "Multiunit squeezes fast and hard, almost like skeletal muscle, then quickly lets go."
+    : "Multiunit smooth muscle contracts rapidly and vigorously, much like skeletal muscle — tension rises and falls quickly.";
+  bar.style.transition = "width 0.25s ease";
+  bar.style.width = "0%";
+  setTimeout(() => { bar.style.transition = "width 0.22s ease-out"; bar.style.width = "100%"; }, 30);
+  setTimeout(() => { bar.style.transition = "width 0.28s ease-in"; bar.style.width = "8%"; }, 320);
+}
+function contractVisceral() {
+  const bar = document.getElementById("visceralBar");
+  document.getElementById("smoothTypesDesc").textContent = eli5Mode
+    ? "Visceral rises slowly, holds the squeeze for a while, then slowly relaxes — built for long, steady work."
+    : "Visceral smooth muscle contracts slowly, sustains tension for an extended period, and relaxes gradually — well-suited for prolonged, rhythmic activity.";
+  bar.style.transition = "width 0.25s ease";
+  bar.style.width = "0%";
+  setTimeout(() => { bar.style.transition = "width 1.1s ease-in-out"; bar.style.width = "70%"; }, 30);
+  setTimeout(() => { bar.style.transition = "width 1.1s ease-in-out"; bar.style.width = "8%"; }, 1600);
+}
+
+/* =========================================================
+   TAB 2 — Peristalsis
+   ========================================================= */
+const PERI_SEGMENTS = 14;
+const PERI_X0 = 40, PERI_X1 = 600, PERI_Y = 50, PERI_H = 70;
+let periRunning = false;
+
+(function buildPeristalsisSvg() {
+  const svg = document.getElementById("periSvg");
+  const segWidth = (PERI_X1 - PERI_X0) / PERI_SEGMENTS;
+  let html = "";
+  for (let i = 0; i < PERI_SEGMENTS; i++) {
+    const x = PERI_X0 + i * segWidth;
+    html += '<rect class="peri-seg" id="peri-seg-' + i + '" x="' + x + '" y="' + PERI_Y + '" width="' + (segWidth - 2) + '" height="' + PERI_H + '" fill="#f1f5f9" stroke="#0f172a" stroke-width="1"></rect>';
+  }
+  html += '<rect x="' + PERI_X0 + '" y="' + PERI_Y + '" width="' + (PERI_X1 - PERI_X0) + '" height="' + PERI_H + '" rx="6" fill="none" stroke="#0f172a" stroke-width="2.5"></rect>';
+  html += '<circle id="periBolus" cx="' + (PERI_X0 + 30) + '" cy="' + (PERI_Y + PERI_H / 2) + '" r="20" fill="#f59e0b" stroke="#0f172a" stroke-width="2"></circle>';
+  html += '<text x="320" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">Direction of movement →</text>';
+  svg.innerHTML = html;
+})();
+
+function runPeristalsis() {
+  if (periRunning) return;
+  periRunning = true;
+  const btn = document.getElementById("periRunBtn");
+  btn.disabled = true;
+  document.getElementById("periDesc").textContent = eli5Mode
+    ? "Watch the squeeze travel down the tube, pushing the ball along — that's peristalsis!"
+    : "A ring of circular-layer contraction travels behind the bolus while the segment ahead relaxes, propelling contents forward.";
+
+  const segWidth = (PERI_X1 - PERI_X0) / PERI_SEGMENTS;
+  const bolus = document.getElementById("periBolus");
+  const startX = PERI_X0 + 30, endX = PERI_X1 - 30;
+  const durationMs = 2600, stepMs = 60;
+  const steps = Math.round(durationMs / stepMs);
+  let cycles = 0;
+
+  function runOneCycle(onDone) {
+    let tick = 0;
+    const timer = setInterval(() => {
+      tick++;
+      const progress = tick / steps;
+      const x = startX + progress * (endX - startX);
+      bolus.setAttribute("cx", x.toFixed(1));
+      for (let i = 0; i < PERI_SEGMENTS; i++) {
+        const segCenter = PERI_X0 + (i + 0.5) * segWidth;
+        const seg = document.getElementById("peri-seg-" + i);
+        if (segCenter < x - 12 && segCenter > x - 120) {
+          seg.setAttribute("fill", "#0e7490"); // constricted, behind bolus
+        } else {
+          seg.setAttribute("fill", "#f1f5f9"); // relaxed
+        }
+      }
+      if (tick >= steps) {
+        clearInterval(timer);
+        for (let i = 0; i < PERI_SEGMENTS; i++) document.getElementById("peri-seg-" + i).setAttribute("fill", "#f1f5f9");
+        onDone();
+      }
+    }, stepMs);
+  }
+
+  function loop() {
+    cycles++;
+    runOneCycle(() => {
+      if (cycles < 2) {
+        document.getElementById("periBolus").setAttribute("cx", startX);
+        setTimeout(loop, 250);
+      } else {
+        periRunning = false;
+        btn.disabled = false;
+        document.getElementById("periBolus").setAttribute("cx", startX);
+        document.getElementById("periDesc").textContent = eli5Mode
+          ? "That's rhythmicity — the wave keeps repeating to keep pushing things along!"
+          : "Rhythmicity: visceral smooth muscle repeats this wave-like contraction pattern continuously to move contents through the tract.";
+      }
+    });
+  }
+  loop();
+}
+
+/* =========================================================
+   TAB 3 — Smooth Muscle Contraction Mechanism
+   ========================================================= */
+let mechStep = 1;
+const mechSteps = [
+  { prof: "Calcium ions enter mainly from the extracellular fluid, since the sarcoplasmic reticulum is greatly reduced in smooth muscle.", eli5: "Calcium mostly comes in from outside the cell — the internal calcium tanks (SR) are tiny here." },
+  { prof: "Calcium binds to calmodulin. Unlike skeletal muscle, smooth muscle has no troponin.", eli5: "Calcium grabs onto a helper protein called calmodulin — there's no troponin lock here." },
+  { prof: "The calcium-calmodulin complex activates myosin light-chain kinase (MLCK), which phosphorylates the myosin head.", eli5: "That calcium-calmodulin pair flips on an enzyme (MLCK) that 'arms' the myosin head." },
+  { prof: "Phosphorylated myosin heads form cross-bridges with actin. Contraction develops slowly but is sustained with low energy cost.", eli5: "Now myosin can grab actin and pull — slowly, but it can hold that pull for a long time without much energy." }
+];
+
+function mechGoToStep(step) {
+  mechStep = step;
+  updateMechText();
+}
+function mechNextStep() { if (mechStep < 4) mechGoToStep(mechStep + 1); }
+function mechPrevStep() { if (mechStep > 1) mechGoToStep(mechStep - 1); }
+function mechReset() { mechGoToStep(1); }
+
+function updateMechText() {
+  const s = mechSteps[mechStep - 1];
+  document.getElementById("mechStepNum").textContent = "Step " + mechStep + " of 4";
+  document.getElementById("mechStepDesc").textContent = eli5Mode ? s.eli5 : s.prof;
+  if (currentTab === "mechanism") {
+    infoBox.innerHTML = "<b>Step " + mechStep + ":</b> " + (eli5Mode ? s.eli5 : s.prof);
+  }
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("mechNode" + i).classList.toggle("active", i <= mechStep);
+  }
+  document.querySelectorAll(".tab-content#mechanism .step-controls .step-btn").forEach((btn, i) => {
+    if (i > 0 && i < 5) btn.classList.toggle("active", i === mechStep);
+  });
+}
+updateMechText();
+
+/* =========================================================
+   TAB 4 — Cardiac Muscle
+   ========================================================= */
+const CARDIAC_ROWS = 4, CARDIAC_COLS = 6;
+let bpm = 72;
+let rhythmTimer = null;
+let rhythmRunning = false;
+
+(function buildCardiacGrid() {
+  const grid = document.getElementById("cardiacGrid");
+  for (let r = 0; r < CARDIAC_ROWS; r++) {
+    for (let c = 0; c < CARDIAC_COLS; c++) {
+      const cell = document.createElement("div");
+      cell.className = "cardiac-cell" + (r === 0 && c === 0 ? " pacemaker" : "");
+      cell.id = "cc-" + r + "-" + c;
+      cell.title = (r === 0 && c === 0) ? "Pacemaker focus (self-excites rhythmically)" : "Cardiac cell";
+      grid.appendChild(cell);
+    }
+  }
+})();
+
+function onBpmInput(val) {
+  bpm = +val;
+  document.getElementById("bpmReadout").textContent = bpm + " bpm";
+  if (rhythmRunning) {
+    clearInterval(rhythmTimer);
+    rhythmTimer = setInterval(propagateWave, 60000 / bpm);
+  }
+}
+
+function propagateWave() {
+  const visited = new Set();
+  const queue = [{ r: 0, c: 0, depth: 0 }];
+  visited.add("0-0");
+  while (queue.length) {
+    const cur = queue.shift();
+    (function (cell) {
+      setTimeout(() => {
+        const el = document.getElementById("cc-" + cell.r + "-" + cell.c);
+        if (!el) return;
+        el.classList.add("firing");
+        setTimeout(() => el.classList.remove("firing"), 260);
+      }, cell.depth * 90);
+    })(cur);
+    const neighbors = [[cur.r - 1, cur.c], [cur.r + 1, cur.c], [cur.r, cur.c - 1], [cur.r, cur.c + 1]];
+    neighbors.forEach(([nr, nc]) => {
+      if (nr >= 0 && nr < CARDIAC_ROWS && nc >= 0 && nc < CARDIAC_COLS && !visited.has(nr + "-" + nc)) {
+        visited.add(nr + "-" + nc);
+        queue.push({ r: nr, c: nc, depth: cur.depth + 1 });
+      }
+    });
+  }
+}
+
+function toggleRhythm() {
+  const btn = document.getElementById("rhythmBtn");
+  rhythmRunning = !rhythmRunning;
+  if (rhythmRunning) {
+    btn.textContent = "⏸ Stop Autorhythmicity";
+    propagateWave();
+    rhythmTimer = setInterval(propagateWave, 60000 / bpm);
+  } else {
+    btn.textContent = "▶ Start Autorhythmicity";
+    clearInterval(rhythmTimer);
+  }
+}
+
+function updateCardiacInfo() {
+  if (currentTab !== "cardiac") return;
+  infoBox.innerHTML = eli5Mode
+    ? "<b>Functional Syncytium:</b> Cardiac cells are wired together at intercalated discs, so once one cell fires, the electrical signal spreads to all of them — the whole heart beats as one unit."
+    : "<b>Functional Syncytium:</b> Intercalated discs contain gap junctions that electrically couple cardiac cells, so an action potential spreads cell-to-cell across the entire myocardium — an all-or-nothing response.";
+}
+
+/* =========================================================
+   TAB 5 — no dynamic logic (static comparison table)
+   ========================================================= */
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"smooth-cardiac-muscle", title:"Smooth & Cardiac Muscle Lab", unit:"Ch 9 · Muscular System" });
+  APTools.mountHUD("#apHud","smooth-cardiac-muscle");
+  var BANK=[
+    { id:"sc1", bloom:"Remember", outcome:"Multiunit Location",
+      q:"Multiunit smooth muscle is found in the:",
+      choices:["Iris of the eye and walls of blood vessels","Walls of the stomach and intestines","Heart wall only","Skeletal muscle tendons"],
+      answer:0, why:"Multiunit smooth muscle occurs in the iris and in the walls of blood vessels, where fibers act more independently and contract rapidly." },
+    { id:"sc2", bloom:"Remember", outcome:"Visceral Location & Behavior",
+      q:"Visceral smooth muscle, found in the walls of hollow organs, is characterized by:",
+      choices:["Slow, sustained contraction with rhythmicity","Rapid, vigorous contraction like skeletal muscle","Striations and multiple peripheral nuclei","Voluntary control"],
+      answer:0, why:"Visceral smooth muscle contracts slowly and sustains tension, often showing rhythmicity — repeated, wave-like contractions." },
+    { id:"sc3", bloom:"Understand", outcome:"Peristalsis",
+      q:"Peristalsis refers to:",
+      choices:["A wave-like muscular motion that pushes contents through a passageway","The independent firing of multiunit smooth muscle fibers","The all-or-nothing contraction of cardiac muscle","The staircase increase in twitch force"],
+      answer:0, why:"Peristalsis is the wave-like contraction of circular and longitudinal smooth muscle layers that propels contents through a tube, such as the GI tract." },
+    { id:"sc4", bloom:"Understand", outcome:"Calmodulin Mechanism",
+      q:"In smooth muscle, calcium ions trigger contraction by binding to:",
+      choices:["Calmodulin","Troponin","Tropomyosin directly","Acetylcholinesterase"],
+      answer:0, why:"Smooth muscle lacks troponin. Instead, calcium binds calmodulin, and the complex activates myosin light-chain kinase (MLCK)." },
+    { id:"sc5", bloom:"Understand", outcome:"No Troponin",
+      q:"Compared to skeletal muscle, smooth muscle contraction regulation differs mainly because smooth muscle:",
+      choices:["Lacks troponin and relies on calmodulin/MLCK instead","Lacks actin and myosin filaments","Uses acetylcholine only, never norepinephrine","Cannot use calcium at all"],
+      answer:0, why:"Smooth muscle has actin and myosin like skeletal muscle, but lacks troponin — regulation instead depends on calcium-calmodulin activation of MLCK." },
+    { id:"sc6", bloom:"Apply", outcome:"Calcium Source",
+      q:"Most of the calcium that triggers smooth muscle contraction comes from:",
+      choices:["The extracellular fluid, since the SR is greatly reduced","The sarcoplasmic reticulum, exactly as in skeletal muscle","Mitochondria","The nucleus"],
+      answer:0, why:"Smooth muscle has a much smaller sarcoplasmic reticulum than skeletal muscle, so most contraction-triggering calcium diffuses in from the extracellular fluid." },
+    { id:"sc7", bloom:"Remember", outcome:"Intercalated Discs",
+      q:"The specialized junctions that join cardiac muscle cells end-to-end are called:",
+      choices:["Intercalated discs","Neuromuscular junctions","Synaptic clefts","Z-lines"],
+      answer:0, why:"Intercalated discs are the junctions between cardiac muscle cells; they contain gap junctions that allow electrical coupling between cells." },
+    { id:"sc8", bloom:"Understand", outcome:"Functional Syncytium",
+      q:"Cardiac muscle functions as a \"syncytium\" because:",
+      choices:["Gap junctions in intercalated discs let an action potential spread to all connected cells, producing an all-or-nothing contraction","Each cardiac cell contracts completely independently","Cardiac cells lack any cell membrane","Cardiac muscle has no calcium requirement"],
+      answer:0, why:"Gap junctions electrically couple cardiac cells so that stimulation of one cell spreads to the whole network, producing a coordinated, all-or-nothing contraction." },
+    { id:"sc9", bloom:"Remember", outcome:"Cardiac Autorhythmicity",
+      q:"Cardiac muscle is described as \"self-exciting\" because it:",
+      choices:["Can generate its own rhythmic action potentials without external nerve stimulation","Requires acetylcholine for every contraction","Only contracts when stimulated by skeletal motor neurons","Cannot contract without external calcium"],
+      answer:0, why:"Cardiac muscle contains pacemaker cells capable of spontaneously generating rhythmic action potentials (autorhythmicity), typically 60-100 beats/minute." },
+    { id:"sc10", bloom:"Understand", outcome:"Cardiac Control",
+      q:"Cardiac muscle contraction is:",
+      choices:["Involuntary and all-or-nothing","Voluntary and graded like skeletal muscle","Voluntary and all-or-nothing","Involuntary but never rhythmic"],
+      answer:0, why:"Cardiac muscle is involuntary (not under conscious control) and contracts in an all-or-nothing fashion due to its functional syncytium." },
+    { id:"sc11", bloom:"Apply", outcome:"Cross-Tissue: Striations",
+      q:"Which muscle tissue type(s) show visible striations?",
+      choices:["Skeletal and cardiac, but not smooth","Smooth and cardiac, but not skeletal","All three muscle tissue types","None of the muscle tissue types"],
+      answer:0, why:"Skeletal and cardiac muscle both show striations from their organized actin/myosin arrangement. Smooth muscle lacks striations due to its random filament arrangement." },
+    { id:"sc12", bloom:"Apply", outcome:"Cross-Tissue: Nuclei",
+      q:"Which best describes nuclei arrangement across the three muscle tissue types?",
+      choices:["Skeletal fibers have multiple peripheral nuclei; smooth and cardiac cells typically have a single central nucleus","All three muscle types have multiple central nuclei","Only cardiac muscle has nuclei","Smooth muscle has multiple peripheral nuclei like skeletal muscle"],
+      answer:0, why:"Skeletal muscle fibers are multinucleated with nuclei at the periphery, while smooth and cardiac muscle cells typically have a single, centrally located nucleus." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"smooth-cardiac-muscle", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

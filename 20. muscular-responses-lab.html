@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muscular Responses Lab | Chapter 9 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-700: #1d4ed8;
+  --blue-600: #2563eb;
+  --blue-500: #3b82f6;
+  --blue-100: #dbeafe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(29, 78, 216, 0.04);
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --purple-600: #9333ea;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(37, 99, 235, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--blue-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--blue-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--blue-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--blue-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Controls */
+.step-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.step-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.step-btn:hover {
+  background: var(--slate-100);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+}
+.step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.step-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  border-color: var(--blue-700);
+}
+.step-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--blue-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* ---- Myogram (Twitch tab) ---- */
+.myogram-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.myogram-svg { width: 100%; max-width: 620px; height: auto; border: 1.5px solid var(--border-color); border-radius: 8px; background: #fff; }
+.axis-label { font-size: 11px; fill: var(--slate-500); font-family: "Hanken Grotesk", sans-serif; }
+.threshold-label { font-size: 10px; font-weight: 700; fill: var(--red-600); }
+.zone-rect { opacity: 0; transition: opacity .4s ease; }
+.zone-label { font-size: 10.5px; font-weight: 800; fill: var(--slate-700); font-family: "Hanken Grotesk", sans-serif; }
+.myogram-legend { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; font-size: 0.76rem; color: var(--slate-600); }
+.myogram-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; border: 1px solid var(--border-color); }
+
+/* ---- Summation / Tetanus tab ---- */
+.mode-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 14px; }
+.mode-btn {
+  background: #fff; border: 1.5px solid var(--border-color); border-radius: 999px;
+  padding: 6px 14px; font-family: inherit; font-weight: 700; font-size: 0.76rem;
+  color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color);
+}
+.mode-btn.active { background: var(--blue-100); color: var(--blue-700); }
+.mode-panel { display: none; }
+.mode-panel.active { display: block; }
+
+.freq-control { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 14px; }
+.freq-control input[type=range] { width: 100%; max-width: 520px; accent-color: var(--blue-700); }
+.freq-readout { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--blue-700); }
+.freq-scale { display: flex; justify-content: space-between; width: 100%; max-width: 520px; font-size: 0.68rem; color: var(--slate-500); font-weight: 700; }
+.classification-tag {
+  display: inline-block; margin-top: 4px; padding: 5px 14px; border-radius: 999px;
+  border: 1.5px solid var(--border-color); font-weight: 800; font-size: 0.82rem;
+  background: var(--blue-100); color: var(--blue-700);
+}
+
+/* ---- Motor Unit Recruitment tab ---- */
+.recruit-control { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 16px; }
+.recruit-control input[type=range] { width: 100%; max-width: 520px; accent-color: var(--blue-700); }
+.tension-meter-wrap { width: 100%; max-width: 520px; }
+.tension-meter { height: 18px; border: 1.5px solid var(--border-color); border-radius: 9px; background: var(--slate-100); overflow: hidden; }
+.tension-meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue-500), var(--blue-700)); transition: width .25s ease; }
+.tension-meter-label { font-size: 0.76rem; color: var(--slate-600); margin-top: 4px; text-align: center; }
+.fiber-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; max-width: 520px; margin: 0 auto; }
+.fiber-dot {
+  aspect-ratio: 1; border-radius: 50%; background: var(--slate-100);
+  border: 1.5px solid var(--border-color); transition: background .2s ease, transform .2s ease;
+}
+.fiber-dot.active { background: var(--blue-600); transform: scale(1.08); }
+
+/* ---- Isotonic / Isometric tab ---- */
+.iso-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.iso-scene-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 14px; background: #fff; }
+.iso-scene-card h4 { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.95rem; margin: 0 0 10px; text-align: center; color: var(--blue-700); }
+.iso-stage { position: relative; height: 210px; border: 1.5px solid var(--border-color); border-radius: 8px; background: linear-gradient(to bottom, #f8fafc, #e2e8f0); overflow: hidden; }
+.iso-pivot { position: absolute; bottom: 40px; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: var(--slate-900); transform: translateX(-50%); z-index: 3; }
+.iso-muscle { position: absolute; bottom: 46px; left: 50%; width: 26px; height: 74px; background: var(--red-600); border: 2px solid var(--border-color); border-radius: 10px; transform-origin: bottom center; transform: translateX(-50%) scaleY(1); transition: transform .6s ease, background .6s ease; }
+.iso-muscle.contracted { transform: translateX(-50%) scaleY(0.6); background: var(--red-700); }
+.iso-muscle.bulge { transform: translateX(-50%) scaleX(1.55) scaleY(0.92); background: var(--red-700); }
+.iso-forearm { position: absolute; bottom: 40px; left: 50%; width: 8px; height: 92px; background: var(--slate-700); transform-origin: bottom center; border-radius: 4px; transition: transform .6s ease; }
+.iso-forearm.rest { transform: translateX(-50%) rotate(78deg); }
+.iso-forearm.contracted { transform: translateX(-50%) rotate(8deg); }
+.iso-forearm.fixed-angle { transform: translateX(-50%) rotate(38deg); }
+.iso-weight { position: absolute; width: 34px; height: 20px; background: var(--amber-500); border: 2px solid var(--border-color); border-radius: 4px; top: -14px; left: 50%; transform: translateX(-50%); font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--slate-900); }
+.iso-wall { position: absolute; right: 18px; top: 16px; bottom: 16px; width: 24px; background: repeating-linear-gradient(45deg, #94a3b8, #94a3b8 6px, #cbd5e1 6px, #cbd5e1 12px); border: 2px solid var(--border-color); border-radius: 4px; }
+.tension-tag { position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 800; padding: 4px 9px; border: 1.5px solid var(--border-color); border-radius: 6px; background: #fff; opacity: 0; transition: opacity .3s ease; }
+.tension-tag.show { opacity: 1; }
+.iso-btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+.iso-desc { font-size: 0.8rem; color: var(--slate-700); margin-top: 10px; line-height: 1.4; text-align: center; min-height: 34px; }
+@media (max-width: 700px) { .iso-compare { grid-template-columns: 1fr; } }
+
+/* ---- Fast / Slow twitch fiber tab ---- */
+.fiber-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+.fiber-card { border: 2px solid var(--border-color); border-radius: 10px; padding: 16px; background: #fff; }
+.fiber-card.slow { border-left: 8px solid var(--red-600); }
+.fiber-card.fast { border-left: 8px solid var(--slate-700); }
+.fiber-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 10px; font-size: 1rem; }
+.fiber-card.slow h4 { color: var(--red-600); }
+.fiber-card.fast h4 { color: var(--slate-700); }
+.fiber-card table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.fiber-card td { padding: 5px 4px; border-bottom: 1px solid var(--slate-100); vertical-align: top; }
+.fiber-card td:first-child { font-weight: 700; color: var(--slate-500); width: 42%; }
+@media (max-width: 700px) { .fiber-compare { grid-template-columns: 1fr; } }
+
+.endurance-stage { display: flex; gap: 60px; align-items: flex-end; justify-content: center; height: 190px; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 16px; background: #fff; margin-bottom: 10px; }
+.endurance-col { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 90px; }
+.endurance-track { width: 46px; height: 140px; border: 1.5px solid var(--border-color); border-radius: 6px; background: var(--slate-100); position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+.endurance-bar { width: 100%; transition: height .7s ease; }
+.endurance-bar.slow-bar { background: linear-gradient(180deg, #ef4444, var(--red-700)); height: 10%; }
+.endurance-bar.fast-bar { background: linear-gradient(180deg, #475569, var(--slate-900)); height: 10%; }
+.endurance-label { font-size: 0.76rem; font-weight: 800; color: var(--slate-700); text-align: center; }
+.endurance-timer { text-align: center; font-size: 0.8rem; color: var(--slate-600); margin-bottom: 12px; }
+
+/* Reference / footer sections (shared) */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--blue-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Muscular Responses Lab</h1>
+    <p>Twitch · Summation &amp; Tetanus · Recruitment · Isotonic/Isometric · Fiber Types · Ch 9</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Responses Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">Use the tabs to explore how a whole skeletal muscle responds to stimulation — from a single twitch up to sustained, graded contractions.</p>
+        <div class="info-box" id="infoBox">
+          <b>Muscular Responses</b><br>
+          A single stimulus produces a brief twitch. Repeated stimulation, more motor units, and different fiber types all change how much force a muscle produces and for how long.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('twitch', this)">Twitch &amp; Myogram</button>
+      <button class="tab-btn" onclick="switchTab('summation', this)">Summation &amp; Tetanus</button>
+      <button class="tab-btn" onclick="switchTab('recruit', this)">Motor Unit Recruitment</button>
+      <button class="tab-btn" onclick="switchTab('isotype', this)">Isotonic vs Isometric</button>
+      <button class="tab-btn" onclick="switchTab('fibers', this)">Fast vs Slow Twitch</button>
+    </div>
+
+    <!-- Tab 1: Twitch & Myogram -->
+    <div id="twitch" class="tab-content active">
+      <section class="panel">
+        <h2>Single Twitch &amp; Myogram</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Recording a Muscle Twitch</h3>
+            <div class="step-display">
+              <div class="step-number" id="twitchStatus">Ready</div>
+              <div class="step-desc" id="twitchDesc">Apply a stimulus and watch the myogram trace.</div>
+            </div>
+            <div class="myogram-stage">
+              <svg id="twitchSvgProf" viewBox="0 0 600 260" class="myogram-svg">
+                <line x1="60" y1="220" x2="580" y2="220" stroke="#0f172a" stroke-width="2"/>
+                <line x1="60" y1="20" x2="60" y2="220" stroke="#0f172a" stroke-width="2"/>
+                <text x="320" y="248" class="axis-label" text-anchor="middle">Time →</text>
+                <text x="20" y="120" class="axis-label" text-anchor="middle" transform="rotate(-90 20 120)">Tension →</text>
+                <line x1="60" y1="190" x2="580" y2="190" stroke="#dc2626" stroke-dasharray="4 4" stroke-width="1.5"/>
+                <text x="500" y="184" class="threshold-label">Threshold</text>
+
+                <rect id="zoneLatent" class="zone-rect" x="60" y="20" width="40" height="200" fill="#dbeafe"/>
+                <text id="zoneLatentLabel" class="zone-label zone-rect" x="80" y="35" text-anchor="middle">Latent</text>
+                <rect id="zoneContraction" class="zone-rect" x="100" y="20" width="90" height="200" fill="#bbf7d0"/>
+                <text id="zoneContractionLabel" class="zone-label zone-rect" x="145" y="35" text-anchor="middle">Contraction</text>
+                <rect id="zoneRelaxation" class="zone-rect" x="190" y="20" width="240" height="200" fill="#fed7aa"/>
+                <text id="zoneRelaxationLabel" class="zone-label zone-rect" x="310" y="35" text-anchor="middle">Relaxation</text>
+
+                <path id="twitchPath" d="" fill="none" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round"/>
+              </svg>
+              <div class="myogram-legend">
+                <span><span class="legend-dot" style="background:#dbeafe"></span>Latent period</span>
+                <span><span class="legend-dot" style="background:#bbf7d0"></span>Contraction phase</span>
+                <span><span class="legend-dot" style="background:#fed7aa"></span>Relaxation phase</span>
+              </div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="applyStimulus(false)">Sub-Threshold Stimulus</button>
+              <button class="step-btn active" onclick="applyStimulus(true)">Threshold+ Stimulus</button>
+              <button class="step-btn" onclick="twitchReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Summation & Tetanus -->
+    <div id="summation" class="tab-content">
+      <section class="panel">
+        <h2>Summation &amp; Tetanus</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Sustained Contraction Builds from Repeated Stimuli</h3>
+            <div class="step-display">
+              <div class="step-number" id="sumStepNum">Stimulus Frequency</div>
+              <div class="step-desc" id="sumStepDesc">Drag the slider to increase how often the muscle fiber is restimulated.</div>
+            </div>
+            <div class="mode-row">
+              <button class="mode-btn active" id="modeFreqBtn" onclick="setSumMode('freq')">Frequency Control</button>
+              <button class="mode-btn" id="modeTreppeBtn" onclick="setSumMode('treppe')">Treppe (Staircase)</button>
+            </div>
+
+            <div class="mode-panel active" id="freqPanel">
+              <div class="freq-control">
+                <div class="freq-readout" id="freqReadout">6 Hz</div>
+                <input type="range" id="freqSlider" min="1" max="60" value="6" oninput="onFreqInput(this.value)">
+                <div class="freq-scale"><span>1 Hz</span><span>15 Hz</span><span>30 Hz</span><span>45 Hz</span><span>60 Hz</span></div>
+                <div class="classification-tag" id="freqClassTag">Single Twitch</div>
+              </div>
+              <div class="myogram-stage">
+                <svg viewBox="0 0 620 260" class="myogram-svg">
+                  <line x1="60" y1="220" x2="600" y2="220" stroke="#0f172a" stroke-width="2"/>
+                  <line x1="60" y1="20" x2="60" y2="220" stroke="#0f172a" stroke-width="2"/>
+                  <text x="330" y="248" class="axis-label" text-anchor="middle">Time →</text>
+                  <text x="20" y="120" class="axis-label" text-anchor="middle" transform="rotate(-90 20 120)">Tension →</text>
+                  <polyline id="summationPath" points="" fill="none" stroke="#2563eb" stroke-width="3"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="mode-panel" id="treppePanel">
+              <p style="text-align:center;font-size:0.82rem;color:var(--slate-600);margin:0 0 10px;">A rested muscle subjected to repeated maximal stimuli responds with gradually increasing twitch strength before leveling off.</p>
+              <div class="myogram-stage">
+                <svg viewBox="0 0 620 260" class="myogram-svg">
+                  <line x1="60" y1="220" x2="600" y2="220" stroke="#0f172a" stroke-width="2"/>
+                  <line x1="60" y1="20" x2="60" y2="220" stroke="#0f172a" stroke-width="2"/>
+                  <text x="330" y="248" class="axis-label" text-anchor="middle">Time →</text>
+                  <text x="20" y="120" class="axis-label" text-anchor="middle" transform="rotate(-90 20 120)">Tension →</text>
+                  <polyline id="treppePath" points="" fill="none" stroke="#16a34a" stroke-width="3"/>
+                </svg>
+              </div>
+              <div class="step-controls">
+                <button class="step-btn" onclick="runTreppe()">▶ Run Staircase</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Motor Unit Recruitment -->
+    <div id="recruit" class="tab-content">
+      <section class="panel">
+        <h2>Motor Unit Recruitment</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Grading Whole-Muscle Force</h3>
+            <div class="step-display">
+              <div class="step-number" id="recruitStepNum">0% Stimulus Intensity</div>
+              <div class="step-desc" id="recruitStepDesc">Increase intensity to recruit more motor units, smallest units first (the size principle).</div>
+            </div>
+            <div class="recruit-control">
+              <input type="range" id="recruitSlider" min="0" max="100" value="0" oninput="onRecruitInput(this.value)">
+              <div class="tension-meter-wrap">
+                <div class="tension-meter"><div class="tension-meter-fill" id="tensionFill"></div></div>
+                <div class="tension-meter-label" id="tensionLabel">0 of 30 motor units active</div>
+              </div>
+            </div>
+            <div class="fiber-grid" id="fiberGrid"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Isotonic vs Isometric -->
+    <div id="isotype" class="tab-content">
+      <section class="panel">
+        <h2>Isotonic vs. Isometric Contraction</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Same Muscle, Two Different Jobs</h3>
+            <div class="iso-compare">
+              <div class="iso-scene-card">
+                <h4>Isotonic — muscle shortens, load moves</h4>
+                <div class="iso-stage">
+                  <div class="iso-pivot"></div>
+                  <div class="iso-muscle" id="isotonicMuscle"></div>
+                  <div class="iso-forearm rest" id="isotonicForearm">
+                    <div class="iso-weight">5 lb</div>
+                  </div>
+                  <div class="tension-tag" id="isotonicTag">Load moving ↑</div>
+                </div>
+                <div class="iso-btn-row">
+                  <button class="step-btn" onclick="isotonicContract()">Contract</button>
+                  <button class="step-btn" onclick="isotonicReset()">↻ Reset</button>
+                </div>
+                <div class="iso-desc" id="isotonicDesc">At rest: the elbow is extended, the biceps is relaxed and at full length.</div>
+              </div>
+
+              <div class="iso-scene-card">
+                <h4>Isometric — muscle tenses, load doesn't move</h4>
+                <div class="iso-stage">
+                  <div class="iso-pivot"></div>
+                  <div class="iso-muscle" id="isometricMuscle"></div>
+                  <div class="iso-forearm fixed-angle" id="isometricForearm"></div>
+                  <div class="iso-wall"></div>
+                  <div class="tension-tag" id="isometricTag">No movement</div>
+                </div>
+                <div class="iso-btn-row">
+                  <button class="step-btn" onclick="isometricContract()">Contract</button>
+                  <button class="step-btn" onclick="isometricReset()">↻ Reset</button>
+                </div>
+                <div class="iso-desc" id="isometricDesc">At rest: the forearm presses lightly against an immovable wall.</div>
+              </div>
+            </div>
+            <div class="info-box" style="margin-top:16px;">
+              <b>Most everyday movements combine both:</b> a muscle may tense isometrically to stabilize a joint (fixator action) while a neighboring muscle contracts isotonically to move a limb.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 5: Fast vs Slow Twitch -->
+    <div id="fibers" class="tab-content">
+      <section class="panel">
+        <h2>Fast-Twitch vs. Slow-Twitch Fibers</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Two Fiber Types, Two Strategies</h3>
+            <div class="fiber-compare">
+              <div class="fiber-card slow">
+                <h4>Slow-Twitch (Red / Type I)</h4>
+                <table>
+                  <tr><td>Color</td><td>Red — rich in myoglobin</td></tr>
+                  <tr><td>Blood supply</td><td>Extensive capillary network</td></tr>
+                  <tr><td>Mitochondria</td><td>Numerous</td></tr>
+                  <tr><td>Main ATP source</td><td>Aerobic respiration</td></tr>
+                  <tr><td>Contraction speed</td><td>Slow to reach peak tension</td></tr>
+                  <tr><td>Fatigue resistance</td><td>High — sustains long periods</td></tr>
+                  <tr><td>Typical use</td><td>Posture, marathon running</td></tr>
+                </table>
+              </div>
+              <div class="fiber-card fast">
+                <h4>Fast-Twitch (White / Type II)</h4>
+                <table>
+                  <tr><td>Color</td><td>White — low myoglobin</td></tr>
+                  <tr><td>Blood supply</td><td>Sparse capillary network</td></tr>
+                  <tr><td>Mitochondria</td><td>Few</td></tr>
+                  <tr><td>Main ATP source</td><td>Anaerobic glycolysis</td></tr>
+                  <tr><td>Contraction speed</td><td>Fast, powerful contraction</td></tr>
+                  <tr><td>Fatigue resistance</td><td>Low — fatigues quickly</td></tr>
+                  <tr><td>Typical use</td><td>Sprinting, jumping, heavy lifts</td></tr>
+                </table>
+              </div>
+            </div>
+            <div class="step-display">
+              <div class="step-number">Endurance Test</div>
+              <div class="step-desc" id="enduranceDesc">Run the test to compare force output over time for each fiber type.</div>
+            </div>
+            <div class="endurance-timer" id="enduranceTimer">t = 0.0 s</div>
+            <div class="endurance-stage">
+              <div class="endurance-col">
+                <div class="endurance-track"><div class="endurance-bar slow-bar" id="slowBar"></div></div>
+                <div class="endurance-label">Slow-Twitch</div>
+              </div>
+              <div class="endurance-col">
+                <div class="endurance-track"><div class="endurance-bar fast-bar" id="fastBar"></div></div>
+                <div class="endurance-label">Fast-Twitch</div>
+              </div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" id="enduranceBtn" onclick="runEndurance()">▶ Run Endurance Test</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Muscular Responses</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master twitch phases, summation and tetanus, motor unit recruitment, isotonic/isometric contraction, and fast- vs. slow-twitch fibers.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive animations model the physiology of whole-muscle responses. Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "twitch";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  if (currentTab === "twitch") updateTwitchInfo();
+  if (currentTab === "summation") { updateFreqText(currentFreq); }
+  if (currentTab === "recruit") updateRecruitText(currentIntensity);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  updateAllTexts();
+};
+
+/* =========================================================
+   TAB 1 — Twitch & Myogram
+   ========================================================= */
+const twitchPathData = {
+  supra: "M60,220 L100,220 L112,205 L124,165 L140,105 L158,62 L175,42 L190,40 L205,48 L225,75 L255,115 L290,155 L330,185 L370,205 L400,214 L420,218 L430,220 L580,220",
+  sub:   "M60,220 L100,220 L118,214 L136,206 L150,210 L165,218 L180,220 L580,220"
+};
+
+function twitchDescText(kind) {
+  if (kind === "sub") {
+    return eli5Mode
+      ? "The zap was too weak — the muscle barely notices and never fires."
+      : "Below threshold: the stimulus fails to depolarize the sarcolemma to threshold, so no action potential — and no twitch — occurs (all-or-none response).";
+  }
+  return eli5Mode
+    ? "First there's a tiny pause (nothing happens yet), then the muscle squeezes hard, then it lets go and relaxes."
+    : "At/above threshold: after the latent period, the fiber shortens during the contraction phase, then lengthens back to resting tension during the relaxation phase.";
+}
+
+function applyStimulus(isSupra) {
+  const path = document.getElementById("twitchPath");
+  const zones = ["zoneLatent", "zoneLatentLabel", "zoneContraction", "zoneContractionLabel", "zoneRelaxation", "zoneRelaxationLabel"];
+  zones.forEach(id => document.getElementById(id).style.opacity = 0);
+
+  path.setAttribute("d", isSupra ? twitchPathData.supra : twitchPathData.sub);
+  const len = path.getTotalLength();
+  path.style.transition = "none";
+  path.setAttribute("stroke-dasharray", len);
+  path.setAttribute("stroke-dashoffset", len);
+  void path.getBoundingClientRect();
+  path.style.transition = "stroke-dashoffset " + (isSupra ? "1.3s" : "0.6s") + " ease-out";
+  path.setAttribute("stroke-dashoffset", "0");
+
+  document.getElementById("twitchStatus").textContent = isSupra ? "Threshold+ Stimulus Applied" : "Sub-Threshold Stimulus Applied";
+  document.getElementById("twitchDesc").textContent = twitchDescText(isSupra ? "supra" : "sub");
+  infoBox.innerHTML = isSupra
+    ? "<b>Single Twitch:</b> Latent period → Contraction phase → Relaxation phase."
+    : "<b>Threshold:</b> A stimulus must reach threshold to trigger a muscle fiber action potential.";
+
+  document.querySelectorAll("#twitch .step-btn").forEach(b => b.classList.remove("active"));
+  event && event.target && event.target.classList.add("active");
+
+  if (isSupra) {
+    setTimeout(() => document.getElementById("zoneLatent").style.opacity = 1, 50);
+    setTimeout(() => document.getElementById("zoneLatentLabel").style.opacity = 1, 50);
+    setTimeout(() => document.getElementById("zoneContraction").style.opacity = 1, 250);
+    setTimeout(() => document.getElementById("zoneContractionLabel").style.opacity = 1, 250);
+    setTimeout(() => document.getElementById("zoneRelaxation").style.opacity = 1, 700);
+    setTimeout(() => document.getElementById("zoneRelaxationLabel").style.opacity = 1, 700);
+  }
+}
+
+function twitchReset() {
+  const path = document.getElementById("twitchPath");
+  path.style.transition = "none";
+  path.setAttribute("d", "M60,220 L580,220");
+  path.removeAttribute("stroke-dasharray");
+  path.removeAttribute("stroke-dashoffset");
+  ["zoneLatent", "zoneLatentLabel", "zoneContraction", "zoneContractionLabel", "zoneRelaxation", "zoneRelaxationLabel"]
+    .forEach(id => document.getElementById(id).style.opacity = 0);
+  document.getElementById("twitchStatus").textContent = "Ready";
+  document.getElementById("twitchDesc").textContent = "Apply a stimulus and watch the myogram trace.";
+  document.querySelectorAll("#twitch .step-btn").forEach(b => b.classList.remove("active"));
+}
+
+function updateTwitchInfo() {
+  // re-apply current description language on ELI5 toggle without re-animating
+  const status = document.getElementById("twitchStatus").textContent;
+  if (status.indexOf("Sub") === 0 || status.indexOf("Sub-Threshold") === 0) {
+    document.getElementById("twitchDesc").textContent = twitchDescText("sub");
+  } else if (status.indexOf("Threshold+") === 0) {
+    document.getElementById("twitchDesc").textContent = twitchDescText("supra");
+  }
+}
+twitchReset();
+
+/* =========================================================
+   TAB 2 — Summation & Tetanus
+   ========================================================= */
+let currentFreq = 6;
+let sumMode = "freq";
+
+function kernelValue(dt) {
+  const rise = 40, fall = 110;
+  if (dt < 0) return 0;
+  if (dt <= rise) return dt / rise;
+  if (dt <= rise + fall) return 1 - (dt - rise) / fall;
+  return 0;
+}
+function computeTrace(stimuli, tMax, step, xOffset) {
+  const pts = [];
+  for (let t = 0; t <= tMax; t += step) {
+    let tension = 0;
+    stimuli.forEach(s => { tension += kernelValue(t - s.t0) * s.peak; });
+    tension = Math.min(tension, 1.45);
+    const x = xOffset + t;
+    const y = Math.max(30, 220 - tension * 130);
+    pts.push(x + "," + y.toFixed(1));
+  }
+  return pts.join(" ");
+}
+
+function setSumMode(mode) {
+  sumMode = mode;
+  document.getElementById("modeFreqBtn").classList.toggle("active", mode === "freq");
+  document.getElementById("modeTreppeBtn").classList.toggle("active", mode === "treppe");
+  document.getElementById("freqPanel").classList.toggle("active", mode === "freq");
+  document.getElementById("treppePanel").classList.toggle("active", mode === "treppe");
+  if (mode === "treppe") runTreppe();
+}
+
+function classify(freq) {
+  if (freq < 4) return { tag: "Single Twitch", prof: "Stimuli are spaced far enough apart that the fiber fully relaxes between each one.", eli5: "The zaps are slow, so the muscle lets go completely between each twitch." };
+  if (freq < 12) return { tag: "Wave Summation", prof: "A new stimulus arrives before the fiber fully relaxes, so tension from successive twitches adds together.", eli5: "The zaps come a bit faster now, so each new squeeze piles on top of the last one before it fully lets go." };
+  if (freq < 30) return { tag: "Unfused (Incomplete) Tetanus", prof: "Stimuli arrive rapidly enough that partial relaxation dips are still visible between summed contractions.", eli5: "The zaps are fast — you can still see tiny wobbles, but the muscle barely relaxes between them." };
+  return { tag: "Fused (Complete) Tetanus", prof: "Stimuli arrive so rapidly that individual twitches are indistinguishable, producing a smooth, sustained maximal contraction.", eli5: "The zaps are so fast the muscle can't relax at all — it's one long, smooth, maximum squeeze." };
+}
+
+function onFreqInput(val) {
+  currentFreq = +val;
+  updateFreqText(currentFreq);
+}
+
+function updateFreqText(freq) {
+  const interval = 600 / freq;
+  const stimuli = [];
+  for (let t0 = 0; t0 < 560; t0 += interval) stimuli.push({ t0: t0, peak: 1 });
+  const points = computeTrace(stimuli, 560, 4, 60);
+  document.getElementById("summationPath").setAttribute("points", points);
+
+  document.getElementById("freqReadout").textContent = freq + " Hz";
+  const c = classify(freq);
+  document.getElementById("freqClassTag").textContent = c.tag;
+  document.getElementById("sumStepNum").textContent = c.tag;
+  document.getElementById("sumStepDesc").textContent = eli5Mode ? c.eli5 : c.prof;
+  if (currentTab === "summation") {
+    infoBox.innerHTML = "<b>" + c.tag + ":</b> " + (eli5Mode ? c.eli5 : c.prof);
+  }
+}
+updateFreqText(currentFreq);
+
+function runTreppe() {
+  const stimuli = [
+    { t0: 0, peak: 0.62 }, { t0: 130, peak: 0.76 },
+    { t0: 260, peak: 0.90 }, { t0: 390, peak: 1.0 }
+  ];
+  const points = computeTrace(stimuli, 560, 4, 60);
+  const path = document.getElementById("treppePath");
+  path.style.opacity = 0;
+  path.setAttribute("points", points);
+  setTimeout(() => { path.style.transition = "opacity .5s ease"; path.style.opacity = 1; }, 30);
+  infoBox.innerHTML = "<b>Treppe (Staircase Effect):</b> " + (eli5Mode
+    ? "A cold, rested muscle 'warms up' — each of the first few twitches gets a little stronger."
+    : "In a previously inactive fiber, successive twitches at a fixed rate show a brief, small rise in tension due to rising sarcoplasmic calcium and muscle warming.");
+}
+
+/* =========================================================
+   TAB 3 — Motor Unit Recruitment
+   ========================================================= */
+const FIBER_COUNT = 30;
+let currentIntensity = 0;
+let fiberThresholds = [];
+(function buildFibers() {
+  const grid = document.getElementById("fiberGrid");
+  for (let i = 0; i < FIBER_COUNT; i++) {
+    fiberThresholds.push(Math.round(((i + 1) / FIBER_COUNT) * 100));
+  }
+  fiberThresholds.forEach((th, i) => {
+    const d = document.createElement("div");
+    d.className = "fiber-dot";
+    d.id = "fiber-" + i;
+    d.title = "Motor unit " + (i + 1) + " (threshold " + th + "%)";
+    grid.appendChild(d);
+  });
+})();
+
+function onRecruitInput(val) {
+  currentIntensity = +val;
+  updateRecruitText(currentIntensity);
+}
+
+function updateRecruitText(intensity) {
+  let activeCount = 0;
+  fiberThresholds.forEach((th, i) => {
+    const active = th <= intensity;
+    if (active) activeCount++;
+    document.getElementById("fiber-" + i).classList.toggle("active", active);
+  });
+  document.getElementById("tensionFill").style.width = intensity + "%";
+  document.getElementById("tensionLabel").textContent = activeCount + " of " + FIBER_COUNT + " motor units active";
+  document.getElementById("recruitStepNum").textContent = intensity + "% Stimulus Intensity";
+
+  const prof = intensity === 0
+    ? "At rest, only the smallest motor units fire occasionally, producing baseline muscle tone."
+    : "As stimulus intensity rises, additional motor units are recruited in order of size — smallest (weakest, most fatigue-resistant) first, largest (most powerful) last.";
+  const eli5 = intensity === 0
+    ? "At rest, just a few tiny helpers are working — that keeps the muscle slightly firm (muscle tone)."
+    : "Turning up the intensity wakes up more helpers (motor units), smallest ones first, so the whole muscle pulls harder.";
+  document.getElementById("recruitStepDesc").textContent = eli5Mode ? eli5 : prof;
+  if (currentTab === "recruit") {
+    infoBox.innerHTML = "<b>Size Principle:</b> " + (eli5Mode ? eli5 : prof);
+  }
+}
+updateRecruitText(0);
+
+/* =========================================================
+   TAB 4 — Isotonic vs Isometric
+   ========================================================= */
+function isotonicContract() {
+  document.getElementById("isotonicMuscle").classList.add("contracted");
+  document.getElementById("isotonicForearm").classList.remove("rest");
+  document.getElementById("isotonicForearm").classList.add("contracted");
+  document.getElementById("isotonicTag").classList.add("show");
+  document.getElementById("isotonicDesc").textContent = eli5Mode
+    ? "The muscle gets shorter and actually lifts the weight up — that's isotonic!"
+    : "Isotonic (concentric) contraction: the biceps brachii shortens, pulling the insertion toward the origin and lifting the load.";
+}
+function isotonicReset() {
+  document.getElementById("isotonicMuscle").classList.remove("contracted");
+  document.getElementById("isotonicForearm").classList.add("rest");
+  document.getElementById("isotonicForearm").classList.remove("contracted");
+  document.getElementById("isotonicTag").classList.remove("show");
+  document.getElementById("isotonicDesc").textContent = "At rest: the elbow is extended, the biceps is relaxed and at full length.";
+}
+function isometricContract() {
+  document.getElementById("isometricMuscle").classList.add("bulge");
+  document.getElementById("isometricTag").classList.add("show");
+  document.getElementById("isometricDesc").textContent = eli5Mode
+    ? "The muscle squeezes and bulges hard, but the wall doesn't budge — no movement happens!"
+    : "Isometric contraction: muscle tension increases and the fibers bulge, but the muscle length and joint angle stay the same because the load doesn't move.";
+}
+function isometricReset() {
+  document.getElementById("isometricMuscle").classList.remove("bulge");
+  document.getElementById("isometricTag").classList.remove("show");
+  document.getElementById("isometricDesc").textContent = "At rest: the forearm presses lightly against an immovable wall.";
+}
+
+/* =========================================================
+   TAB 5 — Fast vs Slow Twitch
+   ========================================================= */
+function runEndurance() {
+  const btn = document.getElementById("enduranceBtn");
+  const slowBar = document.getElementById("slowBar");
+  const fastBar = document.getElementById("fastBar");
+  const timer = document.getElementById("enduranceTimer");
+  const desc = document.getElementById("enduranceDesc");
+  btn.disabled = true;
+
+  slowBar.style.height = "10%"; fastBar.style.height = "10%";
+  timer.textContent = "t = 0.0 s";
+  desc.textContent = eli5Mode ? "Testing... watch how each fiber type holds up over time." : "Running endurance simulation...";
+
+  const steps = [
+    { t: 0.0, slow: 55, fast: 95 },
+    { t: 0.8, slow: 58, fast: 78 },
+    { t: 1.6, slow: 56, fast: 52 },
+    { t: 2.4, slow: 57, fast: 28 },
+    { t: 3.2, slow: 55, fast: 14 },
+    { t: 4.0, slow: 54, fast: 8 }
+  ];
+  steps.forEach((s, i) => {
+    setTimeout(() => {
+      slowBar.style.height = s.slow + "%";
+      fastBar.style.height = s.fast + "%";
+      timer.textContent = "t = " + s.t.toFixed(1) + " s";
+      if (i === steps.length - 1) {
+        btn.disabled = false;
+        desc.textContent = eli5Mode
+          ? "The fast fibers came out strong but tired out quickly. The slow fibers held steady the whole time!"
+          : "Fast-twitch fibers generate high initial force but fatigue rapidly (limited mitochondria, lactic acid buildup). Slow-twitch fibers sustain a lower, steady force far longer thanks to rich blood supply and abundant mitochondria.";
+      }
+    }, i * 750);
+  });
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"muscular-responses", title:"Muscular Responses Lab", unit:"Ch 9 · Muscular System" });
+  APTools.mountHUD("#apHud","muscular-responses");
+  var BANK=[
+    { id:"mr1", bloom:"Remember", outcome:"Latent Period",
+      q:"The brief delay between stimulation and the start of muscle shortening is called the:",
+      choices:["Latent period","Refractory period","Relaxation phase","Treppe"],
+      answer:0, why:"The latent period is the short delay during which the action potential triggers calcium release and cross-bridge formation before any shortening is visible." },
+    { id:"mr2", bloom:"Understand", outcome:"All-or-None",
+      q:"A stimulus that fails to reach threshold produces:",
+      choices:["No contraction at all","A weaker but complete twitch","A slower twitch","A sustained contraction"],
+      answer:0, why:"Skeletal muscle fibers follow the all-or-none principle: a sub-threshold stimulus triggers no action potential and therefore no twitch." },
+    { id:"mr3", bloom:"Understand", outcome:"Summation",
+      q:"Wave summation occurs when:",
+      choices:["A second stimulus arrives before the fiber fully relaxes, adding to existing tension","A muscle fiber is stimulated below threshold repeatedly","Calcium is pumped back into the sarcoplasmic reticulum","Motor units are recruited in decreasing size order"],
+      answer:0, why:"Summation happens when stimuli arrive fast enough that the fiber hasn't fully relaxed, so tension from each twitch adds together." },
+    { id:"mr4", bloom:"Remember", outcome:"Tetanus",
+      q:"A sustained contraction with no visible relaxation between stimuli is called:",
+      choices:["Fused (complete) tetanus","Unfused (incomplete) tetanus","A single twitch","Treppe"],
+      answer:0, why:"Fused tetanus occurs at high stimulation frequencies where individual twitches are no longer distinguishable, producing a smooth, sustained maximal contraction." },
+    { id:"mr5", bloom:"Understand", outcome:"Treppe",
+      q:"The treppe (staircase) effect describes:",
+      choices:["A gradual increase in twitch force over the first few stimuli to a rested muscle","The decline in force during prolonged tetanus","The delay before a muscle begins to contract","The order in which motor units are recruited"],
+      answer:0, why:"Treppe is the brief, gradual rise in twitch tension seen in the first few contractions of a previously resting muscle, linked to rising sarcoplasmic calcium and muscle warming." },
+    { id:"mr6", bloom:"Remember", outcome:"Motor Unit",
+      q:"A motor unit consists of:",
+      choices:["One motor neuron and all the muscle fibers it innervates","One muscle fiber and its neuromuscular junction","A bundle of muscle fascicles","One sarcomere and its triad"],
+      answer:0, why:"A motor unit is a single motor neuron together with every skeletal muscle fiber it stimulates; fiber number per unit varies widely." },
+    { id:"mr7", bloom:"Apply", outcome:"Recruitment / Size Principle",
+      q:"As stimulus intensity increases, motor units are typically recruited:",
+      choices:["Smallest (weakest) units first, largest (most powerful) units last","Largest units first, smallest units last","All units simultaneously regardless of size","Randomly, with no consistent order"],
+      answer:0, why:"The size principle states that smaller, more fatigue-resistant motor units are recruited before larger, more powerful ones as intensity increases." },
+    { id:"mr8", bloom:"Remember", outcome:"Muscle Tone",
+      q:"Muscle tone at rest is best explained by:",
+      choices:["A small number of motor units contracting continuously at low levels","All motor units contracting simultaneously","Complete relaxation of every muscle fiber","Sustained tetanic contraction of the whole muscle"],
+      answer:0, why:"Muscle tone results from asynchronous, low-level activation of a small subset of motor units at rest, keeping the muscle slightly firm." },
+    { id:"mr9", bloom:"Understand", outcome:"Isotonic Contraction",
+      q:"In an isotonic contraction:",
+      choices:["The muscle shortens and moves its attachment(s)","The muscle tenses but does not shorten or move anything","Only isometric fibers are activated","Tension decreases as the muscle contracts"],
+      answer:0, why:"Isotonic contractions involve the muscle changing length and moving the load, such as lifting a weight." },
+    { id:"mr10", bloom:"Understand", outcome:"Isometric Contraction",
+      q:"In an isometric contraction:",
+      choices:["Muscle tension increases but the muscle length and joint angle stay the same","The muscle shortens and its attachments move","The muscle lengthens under load","No cross-bridges form"],
+      answer:0, why:"Isometric contractions increase tension without changing muscle length or moving the load — e.g., pushing against an immovable object." },
+    { id:"mr11", bloom:"Remember", outcome:"Slow-Twitch Fibers",
+      q:"Slow-twitch (red) fibers are characterized by:",
+      choices:["High myoglobin, many mitochondria, and high fatigue resistance","Low myoglobin and rapid fatigue","Sparse blood supply and few mitochondria","Reliance mainly on anaerobic glycolysis"],
+      answer:0, why:"Slow-twitch fibers are rich in myoglobin and mitochondria with an extensive blood supply, allowing sustained aerobic activity without fatiguing quickly." },
+    { id:"mr12", bloom:"Apply", outcome:"Fast-Twitch Fatigue",
+      q:"Fast-twitch (white) fibers fatigue quickly mainly because they:",
+      choices:["Rely on anaerobic glycolysis and accumulate lactic acid with few mitochondria","Have abundant mitochondria and myoglobin","Are recruited only during rest","Cannot form cross-bridges under load"],
+      answer:0, why:"Fast-twitch fibers depend heavily on anaerobic glycolysis, have fewer mitochondria and less myoglobin, and accumulate lactic acid rapidly, causing fatigue." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"muscular-responses", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # 🧬 Anatomy & Physiology Active Learning Mini-Apps
 
-An interactive, responsive suite of **21 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
+An interactive, responsive suite of **24 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
 
 📱 **Live Production URL:** [https://mini-ap1-apps.vercel.app](https://mini-ap1-apps.vercel.app)
 
@@ -49,6 +49,9 @@ The design adopts a vintage **Riso-zine notebook aesthetic** mimicking a physica
 | **Ch 7** | **7.4** | The Skeletal Assembler | [15. skeletal-assembler.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/15.%20skeletal-assembler.html) | Axial/appendicular bones, male/female pelvis |
 | **Ch 8** | **8.1** | The Skeletal Joints Explorer | [17. skeletal-joints-explorer.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/17.%20skeletal-joints-explorer.html) | Joint classes, synovial details & motion range |
 | **Ch 9** | **9.1** | Skeletal Muscle Structure | [18. muscle-structure-explorer.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/18.%20muscle-structure-explorer.html) | Sheaths (epimysium etc.), fibers & sarcomere bands |
+| **Ch 9** | **9.2** | Muscle Contraction Lab | [19. contraction-coupling-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/19.%20contraction-coupling-lab.html) | NMJ, E-C coupling, cross-bridge cycle & sliding filament |
+| **Ch 9** | **9.3** | Muscular Responses Lab | [20. muscular-responses-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/20.%20muscular-responses-lab.html) | Twitch/myogram, summation & tetanus, motor unit recruitment, isotonic/isometric, fast vs. slow-twitch fibers |
+| **Ch 9** | **9.4** | Smooth & Cardiac Muscle Lab | [21. smooth-cardiac-muscle-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/21.%20smooth-cardiac-muscle-lab.html) | Multiunit/visceral smooth muscle, peristalsis, calmodulin mechanism, intercalated discs, 3-way muscle comparison |
 
 ---
 

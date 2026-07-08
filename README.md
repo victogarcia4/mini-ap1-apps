@@ -1,6 +1,6 @@
 # 🧬 Anatomy & Physiology Active Learning Mini-Apps
 
-An interactive, responsive suite of **24 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
+An interactive, responsive suite of **29 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
 
 📱 **Live Production URL:** [https://mini-ap1-apps.vercel.app](https://mini-ap1-apps.vercel.app)
 
@@ -52,6 +52,11 @@ The design adopts a vintage **Riso-zine notebook aesthetic** mimicking a physica
 | **Ch 9** | **9.2** | Muscle Contraction Lab | [19. contraction-coupling-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/19.%20contraction-coupling-lab.html) | NMJ, E-C coupling, cross-bridge cycle & sliding filament |
 | **Ch 9** | **9.3** | Muscular Responses Lab | [20. muscular-responses-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/20.%20muscular-responses-lab.html) | Twitch/myogram, summation & tetanus, motor unit recruitment, isotonic/isometric, fast vs. slow-twitch fibers |
 | **Ch 9** | **9.4** | Smooth & Cardiac Muscle Lab | [21. smooth-cardiac-muscle-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/21.%20smooth-cardiac-muscle-lab.html) | Multiunit/visceral smooth muscle, peristalsis, calmodulin mechanism, intercalated discs, 3-way muscle comparison |
+| **Ch 9** | **9.5** | Muscle Mechanics & Actions Lab | [22. muscle-mechanics-actions-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/22.%20muscle-mechanics-actions-lab.html) | Origin/insertion, three classes of levers, agonist/antagonist/synergist/fixator roles |
+| **Ch 10** | **10.1** | CNS vs. PNS: Organization & Function | [23. cns-pns-organization-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/23.%20cns-pns-organization-lab.html) | Nervous tissue composition, CNS vs. PNS, sensory-integrative-motor loop, somatic/autonomic organizational chart |
+| **Ch 10** | **10.2** | Protective Structures: Bone, Meninges & CSF | [24. protective-structures-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/24.%20protective-structures-lab.html) | Cranial & vertebral bone, the three meninges and their spaces, CSF formation/circulation/reabsorption and function |
+| **Ch 10** | **10.3** | Neuron Structure & Classification | [25. neuron-structure-classification-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/25.%20neuron-structure-classification-lab.html) | Parts of a neuron, myelin/neurilemma/nodes of Ranvier, white vs. gray matter, structural (bipolar/unipolar/multipolar) and functional (sensory/inter/motor) classes |
+| **Ch 10** | **10.4** | Neuroglial Cells | [26. neuroglia-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/26.%20neuroglia-lab.html) | Four CNS glia (astrocyte, oligodendrocyte, microglia, ependyma), two PNS glia (Schwann, satellite), their functions, and axon vs. cell-body injury |
 
 ---
 

@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protective Structures: Bone, Meninges &amp; CSF | Chapter 10 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple-700: #6d28d9;
+  --purple-600: #7c3aed;
+  --purple-500: #8b5cf6;
+  --purple-100: #ede9fe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(109, 40, 217, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --blue-600: #2563eb;
+  --teal-600: #0e7490;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(109, 40, 217, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--purple-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--purple-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--purple-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--purple-100);
+  color: var(--purple-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--purple-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Controls */
+.step-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.step-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.step-btn:hover {
+  background: var(--slate-100);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+}
+.step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.step-btn.active {
+  background: var(--purple-100);
+  color: var(--purple-700);
+  border-color: var(--purple-700);
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--purple-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--purple-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 560px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 580px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* ---- Tab 1: Bony Protection ---- */
+.defense-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 6px 0 20px; }
+.defense-node { flex: 1 1 130px; max-width: 165px; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 12px 8px; text-align: center; background: var(--slate-100); }
+.defense-node .dn-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--purple-700); color: #fff; font-weight: 800; font-size: 0.78rem; margin-bottom: 6px; }
+.defense-node .dn-label { font-size: 0.82rem; font-weight: 800; color: var(--slate-700); line-height: 1.25; }
+.defense-node .dn-tag { font-size: 0.66rem; color: var(--slate-500); font-weight: 700; text-transform: uppercase; margin-top: 3px; }
+.defense-arrow { font-size: 1.3rem; color: var(--slate-500); font-weight: 900; }
+
+.bone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.bone-card { border: 2px solid var(--border-color); border-radius: 10px; padding: 16px; background: #fff; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; box-shadow: 2px 2px 0 var(--border-color); }
+.bone-card:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.bone-card.brain { border-top: 8px solid var(--purple-600); }
+.bone-card.cord { border-top: 8px solid var(--teal-600); }
+.bone-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 6px; font-size: 0.98rem; }
+.bone-card.brain h4 { color: var(--purple-700); }
+.bone-card.cord h4 { color: var(--teal-600); }
+.bone-card .big-num { font-family: "Bricolage Grotesque", sans-serif; font-size: 2rem; font-weight: 900; line-height: 1; margin: 4px 0; }
+.bone-card.brain .big-num { color: var(--purple-600); }
+.bone-card.cord .big-num { color: var(--teal-600); }
+.bone-card p { font-size: 0.82rem; color: var(--slate-600); margin: 0; line-height: 1.45; }
+.bone-card .more { display: none; margin-top: 8px; font-size: 0.8rem; color: var(--slate-700); border-top: 1px dashed var(--slate-500); padding-top: 8px; line-height: 1.45; }
+.bone-card.open .more { display: block; }
+.bone-card .toggle-hint { font-size: 0.7rem; color: var(--purple-600); font-weight: 700; margin-top: 6px; }
+@media (max-width: 640px) { .bone-grid { grid-template-columns: 1fr; } }
+
+/* ---- Tab 2: The Meninges (layer stack) ---- */
+.meninges-wrap { display: grid; grid-template-columns: 1fr; gap: 4px; max-width: 620px; margin: 0 auto; }
+.men-layer { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 11px 14px; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; box-shadow: 2px 2px 0 var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.men-layer:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.men-layer.active { outline: 3px solid var(--purple-700); outline-offset: 1px; }
+.men-layer .ml-name { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 0.86rem; }
+.men-layer .ml-role { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; opacity: 0.75; }
+.men-layer.bone { background: #efe7d6; }
+.men-layer.dura { background: #cdd6ec; }
+.men-layer.space { background: #d7f4fb; border-style: dashed; }
+.men-layer.arachnoid { background: #e4dcf3; }
+.men-layer.pia { background: #f7d9d3; }
+.men-layer.brain { background: #f3e4dd; }
+.men-caption { text-align: center; font-size: 0.74rem; color: var(--slate-500); margin: 8px auto 0; max-width: 560px; }
+
+/* ---- Tab 3: CSF Flow ---- */
+.csf-flow { display: flex; align-items: stretch; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+.csf-node { flex: 1 1 120px; max-width: 150px; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 10px 8px; text-align: center; background: var(--slate-100); transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease; display: flex; flex-direction: column; align-items: center; }
+.csf-node.active { background: #d7f4fb; border-color: var(--blue-600); transform: translateY(-3px); }
+.csf-node .cn-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--slate-500); color: #fff; font-weight: 800; font-size: 0.74rem; margin-bottom: 5px; }
+.csf-node.active .cn-num { background: var(--blue-600); }
+.csf-node .cn-label { font-size: 0.73rem; font-weight: 800; color: var(--slate-700); line-height: 1.22; }
+.csf-arrow { font-size: 1.2rem; color: var(--slate-500); font-weight: 900; align-self: center; }
+.csf-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px; }
+.csf-fact { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; background: #fff; }
+.csf-fact .cf-num { font-family: "Bricolage Grotesque", sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--purple-600); }
+.csf-fact .cf-lab { font-size: 0.72rem; color: var(--slate-600); margin-top: 2px; line-height: 1.3; }
+@media (max-width: 640px) { .csf-facts { grid-template-columns: 1fr; } }
+
+/* ---- Tab 4: Spinal Cord in the Vertebra ---- */
+.vert-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 4px; }
+.vert-btn { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 12px; background: #fff; font-family: inherit; font-weight: 700; font-size: 0.78rem; color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color); transition: 0.15s; }
+.vert-btn:hover { background: var(--slate-100); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.vert-btn.active { background: var(--purple-100); color: var(--purple-700); border-color: var(--purple-700); }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--purple-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Protective Structures: Bone, Meninges &amp; CSF</h1>
+    <p>Cranial &amp; Vertebral Bone · Meninges · Cerebrospinal Fluid · Ch 10</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Protection Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">The CNS is soft and irreplaceable, so it is wrapped in three lines of defense. Explore the bone, the membranes, and the fluid that shield the brain and spinal cord.</p>
+        <div class="info-box" id="infoBox">
+          <b>Three Lines of Defense</b><br>
+          The brain and spinal cord are protected by <b>bone</b> (skull &amp; vertebrae), <b>membranes</b> (the three meninges), and <b>fluid</b> (cerebrospinal fluid) working together as nested shields.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('bone', this)">Bony Protection</button>
+      <button class="tab-btn" onclick="switchTab('meninges', this)">The Meninges</button>
+      <button class="tab-btn" onclick="switchTab('csf', this)">CSF Formation &amp; Flow</button>
+      <button class="tab-btn" onclick="switchTab('vertebra', this)">Spinal Cord in the Vertebra</button>
+    </div>
+
+    <!-- Tab 1: Bony Protection -->
+    <div id="bone" class="tab-content active">
+      <section class="panel">
+        <h2>The Outer Shell — Bone</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Three Nested Lines of Defense</h3>
+            <div class="defense-flow">
+              <div class="defense-node"><div class="dn-num">1</div><div class="dn-label">Bone</div><div class="dn-tag">Skull &amp; vertebrae</div></div>
+              <div class="defense-arrow">→</div>
+              <div class="defense-node"><div class="dn-num">2</div><div class="dn-label">Meninges</div><div class="dn-tag">3 membranes</div></div>
+              <div class="defense-arrow">→</div>
+              <div class="defense-node"><div class="dn-num">3</div><div class="dn-label">Cerebrospinal Fluid</div><div class="dn-tag">Liquid cushion</div></div>
+            </div>
+            <p style="text-align:center; font-size:0.82rem; color:var(--slate-600); margin:0 0 16px;">Bone is the hard outer case. Click each case below to see what it guards.</p>
+            <div class="bone-grid" id="boneGrid">
+              <div class="bone-card brain" data-card="skull">
+                <h4>The Cranium (Skull)</h4>
+                <div class="big-num">8 bones</div>
+                <p>Eight cranial bones fuse into a rigid case that encloses and protects the brain.</p>
+                <div class="more">The cranial bones surround the brain within the cranial cavity. They form an immovable, box-like vault — the strongest bony protection in the body — shielding the ~100 billion neurons of the brain from impact.</div>
+                <div class="toggle-hint">Click to expand</div>
+              </div>
+              <div class="bone-card cord" data-card="vertebrae">
+                <h4>The Vertebral Column</h4>
+                <div class="big-num">26 bones</div>
+                <p>Twenty-six vertebrae stack into a flexible bony tube that encases the spinal cord.</p>
+                <div class="more">Each vertebra has a central opening (the vertebral foramen); stacked together these form the vertebral canal that houses the spinal cord. Unlike the fused skull, the column stays flexible so the trunk can bend while still shielding the cord.</div>
+                <div class="toggle-hint">Click to expand</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: The Meninges -->
+    <div id="meninges" class="tab-content">
+      <section class="panel">
+        <h2>The Three Membranes</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">From Bone Inward to the Brain — Click Each Layer</h3>
+            <div class="step-display">
+              <div class="step-number" id="menTitle">The Meninges</div>
+              <div class="step-desc" id="menDesc">Three connective-tissue membranes lie between the bone and the CNS: dura mater (outer), arachnoid mater (middle), and pia mater (inner). Click a layer to explore it.</div>
+            </div>
+            <div class="meninges-wrap" id="meningesWrap">
+              <div class="men-layer bone" data-men="skull"><span class="ml-name">Skull Bone</span><span class="ml-role">Bone</span></div>
+              <div class="men-layer dura" data-men="dura"><span class="ml-name">Dura Mater</span><span class="ml-role">Outer · Tough</span></div>
+              <div class="men-layer arachnoid" data-men="arachnoid"><span class="ml-name">Arachnoid Mater</span><span class="ml-role">Middle · Web-like</span></div>
+              <div class="men-layer space" data-men="subarachnoid"><span class="ml-name">Subarachnoid Space (CSF)</span><span class="ml-role">Fluid cushion</span></div>
+              <div class="men-layer pia" data-men="pia"><span class="ml-name">Pia Mater</span><span class="ml-role">Inner · Delicate</span></div>
+              <div class="men-layer brain" data-men="brainsurface"><span class="ml-name">Brain Surface</span><span class="ml-role">CNS tissue</span></div>
+            </div>
+            <p class="men-caption">Layers are drawn from the outside (top) inward to the brain (bottom), matching the reference image below.</p>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Cranial Meninges in Cross-Section</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch10-meninges-layers-cross-section.png" alt="Cross-section of the skull and brain showing the skull bone, dura mater, arachnoid mater, subarachnoid space filled with CSF, arachnoid trabeculae, pia mater, and the underlying cerebral cortex with gyri and sulci" loading="lazy">
+              </div>
+              <p class="video-ref-caption">From outside in: skull bone → dura mater → arachnoid mater → subarachnoid space (filled with CSF, crossed by arachnoid trabeculae) → pia mater clinging to the folded cortex. The CSF-filled subarachnoid space is the brain's built-in shock absorber.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: CSF Formation & Flow -->
+    <div id="csf" class="tab-content">
+      <section class="panel">
+        <h2>The Liquid Cushion — Cerebrospinal Fluid</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">How CSF Is Made, Circulated &amp; Reabsorbed</h3>
+            <div class="step-display">
+              <div class="step-number" id="csfStepNum">Step 1 of 5</div>
+              <div class="step-desc" id="csfStepDesc">Choroid plexuses — specialized capillary networks — secrete CSF into the two lateral ventricles.</div>
+            </div>
+            <div class="csf-flow" id="csfFlow">
+              <div class="csf-node" id="csfNode1"><div class="cn-num">1</div><div class="cn-label">Choroid plexus secretes CSF → lateral ventricles</div></div>
+              <div class="csf-arrow">→</div>
+              <div class="csf-node" id="csfNode2"><div class="cn-num">2</div><div class="cn-label">Flows to 3rd ventricle</div></div>
+              <div class="csf-arrow">→</div>
+              <div class="csf-node" id="csfNode3"><div class="cn-num">3</div><div class="cn-label">Through cerebral aqueduct to 4th ventricle</div></div>
+              <div class="csf-arrow">→</div>
+              <div class="csf-node" id="csfNode4"><div class="cn-num">4</div><div class="cn-label">Into subarachnoid space &amp; central canal</div></div>
+              <div class="csf-arrow">→</div>
+              <div class="csf-node" id="csfNode5"><div class="cn-num">5</div><div class="cn-label">Reabsorbed by arachnoid granulations → dural sinuses (blood)</div></div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="csfPrevStep()">← Previous</button>
+              <button class="step-btn active" onclick="csfGoToStep(1)">1</button>
+              <button class="step-btn" onclick="csfGoToStep(2)">2</button>
+              <button class="step-btn" onclick="csfGoToStep(3)">3</button>
+              <button class="step-btn" onclick="csfGoToStep(4)">4</button>
+              <button class="step-btn" onclick="csfGoToStep(5)">5</button>
+              <button class="step-btn" onclick="csfNextStep()">Next →</button>
+              <button class="step-btn" onclick="csfReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+
+            <div class="csf-facts">
+              <div class="csf-fact"><div class="cf-num">150 mL</div><div class="cf-lab">Total CSF volume bathing the CNS at any moment</div></div>
+              <div class="csf-fact"><div class="cf-num">~1 L / day</div><div class="cf-lab">Secreted daily — the whole volume is replaced every 3–4 hours</div></div>
+              <div class="csf-fact"><div class="cf-num">2 jobs</div><div class="cf-lab">Mechanical cushion + chemical protection (stable ion &amp; nutrient environment)</div></div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Ventricles &amp; CSF Circulation</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch10-csf-ventricle-circulation.png" alt="Sagittal section of the brain showing the lateral, third, and fourth ventricles, interventricular foramen, cerebral aqueduct, choroid plexus, subarachnoid space, arachnoid granulations, superior sagittal sinus, and arrows tracing the flow of cerebrospinal fluid" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Arrows trace CSF from the choroid plexus in the ventricles, down through the cerebral aqueduct to the fourth ventricle, out into the subarachnoid space around the brain and cord, and finally back into the blood at the arachnoid granulations of the superior sagittal sinus.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Spinal Cord in the Vertebra -->
+    <div id="vertebra" class="tab-content">
+      <section class="panel">
+        <h2>Protecting the Spinal Cord</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">A Vertebra in Cross-Section — Click a Structure</h3>
+            <div class="vert-btns" id="vertBtns">
+              <button class="vert-btn active" data-vert="foramen">Vertebral Foramen</button>
+              <button class="vert-btn" data-vert="body">Vertebral Body</button>
+              <button class="vert-btn" data-vert="cord">Spinal Cord (gray &amp; white)</button>
+              <button class="vert-btn" data-vert="dura">Dura Mater</button>
+              <button class="vert-btn" data-vert="epidural">Epidural Space</button>
+              <button class="vert-btn" data-vert="subarachnoid">Subarachnoid Space</button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="vertTitle">Vertebral Foramen</div>
+              <div class="step-desc" id="vertDesc">The central opening of each vertebra. Stacked, these openings form the vertebral canal that houses and protects the spinal cord.</div>
+            </div>
+
+            <div class="video-ref" style="margin-top:14px; border-top:none; padding-top:0;">
+              <h4 class="video-ref-title">Reference — Spinal Cord Within a Vertebra</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch10-vertebra-spinal-cord-protection.png" alt="Superior view cross-section of a vertebra showing the spinous process, vertebral arch, transverse processes, vertebral body, and vertebral foramen containing the spinal cord (gray and white matter) wrapped by pia, arachnoid, and dura mater with the CSF-filled subarachnoid space" loading="lazy">
+              </div>
+              <p class="video-ref-caption">The spinal cord sits inside the vertebral foramen, wrapped by the same three meninges as the brain. Note the key spinal difference: the dura is <b>not</b> fused to bone here, leaving an epidural space (fat &amp; loose connective tissue) between dura and vertebra.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Protective Structures</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master the bony case, the three meninges and their spaces, and the formation, circulation, and function of cerebrospinal fluid.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model how the CNS is protected. Meninges/CSF content follows CH11 §11.1–11.3, taught here as a bridge into the nervous system. Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "bone";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  if (currentTab === "meninges" && currentMen) updateMenText(currentMen);
+  if (currentTab === "csf") updateCsfText();
+  if (currentTab === "vertebra" && currentVert) updateVertText(currentVert);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  if (currentTab === "bone") {
+    infoBox.innerHTML = "<b>Bone:</b> The 8 cranial bones form a fused vault around the brain; the 26 vertebrae form a flexible canal around the spinal cord — the hard first line of defense.";
+  } else if (currentTab === "meninges") {
+    infoBox.innerHTML = "<b>Meninges:</b> Three membranes — dura (tough outer), arachnoid (web-like middle), pia (delicate inner). CSF fills the subarachnoid space between arachnoid and pia.";
+  } else if (currentTab === "csf") {
+    infoBox.innerHTML = "<b>CSF:</b> Secreted by choroid plexuses into the ventricles, it circulates around the CNS and is reabsorbed into blood at the arachnoid granulations — a cushion that is fully replaced every 3–4 hours.";
+  } else if (currentTab === "vertebra") {
+    infoBox.innerHTML = "<b>Spinal protection:</b> The cord sits in the vertebral foramen, wrapped by the same 3 meninges. Unlike the brain, the spinal dura is separated from bone by a fat-filled epidural space.";
+  }
+  updateAllTexts();
+};
+
+/* =========================================================
+   TAB 1 — Bony Protection (expand cards)
+   ========================================================= */
+document.querySelectorAll(".bone-card").forEach(card => {
+  card.addEventListener("click", () => {
+    card.classList.toggle("open");
+    const hint = card.querySelector(".toggle-hint");
+    hint.textContent = card.classList.contains("open") ? "Click to collapse" : "Click to expand";
+  });
+});
+
+/* =========================================================
+   TAB 2 — The Meninges (layer explorer)
+   ========================================================= */
+const MEN_INFO = {
+  skull: {
+    title: "Skull Bone",
+    prof: "The bony vault of the cranium. It is the hard outer case; the meninges lie just inside it. The outermost meninx (dura) attaches to the inner surface (periosteum) of these bones.",
+    eli5: "The hard helmet of bone around the brain. The soft wrappings sit right underneath it."
+  },
+  dura: {
+    title: "Dura Mater (Outer)",
+    prof: "Tough, white fibrous connective tissue — the outermost meninx, attached to the inner periosteum of the skull. It carries many blood vessels and nerves, and splits into two layers where it encloses the dural (venous) sinuses.",
+    eli5: "The tough, leathery outer wrap — its name literally means 'tough mother.' It's glued to the inside of the skull."
+  },
+  arachnoid: {
+    title: "Arachnoid Mater (Middle)",
+    prof: "A thin, delicate, net-like (spider-web) membrane — the middle meninx. Beneath it lies the wide subarachnoid space filled with CSF, crossed by web-like arachnoid trabeculae.",
+    eli5: "A thin, spider-web-like middle layer. Below it is a watery space that cushions the brain."
+  },
+  subarachnoid: {
+    title: "Subarachnoid Space (CSF)",
+    prof: "The wide space beneath the arachnoid mater, filled with cerebrospinal fluid. This CSF layer is the meninges' shock absorber — it cushions the brain and spinal cord against impact.",
+    eli5: "A watery gap under the spider-web layer. The liquid here is the brain's built-in bubble wrap."
+  },
+  pia: {
+    title: "Pia Mater (Inner)",
+    prof: "A very thin, delicate connective-tissue membrane — the innermost meninx. It clings directly to the brain's surface, dipping into every groove and contour, and carries many nerves and blood vessels that nourish the tissue.",
+    eli5: "The super-thin inner wrap ('tender mother') that hugs the brain tightly, following every wrinkle."
+  },
+  brainsurface: {
+    title: "Brain Surface (CNS)",
+    prof: "The neural tissue itself — the cerebral cortex with its gyri (ridges) and sulci (grooves). This is what all three meninges, the CSF, and the bone are protecting.",
+    eli5: "The actual brain — the precious thing all these layers are guarding."
+  }
+};
+let currentMen = null;
+document.querySelectorAll(".men-layer[data-men]").forEach(layer => {
+  layer.addEventListener("click", () => {
+    document.querySelectorAll(".men-layer[data-men]").forEach(l => l.classList.remove("active"));
+    layer.classList.add("active");
+    currentMen = layer.dataset.men;
+    updateMenText(currentMen);
+  });
+});
+function updateMenText(key) {
+  const info = MEN_INFO[key];
+  if (!info) return;
+  document.getElementById("menTitle").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById("menDesc").textContent = text;
+  if (currentTab === "meninges") {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+
+/* =========================================================
+   TAB 3 — CSF Formation & Flow (step sequence)
+   ========================================================= */
+let csfStep = 1;
+const csfSteps = [
+  {
+    prof: "Choroid plexuses — specialized capillary networks lining the ventricles — secrete CSF into the two lateral ventricles (ventricles 1 & 2).",
+    eli5: "Special leaky blood vessels (choroid plexus) make the fluid and pour it into the two big brain chambers."
+  },
+  {
+    prof: "CSF flows from the lateral ventricles through the interventricular foramen into the third ventricle.",
+    eli5: "The fluid drains down into the next chamber in the middle of the brain."
+  },
+  {
+    prof: "From the third ventricle, CSF passes through the cerebral aqueduct into the fourth ventricle, near the brainstem and cerebellum.",
+    eli5: "It travels through a narrow tube into the fourth chamber, low in the brain."
+  },
+  {
+    prof: "CSF then exits into the subarachnoid space surrounding the brain and cord, and into the central canal of the spinal cord — bathing the whole CNS.",
+    eli5: "The fluid spreads out all around the brain and down the middle of the spinal cord."
+  },
+  {
+    prof: "Finally, CSF is reabsorbed into the bloodstream through arachnoid granulations that project into the dural venous sinuses. Its movement is aided by the cilia of ependymal cells.",
+    eli5: "Old fluid gets soaked back into the blood through little bumps (arachnoid granulations), so it keeps cycling."
+  }
+];
+function csfGoToStep(step) { csfStep = step; updateCsfText(); }
+function csfNextStep() { if (csfStep < 5) csfGoToStep(csfStep + 1); }
+function csfPrevStep() { if (csfStep > 1) csfGoToStep(csfStep - 1); }
+function csfReset() { csfGoToStep(1); }
+function updateCsfText() {
+  const s = csfSteps[csfStep - 1];
+  document.getElementById("csfStepNum").textContent = "Step " + csfStep + " of 5";
+  document.getElementById("csfStepDesc").textContent = eli5Mode ? s.eli5 : s.prof;
+  if (currentTab === "csf") {
+    infoBox.innerHTML = "<b>Step " + csfStep + ":</b> " + (eli5Mode ? s.eli5 : s.prof);
+  }
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById("csfNode" + i).classList.toggle("active", i <= csfStep);
+  }
+  document.querySelectorAll("#csf .step-controls .step-btn").forEach((btn, i) => {
+    if (i > 0 && i < 6) btn.classList.toggle("active", i === csfStep);
+  });
+}
+updateCsfText();
+
+/* =========================================================
+   TAB 4 — Spinal Cord in the Vertebra
+   ========================================================= */
+const VERT_INFO = {
+  foramen: {
+    title: "Vertebral Foramen",
+    prof: "The central opening of each vertebra. Stacked, these openings form the vertebral canal that houses and protects the spinal cord.",
+    eli5: "The hole in the middle of each backbone. Line them up and you get a tunnel for the spinal cord."
+  },
+  body: {
+    title: "Vertebral Body",
+    prof: "The thick, weight-bearing bony block at the front of the vertebra. It provides structural support and the anterior wall of bony protection for the cord.",
+    eli5: "The big round front part of the backbone that holds your weight and shields the front of the cord."
+  },
+  cord: {
+    title: "Spinal Cord (Gray & White Matter)",
+    prof: "The neural tissue itself: central butterfly-shaped gray matter (neuron cell bodies) surrounded by white matter (myelinated tracts). This is what the bone, meninges, and CSF protect.",
+    eli5: "The actual spinal cord — a soft cable of nerve tissue. The middle looks like a gray butterfly."
+  },
+  dura: {
+    title: "Dura Mater (Spinal)",
+    prof: "The tough outer meninx around the cord. Important difference from the brain: the spinal dura is NOT attached to the bone of the vertebra.",
+    eli5: "The tough outer wrap around the cord — but here it's loose, not glued to the bone like in the skull."
+  },
+  epidural: {
+    title: "Epidural Space",
+    prof: "The gap between the spinal dura mater and the surrounding vertebral bone, filled with loose connective tissue and fat. This cushioning space exists in the vertebral canal but not around the brain (where dura is fused to skull).",
+    eli5: "A padded gap (with fat) between the tough wrap and the bone — like foam packing. This is where an 'epidural' injection goes."
+  },
+  subarachnoid: {
+    title: "Subarachnoid Space (CSF)",
+    prof: "The CSF-filled space between the arachnoid and pia mater. Around the cord it is continuous with the CSF of the brain and the central canal, cushioning the cord in fluid.",
+    eli5: "The watery cushion right around the cord, connected to the same fluid that surrounds the brain."
+  }
+};
+let currentVert = "foramen";
+document.querySelectorAll(".vert-btn[data-vert]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".vert-btn[data-vert]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentVert = btn.dataset.vert;
+    updateVertText(currentVert);
+  });
+});
+function updateVertText(key) {
+  const info = VERT_INFO[key];
+  if (!info) return;
+  document.getElementById("vertTitle").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById("vertDesc").textContent = text;
+  if (currentTab === "vertebra") {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"protective-structures", title:"Protective Structures: Bone, Meninges & CSF", unit:"Ch 10 · Nervous System I" });
+  APTools.mountHUD("#apHud","protective-structures");
+  var BANK=[
+    { id:"ps1", bloom:"Remember", outcome:"Three Lines of Defense",
+      q:"The central nervous system is protected by three things. Which set correctly lists them?",
+      choices:["Bone, membranes (meninges), and fluid (CSF)","Skin, muscle, and fat","Blood vessels, tendons, and cartilage","Neurons, neuroglia, and myelin"],
+      answer:0, why:"The CNS organs are surrounded and protected by bone (skull/vertebrae), membranes (the meninges), and cerebrospinal fluid." },
+    { id:"ps2", bloom:"Remember", outcome:"Cranial Bones",
+      q:"How many bones make up the cranium that encases the brain?",
+      choices:["8","12","26","33"],
+      answer:0, why:"The brain is encased by eight cranial bones that form the protective vault of the skull." },
+    { id:"ps3", bloom:"Remember", outcome:"Vertebral Column",
+      q:"The spinal cord is encased by how many bones of the vertebral column?",
+      choices:["26","8","12","4"],
+      answer:0, why:"The vertebral column is made of 26 bones, whose stacked vertebral foramina form the canal that protects the spinal cord." },
+    { id:"ps4", bloom:"Remember", outcome:"Meninges Order",
+      q:"Listed from the OUTER surface (next to bone) to the INNER surface (next to the brain), the three meninges are:",
+      choices:["Dura mater → arachnoid mater → pia mater","Pia mater → arachnoid mater → dura mater","Arachnoid mater → dura mater → pia mater","Dura mater → pia mater → arachnoid mater"],
+      answer:0, why:"From bone inward: dura mater (tough outer), arachnoid mater (web-like middle), then pia mater (delicate inner) clinging to the brain." },
+    { id:"ps5", bloom:"Understand", outcome:"Dura Mater",
+      q:"Which meninx is the tough, outermost layer attached to the inner periosteum of the skull?",
+      choices:["Dura mater","Pia mater","Arachnoid mater","Choroid plexus"],
+      answer:0, why:"The dura mater is the tough, white fibrous outer membrane, attached to the inside of the skull bones." },
+    { id:"ps6", bloom:"Understand", outcome:"Subarachnoid Space",
+      q:"Cerebrospinal fluid that cushions the brain is found in which space?",
+      choices:["The subarachnoid space (beneath the arachnoid mater)","The epidural space","Inside the dura mater","Between the skull and the scalp"],
+      answer:0, why:"The subarachnoid space lies beneath the arachnoid mater and is filled with CSF, serving as a cushion for the brain and cord." },
+    { id:"ps7", bloom:"Remember", outcome:"CSF Secretion",
+      q:"Cerebrospinal fluid is secreted by which structures?",
+      choices:["Choroid plexuses","Arachnoid granulations","Ependymal axons","Dural sinuses"],
+      answer:0, why:"CSF is secreted by the choroid plexuses — specialized capillary networks — into the ventricles." },
+    { id:"ps8", bloom:"Apply", outcome:"CSF Circulation Order",
+      q:"After being secreted into the lateral ventricles, CSF flows in what order?",
+      choices:["Lateral ventricles → third ventricle → fourth ventricle → subarachnoid space/central canal","Fourth ventricle → third ventricle → lateral ventricles → skull","Subarachnoid space → lateral ventricles → dural sinuses","Central canal → choroid plexus → lateral ventricles"],
+      answer:0, why:"CSF flows from the lateral ventricles to the third, then through the cerebral aqueduct to the fourth ventricle, then into the subarachnoid space and central canal." },
+    { id:"ps9", bloom:"Understand", outcome:"CSF Reabsorption",
+      q:"CSF is reabsorbed back into the bloodstream through:",
+      choices:["Arachnoid granulations projecting into dural sinuses","The choroid plexuses","The pia mater capillaries","The central canal directly"],
+      answer:0, why:"CSF returns to the blood through arachnoid granulations that project into the dural venous sinuses." },
+    { id:"ps10", bloom:"Understand", outcome:"CSF Functions",
+      q:"Which best describes the two protective functions of CSF?",
+      choices:["Mechanical cushioning and chemical protection (stable environment)","Oxygen transport and clotting","Myelination and impulse conduction","Digestion and immune defense"],
+      answer:0, why:"CSF provides mechanical protection (a liquid cushion) and chemical protection (a stable environment of ions, nutrients, and signaling molecules)." },
+    { id:"ps11", bloom:"Understand", outcome:"Spinal vs Cranial Dura",
+      q:"How does protection around the spinal cord differ from that around the brain?",
+      choices:["The spinal dura is not attached to bone; a fat-filled epidural space separates them","The spinal cord has no meninges","The spinal cord is protected by CSF but not by any bone","The spinal dura fuses directly to every vertebra"],
+      answer:0, why:"Unlike the cranial dura (fused to the skull), the spinal dura is separated from the vertebral bone by an epidural space filled with fat and loose connective tissue." },
+    { id:"ps12", bloom:"Remember", outcome:"Vertebral Foramen",
+      q:"The opening in each vertebra that collectively forms the canal housing the spinal cord is the:",
+      choices:["Vertebral foramen","Vertebral body","Spinous process","Transverse process"],
+      answer:0, why:"The vertebral foramen is the central opening of each vertebra; stacked, these form the vertebral canal that protects the spinal cord." },
+    { id:"ps13", bloom:"Remember", outcome:"CSF Volume Turnover",
+      q:"About how often is the ~150 mL of circulating CSF completely replaced?",
+      choices:["Every 3–4 hours","Once per day","Once per week","Only when injured"],
+      answer:0, why:"Roughly 1 liter of CSF is secreted daily, replacing the circulating 150 mL about every 3–4 hours." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"protective-structures", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

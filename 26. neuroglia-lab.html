@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuroglial Cells | Chapter 10 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple-700: #6d28d9;
+  --purple-600: #7c3aed;
+  --purple-500: #8b5cf6;
+  --purple-100: #ede9fe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(109, 40, 217, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --blue-600: #2563eb;
+  --teal-600: #0e7490;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(109, 40, 217, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--purple-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--purple-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--purple-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--purple-100);
+  color: var(--purple-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--purple-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--purple-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--purple-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 540px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 560px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* Pick-button group (glia selectors) */
+.pick-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 6px; }
+.pick-btn { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 13px; background: #fff; font-family: inherit; font-weight: 700; font-size: 0.8rem; color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color); transition: 0.15s; }
+.pick-btn:hover { background: var(--slate-100); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.pick-btn.active { background: var(--purple-100); color: var(--purple-700); border-color: var(--purple-700); }
+.pick-btn .shape { font-size: 0.68rem; color: var(--slate-500); font-weight: 700; }
+.pick-btn.active .shape { color: var(--purple-600); }
+
+/* Tab 3 — All Six at a Glance grid */
+.glia-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.glia-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.glia-card.cns { border-top: 8px solid var(--purple-600); }
+.glia-card.pns { border-top: 8px solid var(--teal-600); }
+.glia-card .gc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.glia-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0; font-size: 0.96rem; }
+.glia-card.cns h4 { color: var(--purple-700); }
+.glia-card.pns h4 { color: var(--teal-600); }
+.badge { font-size: 0.64rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px; border: 1.5px solid var(--border-color); }
+.badge.cns { background: var(--purple-100); color: var(--purple-700); }
+.badge.pns { background: #cffafe; color: var(--teal-600); }
+.glia-card .shape-hint { font-size: 0.72rem; color: var(--slate-500); font-style: italic; margin: 0 0 6px; }
+.glia-card p.fn { font-size: 0.82rem; color: var(--slate-700); margin: 0; line-height: 1.45; }
+.glia-card p.fn b { color: var(--slate-900); }
+.mnemonic-box { margin-top: 16px; border: 1.5px dashed var(--border-color); border-radius: 10px; padding: 12px 16px; background: #fffaf0; font-size: 0.82rem; color: var(--slate-700); line-height: 1.5; }
+.mnemonic-box b { color: var(--amber-500); }
+@media (max-width: 640px) { .glia-grid { grid-template-columns: 1fr; } }
+
+/* Tab 4 — Injury & Regeneration compare */
+.div-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 8px; }
+.div-card { border: 2px solid var(--border-color); border-radius: 10px; padding: 16px; background: #fff; }
+.div-card.bad { border-left: 8px solid var(--red-600); }
+.div-card.good { border-left: 8px solid var(--green-600); }
+.div-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 8px; font-size: 1rem; }
+.div-card.bad h4 { color: var(--red-600); }
+.div-card.good h4 { color: var(--green-600); }
+.div-card .verdict { font-weight: 800; font-size: 0.82rem; margin: 0 0 8px; }
+.div-card.bad .verdict { color: var(--red-600); }
+.div-card.good .verdict { color: var(--green-600); }
+.div-card p { font-size: 0.82rem; color: var(--slate-700); margin: 0; line-height: 1.5; }
+@media (max-width: 700px) { .div-compare { grid-template-columns: 1fr; } }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--purple-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Neuroglial Cells</h1>
+    <p>CNS Glia · PNS Glia · Functions · Injury &amp; Regeneration · Ch 10</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Neuroglia Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">Neuroglia ("nerve glue") are the accessory cells that support, feed, insulate, and defend neurons. There are four types in the CNS and two in the PNS.</p>
+        <div class="info-box" id="infoBox">
+          <b>Neuroglia = "Nerve Glue"</b><br>
+          Glia don't transmit impulses. Instead they form a supporting network around neurons — providing structure, nourishment, myelin, immune defense, and a stable environment.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('cns', this)">CNS Neuroglia (4)</button>
+      <button class="tab-btn" onclick="switchTab('pns', this)">PNS Neuroglia (2)</button>
+      <button class="tab-btn" onclick="switchTab('glance', this)">All Six at a Glance</button>
+      <button class="tab-btn" onclick="switchTab('injury', this)">Injury &amp; Regeneration</button>
+    </div>
+
+    <!-- Tab 1: CNS Neuroglia -->
+    <div id="cns" class="tab-content active">
+      <section class="panel">
+        <h2>Four Glia of the Brain &amp; Spinal Cord</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">CNS Neuroglia — Click a Cell</h3>
+            <div class="pick-btns" id="cnsBtns">
+              <button class="pick-btn active" data-cns="astrocyte">Astrocyte<br><span class="shape">star-shaped</span></button>
+              <button class="pick-btn" data-cns="oligodendrocyte">Oligodendrocyte<br><span class="shape">eyeball-like</span></button>
+              <button class="pick-btn" data-cns="microglia">Microglia<br><span class="shape">spider-like</span></button>
+              <button class="pick-btn" data-cns="ependyma">Ependyma<br><span class="shape">ciliated sheet</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="cnsTitle">Astrocyte</div>
+              <div class="step-desc" id="cnsDesc">Star-shaped and the most abundant glial cell. It nourishes neurons and provides structural support, physically linking neurons to their blood supply.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — The Four CNS Neuroglia</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch10-cns-glia-four-types.png" alt="Four-panel diagram of central nervous system neuroglia: (1) a star-shaped astrocyte contacting a blood vessel and a neuron, (2) an oligodendrocyte myelinating several axons, (3) a spider-like microglial cell phagocytosing debris, and (4) a row of ciliated ependymal cells lining a CSF-filled space" loading="lazy">
+              </div>
+              <p class="video-ref-caption">The four CNS glia: astrocyte (support &amp; nourishment), oligodendrocyte (myelin), microglia (phagocytosis/immune defense), and ependymal cells (line CSF cavities; cilia help circulate CSF).</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: PNS Neuroglia -->
+    <div id="pns" class="tab-content">
+      <section class="panel">
+        <h2>Two Glia of the Peripheral Nerves</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">PNS Neuroglia — Click a Cell</h3>
+            <div class="pick-btns" id="pnsBtns">
+              <button class="pick-btn active" data-pns="schwann">Schwann Cell<br><span class="shape">myelinates axons</span></button>
+              <button class="pick-btn" data-pns="satellite">Satellite Cell<br><span class="shape">surrounds cell bodies</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="pnsTitle">Schwann Cell</div>
+              <div class="step-desc" id="pnsDesc">Produces the myelin sheath around peripheral axons (and also envelops unmyelinated axons). It forms the neurilemma, which enables PNS axons to regenerate after injury.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — The Two PNS Neuroglia</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch10-pns-glia-schwann-satellite.png" alt="Four-panel diagram of peripheral nervous system neuroglia: (1) a myelinating Schwann cell wrapping a single axon with labeled myelin sheath, Schwann cell nucleus, node of Ranvier, and neurilemma; (2) a non-myelinating Schwann cell enveloping several unmyelinated axons; (3) satellite glial cells surrounding a ganglion neuron cell body; and (4) satellite cells performing nutrient exchange and environmental regulation for a neuron cell body" loading="lazy">
+              </div>
+              <p class="video-ref-caption">The two PNS glia: Schwann cells (myelinate or envelop peripheral axons; form the neurilemma) and satellite cells (surround and support neuron cell bodies within ganglia, regulating their environment).</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: All Six at a Glance -->
+    <div id="glance" class="tab-content">
+      <section class="panel">
+        <h2>All Six Neuroglia Compared</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Six Glia, Six Jobs</h3>
+            <div class="glia-grid">
+              <div class="glia-card cns">
+                <div class="gc-head"><h4>Astrocyte</h4><span class="badge cns">CNS</span></div>
+                <p class="shape-hint">Shape hook: star-shaped ⭐</p>
+                <p class="fn"><b>Nourishes</b> neurons &amp; provides <b>structural support</b>; links neurons to blood vessels.</p>
+              </div>
+              <div class="glia-card cns">
+                <div class="gc-head"><h4>Oligodendrocyte</h4><span class="badge cns">CNS</span></div>
+                <p class="shape-hint">Shape hook: eyeball-like 👁</p>
+                <p class="fn"><b>Produces myelin</b> in the CNS — one cell wraps several axons at once.</p>
+              </div>
+              <div class="glia-card cns">
+                <div class="gc-head"><h4>Microglia</h4><span class="badge cns">CNS</span></div>
+                <p class="shape-hint">Shape hook: spider-like 🕷</p>
+                <p class="fn"><b>Phagocytosis</b> — the CNS immune cell; engulfs pathogens and cellular debris.</p>
+              </div>
+              <div class="glia-card cns">
+                <div class="gc-head"><h4>Ependyma</h4><span class="badge cns">CNS</span></div>
+                <p class="shape-hint">Shape hook: ciliated sheet 〰</p>
+                <p class="fn"><b>Lines the cavities</b> of the CNS (ventricles &amp; central canal); cilia help circulate CSF.</p>
+              </div>
+              <div class="glia-card pns">
+                <div class="gc-head"><h4>Schwann Cell</h4><span class="badge pns">PNS</span></div>
+                <p class="shape-hint">Shape hook: wraps one axon segment 🌀</p>
+                <p class="fn"><b>Produces myelin</b> in the PNS; forms the neurilemma that guides axon regeneration.</p>
+              </div>
+              <div class="glia-card pns">
+                <div class="gc-head"><h4>Satellite Cell</h4><span class="badge pns">PNS</span></div>
+                <p class="shape-hint">Shape hook: shell around a cell body 🔵</p>
+                <p class="fn"><b>Surrounds &amp; supports</b> neuron cell bodies inside ganglia; regulates their environment.</p>
+              </div>
+            </div>
+            <div class="mnemonic-box">
+              <b>Quick recall:</b> The two <b>myelin-makers</b> are the <b>O</b>ligodendrocyte (CNS) and the Schwann cell (PNS) — remember "<b>O</b>ligo = <b>O</b>ur brain's insulator." <b>M</b>icroglia = <b>M</b>ini immune cells. <b>E</b>pendyma = lines the CSF-filled sp<b>a</b>ces. <b>A</b>strocyte = the <b>A</b>bundant <b>A</b>ll-rounder that feeds and supports.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Injury & Regeneration -->
+    <div id="injury" class="tab-content">
+      <section class="panel">
+        <h2>Can a Damaged Neuron Recover?</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Cell Body Injury vs. Axon Injury</h3>
+            <div class="div-compare">
+              <div class="div-card bad">
+                <h4>Cell Body Injury</h4>
+                <p class="verdict">✗ Fatal — the neuron dies</p>
+                <p>The cell body (soma) holds the nucleus and life-support machinery. If it is destroyed, the entire neuron dies — and because mature neurons generally do not divide, it usually cannot be replaced.</p>
+              </div>
+              <div class="div-card good">
+                <h4>Axon Injury</h4>
+                <p class="verdict">✓ May regenerate</p>
+                <p>If only the axon is damaged but the cell body survives, the axon <b>may</b> regenerate. In the PNS, the surviving <b>neurilemma</b> (Schwann-cell sheath) forms a tube that guides the regrowing axon back to its target.</p>
+              </div>
+            </div>
+            <div class="step-display">
+              <div class="step-desc" id="injuryNote">Key link to App 10.3: PNS axons regenerate largely because Schwann cells provide the <b>neurilemma</b>. CNS axons (myelinated by oligodendrocytes, which form <b>no</b> neurilemma) generally do <b>not</b> regenerate well.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Neuroglial Cells</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master the four CNS glia, the two PNS glia, each of their functions, and why some injured neurons can regenerate while others cannot.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model neuroglial cell types and functions (CH10 §10.4B–C). Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "cns";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  if (currentTab === "cns" && currentCns) updateCnsText(currentCns);
+  if (currentTab === "pns" && currentPns) updatePnsText(currentPns);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  if (currentTab === "cns") {
+    infoBox.innerHTML = "<b>CNS glia (4):</b> Astrocyte (support/nourish), oligodendrocyte (myelin), microglia (immune defense), ependyma (line CSF spaces).";
+  } else if (currentTab === "pns") {
+    infoBox.innerHTML = "<b>PNS glia (2):</b> Schwann cells (myelin + neurilemma) and satellite cells (surround/support cell bodies in ganglia).";
+  } else if (currentTab === "glance") {
+    infoBox.innerHTML = "<b>Two myelin-makers:</b> oligodendrocytes in the CNS, Schwann cells in the PNS. Everything else is support, defense, or lining.";
+  } else if (currentTab === "injury") {
+    infoBox.innerHTML = "<b>Recovery:</b> A destroyed cell body kills the neuron; a damaged axon may regrow — especially in the PNS, guided by the Schwann-cell neurilemma.";
+  }
+  updateAllTexts();
+};
+
+/* =========================================================
+   TAB 1 — CNS Neuroglia
+   ========================================================= */
+const CNS_INFO = {
+  astrocyte: {
+    title: "Astrocyte",
+    prof: "Star-shaped and the most abundant glial cell. It nourishes neurons and provides structural support, physically linking neurons to their blood supply.",
+    eli5: "A star-shaped helper cell that feeds neurons and holds everything in place, connecting neurons to nearby blood vessels."
+  },
+  oligodendrocyte: {
+    title: "Oligodendrocyte",
+    prof: "Produces the myelin sheath around axons in the CNS. A single oligodendrocyte can wrap several nearby axons at once.",
+    eli5: "The CNS insulation-maker — it wraps brain and spinal-cord axons in myelin, like taping up several wires at once."
+  },
+  microglia: {
+    title: "Microglia",
+    prof: "The small, spider-like immune cells of the CNS. Their function is phagocytosis — engulfing pathogens, damaged cells, and debris.",
+    eli5: "The brain's tiny security guards. They crawl around and 'eat' germs and trash to keep the CNS clean."
+  },
+  ependyma: {
+    title: "Ependyma (Ependymal Cells)",
+    prof: "An epithelial-like layer of ciliated cells that lines the fluid-filled cavities of the CNS (the ventricles and central canal). Their cilia help circulate cerebrospinal fluid.",
+    eli5: "A wall of cells with tiny hairs that line the brain's fluid spaces and help keep the CSF flowing (you met them in App 10.2)."
+  }
+};
+let currentCns = "astrocyte";
+document.querySelectorAll(".pick-btn[data-cns]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".pick-btn[data-cns]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentCns = btn.dataset.cns;
+    updateCnsText(currentCns);
+  });
+});
+function updateCnsText(key) {
+  const info = CNS_INFO[key];
+  if (!info) return;
+  document.getElementById("cnsTitle").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById("cnsDesc").textContent = text;
+  if (currentTab === "cns") {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+
+/* =========================================================
+   TAB 2 — PNS Neuroglia
+   ========================================================= */
+const PNS_INFO = {
+  schwann: {
+    title: "Schwann Cell",
+    prof: "Produces the myelin sheath around peripheral axons (and also envelops unmyelinated axons). It forms the neurilemma, which enables PNS axons to regenerate after injury.",
+    eli5: "The PNS insulation-maker. It wraps one segment of a nerve wire in myelin, and its outer layer (neurilemma) helps damaged nerves regrow."
+  },
+  satellite: {
+    title: "Satellite Cell",
+    prof: "Surrounds and supports neuron cell bodies located in ganglia (clusters of cell bodies in the PNS). It regulates the chemical environment and exchanges nutrients with the neuron.",
+    eli5: "A shell of cells that wraps around nerve cell bodies bunched together in ganglia, feeding them and keeping their surroundings stable."
+  }
+};
+let currentPns = "schwann";
+document.querySelectorAll(".pick-btn[data-pns]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".pick-btn[data-pns]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentPns = btn.dataset.pns;
+    updatePnsText(currentPns);
+  });
+});
+function updatePnsText(key) {
+  const info = PNS_INFO[key];
+  if (!info) return;
+  document.getElementById("pnsTitle").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById("pnsDesc").textContent = text;
+  if (currentTab === "pns") {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"neuroglia", title:"Neuroglial Cells", unit:"Ch 10 · Nervous System I" });
+  APTools.mountHUD("#apHud","neuroglia");
+  var BANK=[
+    { id:"ng1", bloom:"Remember", outcome:"What Neuroglia Do",
+      q:"Which statement best describes neuroglial cells?",
+      choices:["Accessory cells that support and protect neurons but do not transmit impulses","The cells that carry all nerve impulses","Cells found only in muscle tissue","Cells that replace the need for blood vessels"],
+      answer:0, why:"Neuroglia ('nerve glue') form a supporting network for neurons; they support, nourish, insulate, and defend neurons but do not conduct impulses themselves." },
+    { id:"ng2", bloom:"Remember", outcome:"Number of Glia Types",
+      q:"How many types of neuroglia are found in the CNS versus the PNS?",
+      choices:["Four in the CNS and two in the PNS","Two in the CNS and four in the PNS","Three in each","Six in the CNS and none in the PNS"],
+      answer:0, why:"There are four CNS neuroglia (astrocyte, oligodendrocyte, microglia, ependyma) and two PNS neuroglia (Schwann cells and satellite cells)." },
+    { id:"ng3", bloom:"Understand", outcome:"Astrocyte Function",
+      q:"The star-shaped glial cell that nourishes neurons and provides structural support is the:",
+      choices:["Astrocyte","Microglia","Ependymal cell","Satellite cell"],
+      answer:0, why:"Astrocytes are star-shaped CNS glia that nourish neurons, provide structural support, and link neurons to blood vessels." },
+    { id:"ng4", bloom:"Understand", outcome:"Oligodendrocyte Function",
+      q:"Which CNS glial cell produces myelin?",
+      choices:["Oligodendrocyte","Astrocyte","Microglia","Ependymal cell"],
+      answer:0, why:"Oligodendrocytes produce the myelin sheath around axons in the central nervous system." },
+    { id:"ng5", bloom:"Understand", outcome:"Microglia Function",
+      q:"The primary function of microglia is:",
+      choices:["Phagocytosis (immune defense)","Producing myelin","Lining the ventricles","Nourishing neurons"],
+      answer:0, why:"Microglia are the spider-like immune cells of the CNS; they perform phagocytosis, engulfing pathogens and debris." },
+    { id:"ng6", bloom:"Understand", outcome:"Ependyma Function",
+      q:"Ependymal cells are best described as:",
+      choices:["A ciliated, epithelial-like layer that lines CNS cavities and helps circulate CSF","Star-shaped cells that feed neurons","Cells that produce myelin in the PNS","Immune cells that phagocytose debris"],
+      answer:0, why:"Ependyma form a ciliated, epithelial-like layer lining the ventricles and central canal; their cilia help move cerebrospinal fluid." },
+    { id:"ng7", bloom:"Remember", outcome:"Schwann Cell Function",
+      q:"In the peripheral nervous system, myelin is produced by:",
+      choices:["Schwann cells","Oligodendrocytes","Satellite cells","Astrocytes"],
+      answer:0, why:"Schwann cells produce the myelin sheath around axons in the PNS (oligodendrocytes do this in the CNS)." },
+    { id:"ng8", bloom:"Understand", outcome:"Satellite Cell Function",
+      q:"Satellite cells function to:",
+      choices:["Surround and support neuron cell bodies within ganglia","Produce cerebrospinal fluid","Myelinate CNS axons","Phagocytose pathogens in the brain"],
+      answer:0, why:"Satellite cells surround and support the cell bodies of neurons located in ganglia, regulating their environment." },
+    { id:"ng9", bloom:"Analyze", outcome:"Two Myelin-Makers",
+      q:"Which pair of glial cells are the two myelin-producers of the nervous system?",
+      choices:["Oligodendrocytes (CNS) and Schwann cells (PNS)","Astrocytes (CNS) and satellite cells (PNS)","Microglia (CNS) and Schwann cells (PNS)","Ependyma (CNS) and satellite cells (PNS)"],
+      answer:0, why:"Oligodendrocytes myelinate CNS axons and Schwann cells myelinate PNS axons — the two myelin-makers." },
+    { id:"ng10", bloom:"Remember", outcome:"Cell Body Injury",
+      q:"What is the outcome when a neuron's cell body is injured (destroyed)?",
+      choices:["The entire neuron dies","The axon always regenerates fully","Only the dendrites are lost","Nothing — the neuron divides to replace it"],
+      answer:0, why:"Injury to the cell body kills the whole neuron, which generally cannot be replaced because mature neurons don't divide." },
+    { id:"ng11", bloom:"Understand", outcome:"Axon Regeneration",
+      q:"Damage limited to an axon (with the cell body intact):",
+      choices:["May allow regeneration, especially in the PNS","Always kills the neuron immediately","Can never be repaired anywhere","Only affects myelin, never function"],
+      answer:0, why:"If the cell body survives, a damaged axon may regenerate — particularly in the PNS, where the neurilemma guides regrowth." },
+    { id:"ng12", bloom:"Analyze", outcome:"Why PNS Regenerates",
+      q:"Peripheral (PNS) axons regenerate better than central (CNS) axons largely because:",
+      choices:["Schwann cells provide a neurilemma that guides regrowth; CNS oligodendrocytes do not","The CNS has no glial cells","PNS axons are never myelinated","CNS axons have no cell bodies"],
+      answer:0, why:"Schwann cells form the neurilemma, a regeneration tube guiding PNS axon regrowth; oligodendrocytes form no neurilemma, so CNS axons regenerate poorly." },
+    { id:"ng13", bloom:"Apply", outcome:"Identify the Glia",
+      q:"A glial cell lines the fluid-filled ventricles of the brain and beats its cilia to move CSF. Which cell is it?",
+      choices:["Ependymal cell","Astrocyte","Schwann cell","Microglia"],
+      answer:0, why:"Ependymal cells line the ventricles and central canal; their cilia help circulate cerebrospinal fluid." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"neuroglia", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

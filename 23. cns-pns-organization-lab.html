@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CNS vs. PNS: Organization &amp; Function | Chapter 10 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple-700: #6d28d9;
+  --purple-600: #7c3aed;
+  --purple-500: #8b5cf6;
+  --purple-100: #ede9fe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(109, 40, 217, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --blue-600: #2563eb;
+  --teal-600: #0e7490;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(109, 40, 217, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--purple-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--purple-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--purple-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--purple-100);
+  color: var(--purple-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--purple-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Controls */
+.step-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.step-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.step-btn:hover {
+  background: var(--slate-100);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+}
+.step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.step-btn.active {
+  background: var(--purple-100);
+  color: var(--purple-700);
+  border-color: var(--purple-700);
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--purple-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--purple-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 520px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 560px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* ---- Tab 1: Nervous Tissue Composition ---- */
+.tissue-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.tissue-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 14px; background: #fff; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; box-shadow: 2px 2px 0 var(--border-color); }
+.tissue-card:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.tissue-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 6px; font-size: 0.94rem; color: var(--purple-700); }
+.tissue-card p { font-size: 0.82rem; color: var(--slate-600); margin: 0; line-height: 1.45; }
+.tissue-card .more { display: none; margin-top: 8px; font-size: 0.8rem; color: var(--slate-700); border-top: 1px dashed var(--slate-500); padding-top: 8px; line-height: 1.45; }
+.tissue-card.open .more { display: block; }
+.tissue-card .toggle-hint { font-size: 0.7rem; color: var(--purple-600); font-weight: 700; margin-top: 6px; }
+@media (max-width: 640px) { .tissue-grid { grid-template-columns: 1fr; } }
+
+/* ---- Tab 2: CNS vs PNS ---- */
+.div-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 8px; }
+.div-card { border: 2px solid var(--border-color); border-radius: 10px; padding: 16px; background: #fff; }
+.div-card.cns { border-left: 8px solid var(--purple-600); }
+.div-card.pns { border-left: 8px solid var(--amber-500); }
+.div-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 10px; font-size: 1rem; }
+.div-card.cns h4 { color: var(--purple-700); }
+.div-card.pns h4 { color: var(--amber-500); }
+.div-card table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.div-card td { padding: 5px 4px; border-bottom: 1px solid var(--slate-100); vertical-align: top; }
+.div-card td:first-child { font-weight: 700; color: var(--slate-500); width: 38%; }
+@media (max-width: 700px) { .div-compare { grid-template-columns: 1fr; } }
+
+/* ---- Tab 3: Three Major Functions ---- */
+.func-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 18px 0; }
+.func-node { flex: 1 1 130px; max-width: 155px; border: 1.5px solid var(--border-color); border-radius: 10px; padding: 12px 8px; text-align: center; background: var(--slate-100); transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease; }
+.func-node.active { background: var(--purple-100); border-color: var(--purple-700); transform: translateY(-3px); }
+.func-node .node-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--slate-500); color: #fff; font-weight: 800; font-size: 0.78rem; margin-bottom: 6px; }
+.func-node.active .node-num { background: var(--purple-700); }
+.func-node .node-label { font-size: 0.76rem; font-weight: 800; color: var(--slate-700); line-height: 1.25; }
+.func-node .node-tag { font-size: 0.66rem; color: var(--slate-500); font-weight: 700; text-transform: uppercase; margin-top: 3px; }
+.func-arrow { font-size: 1.3rem; color: var(--slate-500); font-weight: 900; }
+
+/* ---- Tab 4: Organizational Chart ---- */
+.org-chart { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.org-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+.org-connector { width: 2px; height: 18px; background: var(--slate-500); }
+.org-box { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 10px 16px; background: #fff; font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 0.82rem; color: var(--slate-700); cursor: pointer; transition: background .2s ease, transform .2s ease; box-shadow: 2px 2px 0 var(--border-color); }
+.org-box:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.org-box.active { background: var(--purple-100); color: var(--purple-700); border-color: var(--purple-700); }
+.org-box.root { background: var(--slate-900); color: #fff; }
+.org-desc-box { margin-top: 16px; }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--purple-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>CNS vs. PNS: Organization &amp; Function</h1>
+    <p>Nervous Tissue · CNS/PNS · Sensory-Integrative-Motor · Autonomic Divisions · Ch 10</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Organization Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">The nervous system coordinates the whole body. Explore what it's built from, how it's divided, and how signals flow through it.</p>
+        <div class="info-box" id="infoBox">
+          <b>Nervous System Organization</b><br>
+          The nervous system is built from neurons and neuroglia, organized into the central nervous system (brain &amp; spinal cord) and the peripheral nervous system (all the nerves that branch out from them).
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('tissue', this)">Nervous Tissue Composition</button>
+      <button class="tab-btn" onclick="switchTab('cnspns', this)">CNS vs. PNS</button>
+      <button class="tab-btn" onclick="switchTab('functions', this)">Three Major Functions</button>
+      <button class="tab-btn" onclick="switchTab('orgchart', this)">Organizational Chart</button>
+    </div>
+
+    <!-- Tab 1: Nervous Tissue Composition -->
+    <div id="tissue" class="tab-content active">
+      <section class="panel">
+        <h2>What the Nervous System Is Made Of</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Nervous Tissue Composition</h3>
+            <div class="tissue-grid" id="tissueGrid">
+              <div class="tissue-card" data-card="neurons">
+                <h4>Neurons</h4>
+                <p>Nerve cells that generate and transmit bioelectric signals (impulses) via dendrites and axons.</p>
+                <div class="more">Neurons receive information through dendrites and send signals away through a single axon. Signals cross gaps called synapses to reach the next cell.</div>
+                <div class="toggle-hint">Click to expand</div>
+              </div>
+              <div class="tissue-card" data-card="glia">
+                <h4>Neuroglia</h4>
+                <p>Accessory ("glue") cells that support, nourish, insulate, and protect neurons — they don't transmit impulses.</p>
+                <div class="more">Different neuroglial cell types perform different jobs: producing myelin, providing structural support, and defending against pathogens (covered in depth in App 10.4).</div>
+                <div class="toggle-hint">Click to expand</div>
+              </div>
+              <div class="tissue-card" data-card="vessels">
+                <h4>Blood Vessels</h4>
+                <p>Supply neural tissue with oxygen and glucose — neurons have very high, constant metabolic demand.</p>
+                <div class="more">Because neurons can't store much energy, even brief interruptions in blood flow (as in a stroke) can cause rapid, serious damage.</div>
+                <div class="toggle-hint">Click to expand</div>
+              </div>
+              <div class="tissue-card" data-card="ct">
+                <h4>Connective Tissue</h4>
+                <p>Wraps and bundles nerves and nervous system organs, providing structural support and protection.</p>
+                <div class="more">This is a general category distinct from neuroglia — it's the same family of wrapping/binding tissue found throughout the body (compare to the epimysium/perimysium wrapping muscle in Ch 9).</div>
+                <div class="toggle-hint">Click to expand</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: CNS vs PNS -->
+    <div id="cnspns" class="tab-content">
+      <section class="panel">
+        <h2>Two Major Divisions</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Central vs. Peripheral Nervous System</h3>
+            <div class="div-compare">
+              <div class="div-card cns">
+                <h4>Central Nervous System (CNS)</h4>
+                <table>
+                  <tr><td>Structures</td><td>Brain and spinal cord</td></tr>
+                  <tr><td>Location</td><td>Encased in the skull and vertebral column</td></tr>
+                  <tr><td>Key cell type</td><td>Interneurons (integration/decision-making)</td></tr>
+                  <tr><td>Function</td><td>Interprets incoming signals and decides on a response</td></tr>
+                </table>
+              </div>
+              <div class="div-card pns">
+                <h4>Peripheral Nervous System (PNS)</h4>
+                <table>
+                  <tr><td>Structures</td><td>Cranial nerves (from the brain) and spinal nerves (from the cord)</td></tr>
+                  <tr><td>Location</td><td>Extends throughout the rest of the body</td></tr>
+                  <tr><td>Key cell types</td><td>Sensory (afferent) and motor (efferent) neurons</td></tr>
+                  <tr><td>Function</td><td>Carries signals into and out of the CNS</td></tr>
+                </table>
+              </div>
+            </div>
+            <div class="step-display">
+              <div class="step-desc" id="cnspnsDesc">The CNS is the body's decision-maker; the PNS is its communication network, carrying information to and from the CNS.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — The Human Nervous System</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch10-cns-pns-fullbody.png" alt="Full body diagram of the human nervous system showing the CNS (brain and spinal cord) and PNS (nerves branching throughout the body), plus basic neuron anatomy and sensory/motor pathways" loading="lazy">
+              </div>
+              <p class="video-ref-caption">The CNS (brain + spinal cord, shown in the torso/head) is the command center. The PNS (branching nerve network) connects the CNS to every limb and organ, carrying sensory information in and motor commands out.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Three Major Functions -->
+    <div id="functions" class="tab-content">
+      <section class="panel">
+        <h2>Sensory → Integrative → Motor</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">How the Nervous System Responds to Stimuli</h3>
+            <div class="step-display">
+              <div class="step-number" id="funcStepNum">Step 1 of 4</div>
+              <div class="step-desc" id="funcStepDesc">A sensory receptor detects a stimulus — for example, a hot surface touching the skin.</div>
+            </div>
+            <div class="func-flow" id="funcFlow">
+              <div class="func-node" id="funcNode1"><div class="node-num">1</div><div class="node-label">Sensory receptor detects stimulus</div><div class="node-tag">PNS</div></div>
+              <div class="func-arrow">→</div>
+              <div class="func-node" id="funcNode2"><div class="node-num">2</div><div class="node-label">Sensory neuron carries impulse to CNS</div><div class="node-tag">PNS · Afferent</div></div>
+              <div class="func-arrow">→</div>
+              <div class="func-node" id="funcNode3"><div class="node-num">3</div><div class="node-label">Interneuron integrates &amp; decides response</div><div class="node-tag">CNS</div></div>
+              <div class="func-arrow">→</div>
+              <div class="func-node" id="funcNode4"><div class="node-num">4</div><div class="node-label">Motor neuron signals effector to respond</div><div class="node-tag">PNS · Efferent</div></div>
+            </div>
+            <div class="step-controls">
+              <button class="step-btn" onclick="funcPrevStep()">← Previous</button>
+              <button class="step-btn active" onclick="funcGoToStep(1)">1</button>
+              <button class="step-btn" onclick="funcGoToStep(2)">2</button>
+              <button class="step-btn" onclick="funcGoToStep(3)">3</button>
+              <button class="step-btn" onclick="funcGoToStep(4)">4</button>
+              <button class="step-btn" onclick="funcNextStep()">Next →</button>
+              <button class="step-btn" onclick="funcReset()" style="margin-left: 10px;">↻ Reset</button>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — A Withdrawal Reflex</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch10-reflex-arc-loop.png" alt="Diagram of a withdrawal reflex arc: a hand touching a hot surface, sensory receptor, sensory neuron to the dorsal root ganglion and spinal cord, interneuron, motor neuron, and effector muscle contracting" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Touching a hot surface triggers a sensory receptor, which sends an impulse along a sensory neuron to the spinal cord. An interneuron there integrates the signal and activates a motor neuron, which signals the biceps to contract and pull the hand away.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Organizational Chart -->
+    <div id="orgchart" class="tab-content">
+      <section class="panel">
+        <h2>Levels of Organization</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Click Any Box to Learn More</h3>
+            <div class="org-chart">
+              <div class="org-box root">Nervous System</div>
+              <div class="org-connector"></div>
+              <div class="org-row">
+                <div class="org-box" data-org="cns">Central Nervous System</div>
+                <div class="org-box" data-org="pns">Peripheral Nervous System</div>
+              </div>
+              <div class="org-connector"></div>
+              <div class="org-row">
+                <div class="org-box" data-org="sensory">Sensory (Afferent)</div>
+                <div class="org-box" data-org="motor">Motor (Efferent)</div>
+              </div>
+              <div class="org-connector"></div>
+              <div class="org-row">
+                <div class="org-box" data-org="somatic">Somatic</div>
+                <div class="org-box" data-org="autonomic">Autonomic</div>
+              </div>
+              <div class="org-connector"></div>
+              <div class="org-row">
+                <div class="org-box" data-org="parasympathetic">Parasympathetic</div>
+                <div class="org-box" data-org="sympathetic">Sympathetic</div>
+              </div>
+            </div>
+            <div class="step-display org-desc-box">
+              <div class="step-number" id="orgTitle">Nervous System</div>
+              <div class="step-desc" id="orgDesc">Click any box above to explore how the nervous system is organized, from the two major divisions down to the autonomic split between parasympathetic and sympathetic control.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — CNS vs. PNS Organization</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master nervous tissue composition, CNS vs. PNS, the three major functions, and the somatic/autonomic organizational hierarchy.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model the organization of the nervous system. Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "tissue";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  if (currentTab === "functions") updateFuncText();
+  if (currentTab === "orgchart" && currentOrg) updateOrgText(currentOrg);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  if (currentTab === "tissue") {
+    infoBox.innerHTML = "<b>Nervous Tissue:</b> Neurons transmit signals; neuroglia support and protect them. Together with blood vessels and connective tissue, they form the organs of the nervous system.";
+  } else if (currentTab === "cnspns") {
+    infoBox.innerHTML = "<b>CNS vs. PNS:</b> The CNS (brain + spinal cord) integrates information. The PNS (cranial + spinal nerves) carries signals to and from the CNS.";
+  } else if (currentTab === "orgchart") {
+    infoBox.innerHTML = "<b>Organization:</b> Every level below the CNS/PNS split narrows down control — from sensory vs. motor, to somatic vs. autonomic, to parasympathetic vs. sympathetic.";
+  }
+  updateAllTexts();
+};
+
+/* =========================================================
+   TAB 1 — Nervous Tissue Composition
+   ========================================================= */
+document.querySelectorAll(".tissue-card").forEach(card => {
+  card.addEventListener("click", () => {
+    card.classList.toggle("open");
+    const hint = card.querySelector(".toggle-hint");
+    hint.textContent = card.classList.contains("open") ? "Click to collapse" : "Click to expand";
+  });
+});
+
+/* =========================================================
+   TAB 2 — CNS vs PNS (static comparison, no JS state needed
+   beyond the shared tab-switch info-box update above)
+   ========================================================= */
+
+/* =========================================================
+   TAB 3 — Three Major Functions
+   ========================================================= */
+let funcStep = 1;
+const funcSteps = [
+  {
+    prof: "A sensory receptor detects a stimulus — for example, a hot surface touching the skin.",
+    eli5: "A sensor in the skin notices something — like heat!"
+  },
+  {
+    prof: "The sensory (afferent) neuron carries the impulse from the receptor into the CNS. This is the sensory input function, carried out in the PNS.",
+    eli5: "A wire (sensory neuron) races the message from the skin toward the brain and spinal cord."
+  },
+  {
+    prof: "An interneuron in the CNS integrates the incoming signal — this is the integrative function, deciding what should happen next.",
+    eli5: "The spinal cord/brain reads the message and decides what to do about it."
+  },
+  {
+    prof: "A motor (efferent) neuron carries the outgoing impulse from the CNS to an effector (muscle or gland) — the motor function, carried out in the PNS.",
+    eli5: "Another wire (motor neuron) carries the decision back out to a muscle or gland, which responds."
+  }
+];
+
+function funcGoToStep(step) {
+  funcStep = step;
+  updateFuncText();
+}
+function funcNextStep() { if (funcStep < 4) funcGoToStep(funcStep + 1); }
+function funcPrevStep() { if (funcStep > 1) funcGoToStep(funcStep - 1); }
+function funcReset() { funcGoToStep(1); }
+
+function updateFuncText() {
+  const s = funcSteps[funcStep - 1];
+  document.getElementById("funcStepNum").textContent = "Step " + funcStep + " of 4";
+  document.getElementById("funcStepDesc").textContent = eli5Mode ? s.eli5 : s.prof;
+  if (currentTab === "functions") {
+    infoBox.innerHTML = "<b>Step " + funcStep + ":</b> " + (eli5Mode ? s.eli5 : s.prof);
+  }
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("funcNode" + i).classList.toggle("active", i <= funcStep);
+  }
+  document.querySelectorAll("#functions .step-controls .step-btn").forEach((btn, i) => {
+    if (i > 0 && i < 5) btn.classList.toggle("active", i === funcStep);
+  });
+}
+updateFuncText();
+
+/* =========================================================
+   TAB 4 — Organizational Chart
+   ========================================================= */
+const ORG_INFO = {
+  cns: {
+    title: "Central Nervous System (CNS)",
+    prof: "The brain and spinal cord. Contains interneurons and performs the integrative function — interpreting sensory input and deciding on a response.",
+    eli5: "The brain and spinal cord — the 'boss' that reads messages and makes decisions."
+  },
+  pns: {
+    title: "Peripheral Nervous System (PNS)",
+    prof: "Cranial nerves (from the brain) and spinal nerves (from the spinal cord), extending throughout the body. Carries sensory input in and motor output out.",
+    eli5: "All the nerves branching out from the brain and spinal cord — the wiring that reaches every part of the body."
+  },
+  sensory: {
+    title: "Sensory (Afferent) Division",
+    prof: "Carries sensory impulses from receptors toward the CNS. This is the input side of the PNS.",
+    eli5: "Wires that carry information IN toward the brain and spinal cord."
+  },
+  motor: {
+    title: "Motor (Efferent) Division",
+    prof: "Carries motor impulses from the CNS to effectors (muscles and glands). This is the output side of the PNS.",
+    eli5: "Wires that carry commands OUT from the brain and spinal cord to muscles and glands."
+  },
+  somatic: {
+    title: "Somatic Nervous System",
+    prof: "Motor division controlling skeletal muscle under conscious, voluntary control.",
+    eli5: "The part you control on purpose — like deciding to wave your hand."
+  },
+  autonomic: {
+    title: "Autonomic Nervous System",
+    prof: "Motor division controlling smooth muscle, cardiac muscle, and glands, under unconscious, involuntary control.",
+    eli5: "The part that runs automatically — like your heartbeat and digestion — without you thinking about it."
+  },
+  parasympathetic: {
+    title: "Parasympathetic Division",
+    prof: "Maintains homeostasis during calm conditions ('rest and digest'). Primary neurotransmitter: acetylcholine.",
+    eli5: "The 'chill out and digest' mode. Its messenger chemical is acetylcholine."
+  },
+  sympathetic: {
+    title: "Sympathetic Division",
+    prof: "Prepares the body for emergencies ('fight-or-flight'). Primary neurotransmitter: norepinephrine.",
+    eli5: "The 'danger, get ready!' mode. Its messenger chemical is norepinephrine."
+  }
+};
+let currentOrg = null;
+
+document.querySelectorAll(".org-box[data-org]").forEach(box => {
+  box.addEventListener("click", () => {
+    document.querySelectorAll(".org-box[data-org]").forEach(b => b.classList.remove("active"));
+    box.classList.add("active");
+    currentOrg = box.dataset.org;
+    updateOrgText(currentOrg);
+  });
+});
+
+function updateOrgText(key) {
+  const info = ORG_INFO[key];
+  if (!info) return;
+  document.getElementById("orgTitle").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById("orgDesc").textContent = text;
+  if (currentTab === "orgchart") {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"cns-pns-organization", title:"CNS vs. PNS: Organization & Function", unit:"Ch 10 · Nervous System I" });
+  APTools.mountHUD("#apHud","cns-pns-organization");
+  var BANK=[
+    { id:"np1", bloom:"Remember", outcome:"Nervous Tissue Composition",
+      q:"Nervous tissue is composed of which two types of cells?",
+      choices:["Neurons and neuroglia","Neurons and myocytes","Neuroglia and osteocytes","Neurons and fibroblasts"],
+      answer:0, why:"Nervous tissue is made up of neurons, which transmit impulses, and neuroglia, which support and protect them." },
+    { id:"np2", bloom:"Remember", outcome:"CNS Structures",
+      q:"The central nervous system (CNS) consists of the:",
+      choices:["Brain and spinal cord","Brain and cranial nerves","Spinal cord and spinal nerves","Cranial and spinal nerves only"],
+      answer:0, why:"The CNS is made up of the brain and spinal cord, encased within the skull and vertebral column." },
+    { id:"np3", bloom:"Remember", outcome:"PNS Structures",
+      q:"The peripheral nervous system (PNS) consists of the:",
+      choices:["Cranial nerves and spinal nerves","Brain and spinal cord only","Interneurons only","Meninges and cerebrospinal fluid"],
+      answer:0, why:"The PNS consists of the cranial nerves (extending from the brain) and spinal nerves (extending from the spinal cord)." },
+    { id:"np4", bloom:"Understand", outcome:"Sensory Function",
+      q:"Sensory receptors, once stimulated, transmit an impulse:",
+      choices:["Toward the CNS, via a sensory neuron","Away from the CNS, via a motor neuron","Directly to an effector","Only within the PNS, never reaching the CNS"],
+      answer:0, why:"Sensory (afferent) neurons carry impulses from receptors toward the central nervous system." },
+    { id:"np5", bloom:"Understand", outcome:"Integrative Function",
+      q:"Integration of sensory input — interpreting it and deciding on a response — occurs:",
+      choices:["In the CNS, via interneurons","In the PNS, via sensory neurons","In effectors directly","In neuroglia"],
+      answer:0, why:"Integration is the CNS's job, carried out by interneurons that link sensory input to an appropriate motor output." },
+    { id:"np6", bloom:"Understand", outcome:"Motor Function",
+      q:"Motor impulses travel from the CNS to effectors via:",
+      choices:["Motor (efferent) neurons in the PNS","Sensory (afferent) neurons in the PNS","Interneurons in the PNS","Neuroglia in the CNS"],
+      answer:0, why:"Motor (efferent) neurons carry impulses away from the CNS to effectors such as muscles and glands." },
+    { id:"np7", bloom:"Remember", outcome:"Effectors",
+      q:"Which of the following are considered effectors?",
+      choices:["Muscles and glands","Sensory receptors and neuroglia","Only skeletal muscle","Only the brain and spinal cord"],
+      answer:0, why:"Effectors are the structures that respond to motor impulses: muscles (which contract) and glands (which secrete)." },
+    { id:"np8", bloom:"Understand", outcome:"Somatic vs Autonomic",
+      q:"The somatic nervous system differs from the autonomic nervous system in that it:",
+      choices:["Controls skeletal muscle under voluntary/conscious control","Controls smooth and cardiac muscle under voluntary control","Is part of the CNS, not the PNS","Only carries sensory information"],
+      answer:0, why:"The somatic nervous system controls skeletal muscle voluntarily, while the autonomic nervous system controls smooth muscle, cardiac muscle, and glands involuntarily." },
+    { id:"np9", bloom:"Remember", outcome:"Parasympathetic",
+      q:"The parasympathetic division of the autonomic nervous system primarily uses which neurotransmitter and supports which state?",
+      choices:["Acetylcholine; homeostasis ('rest and digest')","Norepinephrine; fight-or-flight","Dopamine; muscle contraction","Serotonin; sensory input"],
+      answer:0, why:"The parasympathetic division releases acetylcholine and promotes calm, homeostatic 'rest and digest' functions." },
+    { id:"np10", bloom:"Remember", outcome:"Sympathetic",
+      q:"The sympathetic division of the autonomic nervous system primarily uses which neurotransmitter and supports which state?",
+      choices:["Norepinephrine; fight-or-flight","Acetylcholine; rest and digest","GABA; sedation","Glutamate; digestion"],
+      answer:0, why:"The sympathetic division releases norepinephrine and prepares the body for emergency 'fight-or-flight' responses." },
+    { id:"np11", bloom:"Apply", outcome:"Reflex Arc Order",
+      q:"In a simple withdrawal reflex (touching a hot surface), what is the correct order of signal transmission?",
+      choices:["Sensory receptor → sensory neuron → interneuron → motor neuron → effector","Motor neuron → interneuron → sensory neuron → effector → receptor","Effector → motor neuron → interneuron → sensory neuron → receptor","Interneuron → sensory neuron → receptor → motor neuron → effector"],
+      answer:0, why:"The reflex arc runs: stimulus detected by a sensory receptor, carried by a sensory neuron to the CNS, integrated by an interneuron, then carried by a motor neuron to the effector muscle." },
+    { id:"np12", bloom:"Understand", outcome:"Nervous Tissue vs Organs",
+      q:"Besides neurons and neuroglia, what else is required to form the organs of the nervous system?",
+      choices:["Blood vessels and connective tissue","Bone and cartilage only","Epithelial tissue exclusively","Adipose tissue"],
+      answer:0, why:"Nervous system organs are composed of neural tissue (neurons + neuroglia) plus supporting blood vessels and connective tissue." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"cns-pns-organization", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

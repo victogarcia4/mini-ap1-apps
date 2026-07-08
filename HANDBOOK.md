@@ -26,7 +26,7 @@ The applications are built as lightweight static HTML pages running directly in 
 
 ---
 
-## 🗺️ Current Module Registry (24 Apps)
+## 🗺️ Current Module Registry (29 Apps)
 
 The mini-apps are organized sequentially, corresponding to the A&P I course curriculum. Here is the list of apps built so far:
 
@@ -71,6 +71,13 @@ The mini-apps are organized sequentially, corresponding to the A&P I course curr
 - **App 9.2:** [Muscle Contraction Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/19.%20contraction-coupling-lab.html) (`19. contraction-coupling-lab.html`) *(Active)*
 - **App 9.3:** [Muscular Responses Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/20.%20muscular-responses-lab.html) (`20. muscular-responses-lab.html`) *(Active)*
 - **App 9.4:** [Smooth & Cardiac Muscle Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/21.%20smooth-cardiac-muscle-lab.html) (`21. smooth-cardiac-muscle-lab.html`) *(Active)*
+- **App 9.5:** [Muscle Mechanics & Actions Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/22.%20muscle-mechanics-actions-lab.html) (`22. muscle-mechanics-actions-lab.html`) *(Active)*
+
+### Chapter 10: Nervous System — Part I *(In Progress)*
+- **App 10.1:** [CNS vs. PNS: Organization & Function](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/23.%20cns-pns-organization-lab.html) (`23. cns-pns-organization-lab.html`) *(Active)*
+- **App 10.2:** [Protective Structures: Bone, Meninges & CSF](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/24.%20protective-structures-lab.html) (`24. protective-structures-lab.html`) *(Active)*
+- **App 10.3:** [Neuron Structure & Classification](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/25.%20neuron-structure-classification-lab.html) (`25. neuron-structure-classification-lab.html`) *(Active)*
+- **App 10.4:** [Neuroglial Cells](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/26.%20neuroglia-lab.html) (`26. neuroglia-lab.html`) *(Active)*
 
 ---
 

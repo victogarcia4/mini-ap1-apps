@@ -98,6 +98,12 @@ h1,h2,h3,.ui,.brandmark{font-family:"Bricolage Grotesque","Arial Black","Inter",
 .reset-btn{font-family:"Bricolage Grotesque",sans-serif;font-weight:900;font-size:13px;cursor:pointer;border:2px solid var(--ink);border-radius:4px;background:var(--card);color:var(--ink);box-shadow:var(--stamp-shadow);padding:10px 16px;transition:transform .14s,box-shadow .14s}
 .reset-btn:hover{transform:translate(-1px,-1px) rotate(-.4deg);box-shadow:4px 5px 0 rgba(22,21,15,.86);background:var(--lime)}
 
+/* ---- disclaimer ---- */
+.disclaimer{margin:36px 0 8px;padding:18px 22px;background:var(--card-2);border:1.5px solid var(--ink);border-radius:8px;box-shadow:var(--shadow)}
+.disclaimer h3{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:900;letter-spacing:.02em;margin:0 0 8px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.disclaimer h3::before{content:"⚠";font-size:15px;color:var(--red)}
+.disclaimer p{font-family:"Hanken Grotesk",sans-serif;font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0}
+
 /* ---- sections & module cards ---- */
 main{padding:20px 0 10px}
 .unit-h{font-family:"Bricolage Grotesque",sans-serif;font-size:clamp(22px,3vw,32px);font-weight:900;letter-spacing:-.04em;margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:12px}
@@ -201,6 +207,11 @@ footer{margin-top:40px;padding:30px 0 70px;border-top:1px dashed var(--ink-faint
   </div>
 
   <main id="units"></main>
+
+  <div class="disclaimer">
+    <h3>A note on accuracy</h3>
+    <p>Some illustrations in this app were generated with AI and may contain errors, mislabeled structures, or inaccuracies. This site is a study aid to help you review Anatomy &amp; Physiology concepts — it is <strong>not</strong> a substitute for your textbook, lecture material, or instructor. Always verify what you see here against a trusted source, and please report anything that looks wrong.</p>
+  </div>
 </div>
 
 <footer>
@@ -317,6 +328,26 @@ const MODULES = [
     title:"Smooth & Cardiac Muscle Lab",
     desc:"Multiunit vs. visceral smooth muscle, peristalsis, calmodulin contraction, intercalated discs, and a 3-way muscle tissue comparison.",
     file:"21. smooth-cardiac-muscle-lab.html", engine:true },
+  { chapter:9, num:"9.5", id:"muscle-mechanics-actions", accent:"blue",
+    title:"Muscle Mechanics & Actions Lab",
+    desc:"Origin vs. insertion, the three classes of levers, and agonist/antagonist/synergist/fixator muscle roles.",
+    file:"22. muscle-mechanics-actions-lab.html", engine:true },
+  { chapter:10, num:"10.1", id:"cns-pns-organization", accent:"purple",
+    title:"CNS vs. PNS: Organization & Function",
+    desc:"Nervous tissue composition, CNS vs. PNS, the sensory-integrative-motor loop, and the somatic/autonomic organizational chart.",
+    file:"23. cns-pns-organization-lab.html", engine:true },
+  { chapter:10, num:"10.2", id:"protective-structures", accent:"purple",
+    title:"Protective Structures: Bone, Meninges & CSF",
+    desc:"Cranial &amp; vertebral bone, the three meninges and their spaces, and the formation, circulation, and function of cerebrospinal fluid.",
+    file:"24. protective-structures-lab.html", engine:true },
+  { chapter:10, num:"10.3", id:"neuron-structure", accent:"purple",
+    title:"Neuron Structure & Classification",
+    desc:"Parts of a neuron, myelin/neurilemma/nodes of Ranvier, white vs. gray matter, and the structural and functional classes of neurons.",
+    file:"25. neuron-structure-classification-lab.html", engine:true },
+  { chapter:10, num:"10.4", id:"neuroglia", accent:"purple",
+    title:"Neuroglial Cells",
+    desc:"The four CNS glia (astrocyte, oligodendrocyte, microglia, ependyma), the two PNS glia (Schwann &amp; satellite), their functions, and axon vs. cell-body injury.",
+    file:"26. neuroglia-lab.html", engine:true },
   { chapter:5, num:"5.1", id:"epithelial-tissue", accent:"amber",
     title:"Epithelial Tissue Explorer",
     desc:"Structure, function and classification of epithelia.",

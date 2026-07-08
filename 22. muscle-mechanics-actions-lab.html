@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muscle Mechanics &amp; Actions Lab | Chapter 9 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-700: #1d4ed8;
+  --blue-600: #2563eb;
+  --blue-500: #3b82f6;
+  --blue-100: #dbeafe;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(29, 78, 216, 0.04);
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --purple-600: #9333ea;
+  --teal-600: #0e7490;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(37, 99, 235, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--blue-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--blue-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--blue-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--blue-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Controls */
+.step-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.step-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.step-btn:hover {
+  background: var(--slate-100);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+}
+.step-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.step-btn.active {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  border-color: var(--blue-700);
+}
+.step-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--blue-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--blue-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 480px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 520px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* ---- Tab 1 & Tab 3: rotating elbow scene ---- */
+.oi-stage-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.oi-stage { position: relative; width: 100%; max-width: 420px; height: 240px; border: 1.5px solid var(--border-color); border-radius: 8px; background: linear-gradient(to bottom, #f8fafc, #e2e8f0); overflow: hidden; }
+.oi-pivot { position: absolute; bottom: 44px; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: var(--slate-900); transform: translateX(-50%); z-index: 4; }
+.oi-tag { position: absolute; font-size: 10px; font-weight: 800; padding: 3px 8px; border: 1.5px solid var(--border-color); border-radius: 6px; background: #fff; opacity: 0; transition: opacity .4s ease; z-index: 5; }
+.oi-tag.show { opacity: 1; }
+.oi-origin-tag { top: 20px; left: 50%; transform: translateX(-50%); background: var(--blue-100); color: var(--blue-700); }
+.oi-insertion-tag { background: #fef3c7; color: var(--amber-500); }
+
+.oi-biceps { position: absolute; bottom: 50px; left: 50%; width: 22px; height: 68px; background: var(--red-600); border: 2px solid var(--border-color); border-radius: 10px; transform-origin: bottom center; transform: translateX(-56px) scaleY(1); transition: transform .6s ease, background .6s ease; }
+.oi-biceps.contracted { transform: translateX(-56px) scaleY(0.62); background: var(--red-700); }
+.oi-triceps { position: absolute; bottom: 50px; left: 50%; width: 18px; height: 64px; background: var(--slate-500); border: 2px solid var(--border-color); border-radius: 10px; transform-origin: bottom center; transform: translateX(38px) scaleY(1); transition: transform .6s ease, background .6s ease, opacity .6s ease; opacity: 0.75; }
+.oi-triceps.stretched { transform: translateX(38px) scaleY(1.12); opacity: 1; background: var(--slate-700); }
+
+.oi-forearm { position: absolute; bottom: 40px; left: 50%; width: 8px; height: 100px; background: var(--slate-700); transform-origin: bottom center; border-radius: 4px; transition: transform .6s ease; }
+.oi-forearm.rest { transform: translateX(-50%) rotate(78deg); }
+.oi-forearm.contracted { transform: translateX(-50%) rotate(8deg); }
+.oi-hand { position: absolute; width: 22px; height: 14px; background: var(--slate-100); border: 2px solid var(--border-color); border-radius: 4px; top: -12px; left: 50%; transform: translateX(-50%); }
+
+.oi-scapula { position: absolute; top: 14px; left: 50%; width: 60px; height: 26px; background: #fde68a; border: 2px solid var(--border-color); border-radius: 6px; transform: translateX(-50%); z-index: 2; }
+.oi-rhomboid { position: absolute; top: 42px; left: 50%; width: 26px; height: 16px; background: var(--purple-600); border: 2px solid var(--border-color); border-radius: 4px; transform: translateX(-50%); transition: box-shadow .4s ease, background .4s ease; }
+.oi-rhomboid.active { box-shadow: 0 0 0 4px rgba(147,51,234,.35); background: #7e22ce; }
+
+.oi-desc { font-size: 0.82rem; color: var(--slate-700); text-align: center; max-width: 480px; line-height: 1.45; }
+
+/* ---- Tab 2: Levers ---- */
+.lever-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+.lever-svg { width: 100%; max-width: 600px; height: auto; border: 1.5px solid var(--border-color); border-radius: 8px; background: #fff; display: block; margin: 0 auto; }
+.lever-example-box { background: var(--slate-100); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 12px 16px; margin-top: 14px; font-size: 0.84rem; line-height: 1.5; text-align: center; }
+.lever-example-box b { color: var(--blue-700); }
+
+/* ---- Tab 3: Role cards ---- */
+.role-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+.role-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 12px 10px; text-align: center; background: var(--slate-100); transition: background .3s ease, transform .3s ease, border-color .3s ease; }
+.role-card.active { transform: translateY(-3px); }
+.role-card.active.agonist { background: #fee2e2; border-color: var(--red-600); }
+.role-card.active.synergist { background: #dcfce7; border-color: var(--green-600); }
+.role-card.active.antagonist { background: #e2e8f0; border-color: var(--slate-700); }
+.role-card.active.fixator { background: #f3e8ff; border-color: var(--purple-600); }
+.role-card .role-title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 0.82rem; margin-bottom: 4px; }
+.role-card .role-muscle { font-size: 0.76rem; color: var(--slate-600); font-weight: 700; }
+@media (max-width: 640px) { .role-cards { grid-template-columns: 1fr 1fr; } }
+
+/* ---- Tab 4: Scenario Challenge ---- */
+.scenario-box { max-width: 560px; margin: 0 auto; }
+.scenario-counter { text-align: center; font-size: 0.78rem; color: var(--slate-500); font-weight: 700; margin-bottom: 8px; }
+.scenario-prompt { font-size: 0.98rem; font-weight: 700; color: var(--slate-900); text-align: center; margin-bottom: 16px; line-height: 1.5; }
+.scenario-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.scenario-choice { background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; padding: 12px; font-family: inherit; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color); }
+.scenario-choice:hover:not(:disabled) { background: var(--slate-100); }
+.scenario-choice.correct { background: #dcfce7; border-color: var(--green-600); }
+.scenario-choice.wrong { background: #fee2e2; border-color: var(--red-600); }
+.scenario-choice:disabled { cursor: not-allowed; opacity: 0.85; }
+.scenario-feedback { margin-top: 14px; padding: 12px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 0.84rem; line-height: 1.5; display: none; }
+.scenario-feedback.show { display: block; }
+.scenario-feedback.ok { background: #dcfce7; }
+.scenario-feedback.no { background: #fee2e2; }
+@media (max-width: 500px) { .scenario-choices { grid-template-columns: 1fr; } }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--blue-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Muscle Mechanics &amp; Actions Lab</h1>
+    <p>Origin/Insertion · Levers · Agonist/Antagonist/Synergist/Fixator · Ch 9</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Mechanics Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">A muscle's action depends on the joint it crosses and how it's attached. Explore how muscles act as levers — and how they cooperate with each other.</p>
+        <div class="info-box" id="infoBox">
+          <b>Muscle Mechanics &amp; Actions</b><br>
+          When a muscle contracts, its insertion is pulled toward its origin. Bones act as levers, and muscles rarely work alone — they cooperate in predictable roles.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('origininsertion', this)">Origin &amp; Insertion</button>
+      <button class="tab-btn" onclick="switchTab('levers', this)">Levers</button>
+      <button class="tab-btn" onclick="switchTab('roles', this)">Agonist/Antagonist/Synergist/Fixator</button>
+      <button class="tab-btn" onclick="switchTab('scenario', this)">Scenario Challenge</button>
+    </div>
+
+    <!-- Tab 1: Origin & Insertion -->
+    <div id="origininsertion" class="tab-content active">
+      <section class="panel">
+        <h2>Origin &amp; Insertion</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">The Insertion Moves Toward the Origin</h3>
+            <div class="oi-stage-wrap">
+              <div class="oi-stage" id="oiStage">
+                <div class="oi-scapula"></div>
+                <div class="oi-tag oi-origin-tag" id="oiOriginTag">Origin — fixed end</div>
+                <div class="oi-pivot"></div>
+                <div class="oi-biceps" id="oiBiceps"></div>
+                <div class="oi-triceps" id="oiTriceps"></div>
+                <div class="oi-forearm rest" id="oiForearm">
+                  <div class="oi-hand"></div>
+                  <div class="oi-tag oi-insertion-tag" id="oiInsertionTag" style="top:-30px;">Insertion — movable end</div>
+                </div>
+              </div>
+              <div class="oi-desc" id="oiDesc">At rest: the biceps brachii's origin (scapula) is fixed. Click "Contract" to see the insertion (radius, near the elbow) get pulled toward it.</div>
+              <div class="step-controls">
+                <button class="step-btn" onclick="oiContract()">Contract</button>
+                <button class="step-btn" onclick="oiReset()">↻ Reset</button>
+              </div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Elbow Flexors &amp; Extensor</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch9-elbow-flexion-extension.png" alt="Extended and flexed elbow showing biceps brachii, brachialis, brachioradialis, and triceps brachii" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Biceps brachii, brachialis, and brachioradialis originate above the elbow and insert on the radius/ulna — when they contract, the forearm (insertion) swings up toward the shoulder (origin). Triceps brachii inserts on the olecranon and does the opposite: it extends the elbow.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Levers -->
+    <div id="levers" class="tab-content">
+      <section class="panel">
+        <h2>Bones as Levers</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Fulcrum (F) · Effort (E) · Load (L)</h3>
+            <div class="lever-controls">
+              <button class="step-btn active" id="leverBtn1" onclick="selectLeverClass(1)">1st-Class Lever</button>
+              <button class="step-btn" id="leverBtn2" onclick="selectLeverClass(2)">2nd-Class Lever</button>
+              <button class="step-btn" id="leverBtn3" onclick="selectLeverClass(3)">3rd-Class Lever</button>
+            </div>
+            <svg id="leverSvg" viewBox="0 0 600 200" class="lever-svg">
+              <line x1="40" y1="170" x2="560" y2="170" stroke="#cbd5e1" stroke-width="3"/>
+              <g id="leverBeamGroup">
+                <rect id="leverBeam" x="80" y="93" width="440" height="14" rx="4" fill="#334155" stroke="#0f172a" stroke-width="2"/>
+              </g>
+              <polygon id="leverFulcrumTri" points="140,110 128,140 152,140" fill="#f59e0b" stroke="#0f172a" stroke-width="2"/>
+              <g id="leverLabelE"><circle r="14" fill="#dc2626" stroke="#0f172a" stroke-width="2"/><text text-anchor="middle" dy="5" font-size="13" font-weight="800" fill="#fff">E</text></g>
+              <g id="leverLabelF"><circle r="14" fill="#f59e0b" stroke="#0f172a" stroke-width="2"/><text text-anchor="middle" dy="5" font-size="13" font-weight="800" fill="#fff">F</text></g>
+              <g id="leverLabelL"><circle r="14" fill="#2563eb" stroke="#0f172a" stroke-width="2"/><text text-anchor="middle" dy="5" font-size="13" font-weight="800" fill="#fff">L</text></g>
+            </svg>
+            <div class="step-controls">
+              <button class="step-btn" onclick="tipLever()">⚖ Tip Lever</button>
+            </div>
+            <div class="lever-example-box" id="leverExampleBox">
+              <b>1st-Class Lever:</b> Effort and load are on opposite sides of the fulcrum. Example: nodding the head — the atlanto-occipital joint is the fulcrum, posterior neck muscles provide effort, and the weight of the face/skull is the load.
+            </div>
+
+            <div class="video-ref" id="leverImageRef" style="display:none;">
+              <h4 class="video-ref-title">Reference — 3rd-Class Lever at the Elbow</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch9-elbow-flexion-extension.png" alt="Elbow flexion showing the fulcrum, effort, and load of a third-class lever" loading="lazy">
+              </div>
+              <p class="video-ref-caption">The elbow joint is the fulcrum (F). The biceps brachii/brachialis insert close to the elbow and provide the effort (E). The forearm and hand, farther from the joint, are the load (L) — effort sits between fulcrum and load, the hallmark of a 3rd-class lever.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Agonist / Antagonist / Synergist / Fixator -->
+    <div id="roles" class="tab-content">
+      <section class="panel">
+        <h2>How Muscles Cooperate</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Agonist · Synergist · Antagonist · Fixator</h3>
+            <div class="oi-stage-wrap">
+              <div class="oi-stage" id="roleStage">
+                <div class="oi-scapula"></div>
+                <div class="oi-rhomboid" id="roleRhomboid"></div>
+                <div class="oi-pivot"></div>
+                <div class="oi-biceps" id="roleBiceps"></div>
+                <div class="oi-triceps" id="roleTriceps"></div>
+                <div class="oi-forearm rest" id="roleForearm"><div class="oi-hand"></div></div>
+              </div>
+              <div class="oi-desc" id="roleDesc">Click "Flex Elbow" to see each muscle's role during this movement.</div>
+              <div class="step-controls">
+                <button class="step-btn" onclick="rolesFlex()">Flex Elbow</button>
+                <button class="step-btn" onclick="rolesReset()">↻ Reset</button>
+              </div>
+            </div>
+            <div class="role-cards">
+              <div class="role-card" id="roleCardAgonist"><div class="role-title">AGONIST</div><div class="role-muscle">Biceps brachii</div></div>
+              <div class="role-card" id="roleCardSynergist"><div class="role-title">SYNERGIST</div><div class="role-muscle">Brachialis</div></div>
+              <div class="role-card" id="roleCardAntagonist"><div class="role-title">ANTAGONIST</div><div class="role-muscle">Triceps brachii</div></div>
+              <div class="role-card" id="roleCardFixator"><div class="role-title">FIXATOR</div><div class="role-muscle">Rhomboideus</div></div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Muscle Actions During a Biceps Curl</h4>
+              <div class="video-ref-frame" style="max-width: 460px;">
+                <img src="assets/ch9-origin-insertion-agonist-antagonist.png" alt="Labeled diagram of prime mover, synergist, antagonist, and fixator during a biceps curl" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Prime mover (agonist) = biceps brachii. Synergist = brachialis. Antagonist = triceps brachii. Fixator = a muscle that holds the scapula firmly in place, such as the rhomboideus.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Scenario Challenge -->
+    <div id="scenario" class="tab-content">
+      <section class="panel">
+        <h2>Scenario Challenge</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Same Muscle, Different Role — It Depends on the Movement</h3>
+            <div class="scenario-box">
+              <div class="scenario-counter" id="scenarioCounter">Scenario 1 / 4</div>
+              <div class="scenario-prompt" id="scenarioPrompt"></div>
+              <div class="scenario-choices" id="scenarioChoices"></div>
+              <div class="scenario-feedback" id="scenarioFeedback"></div>
+              <div class="step-controls">
+                <button class="step-btn" id="scenarioNextBtn" onclick="nextScenario()" style="display:none;">Next Scenario →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Muscle Mechanics &amp; Actions</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master origin vs. insertion, the three classes of levers, and agonist/antagonist/synergist/fixator muscle roles.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive animations model how skeletal muscles produce movement. Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "origininsertion";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  if (currentTab === "levers") updateLeverText();
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  if (currentTab === "origininsertion") {
+    infoBox.innerHTML = "<b>Origin &amp; Insertion:</b> The origin is a muscle's fixed, anchored attachment. The insertion is the movable attachment — when the muscle shortens, the insertion is pulled toward the origin.";
+  } else if (currentTab === "roles") {
+    infoBox.innerHTML = "<b>Muscle Roles:</b> The agonist (prime mover) produces a movement, the antagonist opposes/relaxes, synergists assist the agonist, and fixators stabilize a bone so the prime mover can act efficiently.";
+  } else if (currentTab === "scenario") {
+    infoBox.innerHTML = "<b>Roles Are Movement-Specific:</b> The same muscle can be an agonist for one movement and an antagonist for the opposite movement.";
+  }
+  updateAllTexts();
+};
+
+/* =========================================================
+   TAB 1 — Origin & Insertion
+   ========================================================= */
+function oiContract() {
+  document.getElementById("oiBiceps").classList.add("contracted");
+  document.getElementById("oiTriceps").classList.add("stretched");
+  document.getElementById("oiForearm").classList.remove("rest");
+  document.getElementById("oiForearm").classList.add("contracted");
+  document.getElementById("oiOriginTag").classList.add("show");
+  document.getElementById("oiInsertionTag").classList.add("show");
+  document.getElementById("oiDesc").textContent = eli5Mode
+    ? "The biceps gets shorter and pulls the forearm (insertion) up toward the shoulder (origin), which never moves."
+    : "As the biceps brachii shortens, the insertion (radial tuberosity) is pulled toward the origin (scapula), which remains fixed.";
+}
+function oiReset() {
+  document.getElementById("oiBiceps").classList.remove("contracted");
+  document.getElementById("oiTriceps").classList.remove("stretched");
+  document.getElementById("oiForearm").classList.add("rest");
+  document.getElementById("oiForearm").classList.remove("contracted");
+  document.getElementById("oiOriginTag").classList.remove("show");
+  document.getElementById("oiInsertionTag").classList.remove("show");
+  document.getElementById("oiDesc").textContent = 'At rest: the biceps brachii\'s origin (scapula) is fixed. Click "Contract" to see the insertion (radius, near the elbow) get pulled toward it.';
+}
+
+/* =========================================================
+   TAB 2 — Levers
+   ========================================================= */
+const LEVER_CONFIGS = {
+  1: {
+    fulcrumX: 300, effortX: 140, loadX: 460, order: "E–F–L",
+    prof: "Effort and load are on opposite sides of the fulcrum. Example: nodding the head — the atlanto-occipital joint is the fulcrum, posterior neck muscles provide effort, and the weight of the face/skull is the load.",
+    eli5: "Picture a seesaw: the pivot is in the middle, with a push on one side and a weight on the other — like nodding your head."
+  },
+  2: {
+    fulcrumX: 140, effortX: 460, loadX: 300, order: "F–L–E",
+    prof: "The load sits between the fulcrum and the effort. Example: a standing calf raise — the ball of the foot is the fulcrum, body weight is the load, and the calf muscle (gastrocnemius) pulling up on the heel is the effort.",
+    eli5: "Think of a wheelbarrow: the wheel (fulcrum) is at one end, the weight is in the middle, and you lift at the other end — like rising up on your toes."
+  },
+  3: {
+    fulcrumX: 140, effortX: 260, loadX: 460, order: "F–E–L",
+    prof: "The effort sits between the fulcrum and the load. Example: elbow flexion — the elbow joint is the fulcrum, the biceps brachii inserts close to the joint (effort), and the hand/forearm farther away is the load. Most limb muscles work this way.",
+    eli5: "Like using a broom: your bottom hand is the pivot, your top hand pulls (effort) closer in, and the far end (broom head) is the load — most of your arm muscles work this way."
+  }
+};
+let currentLeverClass = 1;
+
+function positionLeverLabel(id, x, y) {
+  document.getElementById(id).setAttribute("transform", "translate(" + x + "," + y + ")");
+}
+
+function selectLeverClass(n) {
+  currentLeverClass = n;
+  [1, 2, 3].forEach(i => document.getElementById("leverBtn" + i).classList.toggle("active", i === n));
+  const cfg = LEVER_CONFIGS[n];
+  const beamY = 100;
+  positionLeverLabel("leverLabelE", cfg.effortX, beamY);
+  positionLeverLabel("leverLabelF", cfg.fulcrumX, beamY);
+  positionLeverLabel("leverLabelL", cfg.loadX, beamY);
+
+  const tri = document.getElementById("leverFulcrumTri");
+  const fx = cfg.fulcrumX;
+  tri.setAttribute("points", (fx - 12) + ",110 " + (fx - 24) + ",140 " + (fx + 24) + ",140");
+  document.getElementById("leverBeamGroup").style.transform = "none";
+  document.getElementById("leverBeamGroup").style.transformOrigin = fx + "px " + beamY + "px";
+
+  document.getElementById("leverImageRef").style.display = (n === 3) ? "flex" : "none";
+  updateLeverText();
+}
+
+function updateLeverText() {
+  const cfg = LEVER_CONFIGS[currentLeverClass];
+  document.getElementById("leverExampleBox").innerHTML =
+    "<b>" + currentLeverClass + (currentLeverClass === 1 ? "st" : currentLeverClass === 2 ? "nd" : "rd") + "-Class Lever (" + cfg.order + "):</b> " +
+    (eli5Mode ? cfg.eli5 : cfg.prof);
+}
+
+function tipLever() {
+  const cfg = LEVER_CONFIGS[currentLeverClass];
+  const group = document.getElementById("leverBeamGroup");
+  group.style.transition = "transform .5s ease";
+  group.style.transformOrigin = cfg.fulcrumX + "px 100px";
+  group.style.transform = "rotate(-9deg)";
+  setTimeout(() => { group.style.transform = "none"; }, 650);
+}
+
+selectLeverClass(1);
+
+/* =========================================================
+   TAB 3 — Agonist / Antagonist / Synergist / Fixator
+   ========================================================= */
+function rolesFlex() {
+  document.getElementById("roleBiceps").classList.add("contracted");
+  document.getElementById("roleTriceps").classList.add("stretched");
+  document.getElementById("roleForearm").classList.remove("rest");
+  document.getElementById("roleForearm").classList.add("contracted");
+  document.getElementById("roleRhomboid").classList.add("active");
+  document.getElementById("roleCardAgonist").classList.add("active", "agonist");
+  document.getElementById("roleCardSynergist").classList.add("active", "synergist");
+  document.getElementById("roleCardAntagonist").classList.add("active", "antagonist");
+  document.getElementById("roleCardFixator").classList.add("active", "fixator");
+  document.getElementById("roleDesc").textContent = eli5Mode
+    ? "Biceps does the main pulling (agonist), brachialis helps it (synergist), triceps lets go and stretches (antagonist), and rhomboideus holds the shoulder blade steady (fixator) so the pull actually works."
+    : "During elbow flexion: biceps brachii is the agonist (prime mover), brachialis is a synergist, triceps brachii is the antagonist (relaxes/lengthens), and the rhomboideus acts as a fixator, stabilizing the scapula.";
+}
+function rolesReset() {
+  document.getElementById("roleBiceps").classList.remove("contracted");
+  document.getElementById("roleTriceps").classList.remove("stretched");
+  document.getElementById("roleForearm").classList.add("rest");
+  document.getElementById("roleForearm").classList.remove("contracted");
+  document.getElementById("roleRhomboid").classList.remove("active");
+  ["roleCardAgonist", "roleCardSynergist", "roleCardAntagonist", "roleCardFixator"].forEach(id => {
+    document.getElementById(id).classList.remove("active", "agonist", "synergist", "antagonist", "fixator");
+  });
+  document.getElementById("roleDesc").textContent = 'Click "Flex Elbow" to see each muscle\'s role during this movement.';
+}
+
+/* =========================================================
+   TAB 4 — Scenario Challenge
+   ========================================================= */
+const SCENARIOS = [
+  {
+    prompt: "During elbow flexion, the triceps brachii relaxes and lengthens while the biceps does the work. The triceps brachii is acting as the:",
+    choices: ["Antagonist", "Agonist", "Synergist", "Fixator"],
+    answer: 0,
+    why: "During elbow flexion, the triceps brachii is the antagonist — it opposes and relaxes as the biceps brachii (agonist) shortens."
+  },
+  {
+    prompt: "Now the person straightens the elbow (extension). This time, the triceps brachii is the prime mover. It is now acting as the:",
+    choices: ["Agonist", "Antagonist", "Fixator", "Synergist"],
+    answer: 0,
+    why: "Roles are movement-specific: for extension, the triceps brachii becomes the agonist (prime mover), and the biceps brachii becomes the antagonist."
+  },
+  {
+    prompt: "While the biceps brachii flexes the elbow, the brachialis also crosses the joint and helps pull the forearm up. The brachialis is acting as a:",
+    choices: ["Synergist", "Agonist", "Antagonist", "Fixator"],
+    answer: 0,
+    why: "The brachialis assists the prime mover (biceps brachii) during elbow flexion, making it a synergist."
+  },
+  {
+    prompt: "During elbow flexion, the rhomboideus contracts to hold the scapula firmly in place so the biceps brachii has a stable origin to pull against. The rhomboideus is acting as a:",
+    choices: ["Fixator", "Agonist", "Antagonist", "Synergist"],
+    answer: 0,
+    why: "A fixator stabilizes a bone (here, the scapula) so the prime mover can act efficiently — it doesn't directly cause the movement."
+  }
+];
+let scenarioIndex = 0;
+
+function renderScenario() {
+  const s = SCENARIOS[scenarioIndex];
+  document.getElementById("scenarioCounter").textContent = "Scenario " + (scenarioIndex + 1) + " / " + SCENARIOS.length;
+  document.getElementById("scenarioPrompt").textContent = s.prompt;
+  const choicesEl = document.getElementById("scenarioChoices");
+  choicesEl.innerHTML = "";
+  s.choices.forEach((choice, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "scenario-choice";
+    btn.type = "button";
+    btn.textContent = choice;
+    btn.addEventListener("click", () => answerScenario(idx, btn));
+    choicesEl.appendChild(btn);
+  });
+  const fb = document.getElementById("scenarioFeedback");
+  fb.className = "scenario-feedback";
+  fb.textContent = "";
+  document.getElementById("scenarioNextBtn").style.display = "none";
+}
+
+function answerScenario(idx, btn) {
+  const s = SCENARIOS[scenarioIndex];
+  const correct = idx === s.answer;
+  document.querySelectorAll("#scenarioChoices .scenario-choice").forEach((b, i) => {
+    b.disabled = true;
+    if (i === s.answer) b.classList.add("correct");
+  });
+  if (!correct) btn.classList.add("wrong");
+  const fb = document.getElementById("scenarioFeedback");
+  fb.classList.add("show", correct ? "ok" : "no");
+  fb.textContent = (correct ? "✓ Correct — " : "✗ Not quite — ") + s.why;
+  document.getElementById("scenarioNextBtn").style.display = "inline-block";
+}
+
+function nextScenario() {
+  scenarioIndex = (scenarioIndex + 1) % SCENARIOS.length;
+  renderScenario();
+}
+
+renderScenario();
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"muscle-mechanics-actions", title:"Muscle Mechanics & Actions Lab", unit:"Ch 9 · Muscular System" });
+  APTools.mountHUD("#apHud","muscle-mechanics-actions");
+  var BANK=[
+    { id:"mm1", bloom:"Remember", outcome:"Origin",
+      q:"The origin of a muscle is:",
+      choices:["Its fixed, anchored attachment point","Its movable attachment point","Always located on the humerus","The site of the neuromuscular junction"],
+      answer:0, why:"The origin is the immovable (anchored) end of a muscle's attachment to bone." },
+    { id:"mm2", bloom:"Remember", outcome:"Insertion",
+      q:"When a muscle contracts, its insertion:",
+      choices:["Is pulled toward the origin","Stays completely still","Moves away from the origin","Detaches from the bone"],
+      answer:0, why:"The insertion is the movable attachment. When a muscle shortens, the insertion is pulled toward the fixed origin." },
+    { id:"mm3", bloom:"Understand", outcome:"1st-Class Lever",
+      q:"In a first-class lever, the arrangement is:",
+      choices:["Effort and load on opposite sides of the fulcrum","Load between the fulcrum and the effort","Effort between the fulcrum and the load","There is no fulcrum"],
+      answer:0, why:"A first-class lever places the fulcrum between the effort and the load, such as at the atlanto-occipital joint during head nodding." },
+    { id:"mm4", bloom:"Understand", outcome:"2nd-Class Lever",
+      q:"A standing calf raise (rising onto the toes) is an example of which class of lever?",
+      choices:["Second-class lever — load between fulcrum and effort","First-class lever — fulcrum between effort and load","Third-class lever — effort between fulcrum and load","Not a lever system"],
+      answer:0, why:"In a calf raise, the ball of the foot is the fulcrum, body weight is the load in the middle, and the calf muscle pulling the heel up is the effort at the far end — a second-class lever." },
+    { id:"mm5", bloom:"Apply", outcome:"3rd-Class Lever",
+      q:"Most limb muscles, including elbow flexion by the biceps brachii, operate as which class of lever?",
+      choices:["Third-class — effort is between the fulcrum and the load","First-class — fulcrum is between effort and load","Second-class — load is between fulcrum and effort","Fourth-class lever"],
+      answer:0, why:"In elbow flexion, the elbow joint is the fulcrum, the biceps brachii's insertion (effort) is close to the joint, and the hand (load) is farther away — a third-class lever, the most common type in the limbs." },
+    { id:"mm6", bloom:"Remember", outcome:"Agonist",
+      q:"The muscle primarily responsible for producing a specific movement is called the:",
+      choices:["Agonist (prime mover)", "Antagonist", "Synergist", "Fixator"],
+      answer:0, why:"The agonist, or prime mover, is the main muscle responsible for a given movement." },
+    { id:"mm7", bloom:"Remember", outcome:"Antagonist",
+      q:"During elbow flexion, the triceps brachii relaxes and lengthens. It is acting as the:",
+      choices:["Antagonist","Agonist","Synergist","Fixator"],
+      answer:0, why:"The antagonist opposes the action of the prime mover and relaxes (or stretches) as the agonist contracts." },
+    { id:"mm8", bloom:"Understand", outcome:"Synergist",
+      q:"A muscle that assists the prime mover in producing a movement is called a:",
+      choices:["Synergist","Antagonist","Fixator","Agonist"],
+      answer:0, why:"Synergists assist the agonist, such as the brachialis assisting the biceps brachii during elbow flexion." },
+    { id:"mm9", bloom:"Understand", outcome:"Fixator",
+      q:"A muscle that stabilizes a bone so the prime mover can act more efficiently is called a:",
+      choices:["Fixator","Synergist","Agonist","Antagonist"],
+      answer:0, why:"Fixators stabilize the origin of the prime mover — for example, the rhomboideus stabilizing the scapula during elbow flexion." },
+    { id:"mm10", bloom:"Apply", outcome:"Role Reversal",
+      q:"When the elbow is extended (straightened) instead of flexed, the triceps brachii becomes the:",
+      choices:["Agonist","Antagonist","Fixator only","It has no role in extension"],
+      answer:0, why:"Muscle roles are specific to the movement, not fixed. The triceps brachii is the antagonist during flexion but becomes the agonist during extension." },
+    { id:"mm11", bloom:"Apply", outcome:"Fixator Example",
+      q:"Which muscle is given as an example of a fixator that stabilizes the scapula during a biceps curl?",
+      choices:["Rhomboideus","Triceps brachii","Brachioradialis","Deltoid"],
+      answer:0, why:"The rhomboideus is a classic fixator example, holding the scapula in place so the biceps brachii has a stable origin to pull against." },
+    { id:"mm12", bloom:"Understand", outcome:"Lever Purpose",
+      q:"In the skeletal lever system, which structure always functions as the fulcrum?",
+      choices:["The joint","The prime mover muscle","The tendon insertion","The bone's distal end, regardless of joint location"],
+      answer:0, why:"The joint acts as the fulcrum (pivot point) around which the lever (bone) moves, powered by the effort (muscle contraction) against a load." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"muscle-mechanics-actions", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

@@ -231,8 +231,14 @@
     "sensory-homeostasis": {
       title: "Sensory Homeostasis Lab",
       subtitle: "Receptors as feedback-loop detectors",
-      image: "",
-      imageAlt: "",
+      image: "assets/ch12-sensory-homeostasis-feedback-loop.png",
+      imageAlt: "Sensory feedback loop for homeostasis",
+      tabImages: [
+        { src: "assets/ch12-sensory-homeostasis-feedback-loop.png", alt: "Sensory feedback loop for homeostasis" },
+        { src: "assets/ch12-sensory-homeostasis-feedback-loop.png", alt: "Sensory adaptation within a sensory feedback loop" },
+        { src: "assets/ch12-pain-protection-homeostasis.png", alt: "Pain as a protective homeostatic signal" },
+        { src: "assets/ch12-sensory-homeostasis-feedback-loop.png", alt: "Sensory examples that support homeostasis" }
+      ],
       intro: "Sensory systems help homeostasis by detecting change, reporting it to the CNS, and supporting corrective responses.",
       tabs: [
         { title: "Feedback Logic", body: "A receptor detects change, an afferent pathway carries input to the CNS, integration interprets the signal, and an efferent response helps restore or protect function.", eli5: "Detect, report, decide, respond." },
@@ -259,7 +265,7 @@
       image: "assets/ch12-healthy-eye-cataract-glaucoma.png",
       imageAlt: "Healthy eye, cataract, and glaucoma comparison",
       tabImages: [
-        null,
+        { src: "assets/ch12-lifespan-sensory-aging-overview.png", alt: "Life-span changes in hearing and vision overview" },
         { src: "assets/ch12-hearing-reflex-ossicles.png", alt: "Human ear anatomy with ossicles, cochlea, basilar membrane, and hair cells" },
         { src: "assets/ch12-healthy-eye-cataract-glaucoma.png", alt: "Healthy eye, cataract, and glaucoma comparison" },
         { src: "assets/ch12-healthy-eye-cataract-glaucoma.png", alt: "Healthy eye, cataract, and glaucoma comparison" }

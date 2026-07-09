@@ -182,6 +182,12 @@
       subtitle: "Sound waves to auditory cortex",
       image: "assets/ch12-auditory-pathway.png",
       imageAlt: "Auditory pathway",
+      tabImages: [
+        { src: "assets/ch12-auditory-pathway.png", alt: "Auditory pathway" },
+        { src: "assets/ch12-auditory-pathway.png", alt: "Auditory pathway" },
+        { src: "assets/ch12-auditory-pathway.png", alt: "Auditory pathway" },
+        null
+      ],
       intro: "Sound waves become mechanical vibration, then fluid waves, then hair-cell signals, then cortical perception.",
       tabs: [
         { title: "Mechanical Route", body: "Sound travels auricle, external acoustic meatus, tympanic membrane, malleus, incus, stapes, and oval window.", eli5: "Sound is passed from ear flap to canal to eardrum to three bones to the inner ear door." },
@@ -189,6 +195,7 @@
         { title: "Neural Route", body: "After hair cells reach threshold, impulses travel on the cochlear branch of CN VIII to thalamus and primary auditory cortex in temporal lobes.", eli5: "Hair cells start the nerve message to the hearing cortex." },
         { title: "Frequency Map", body: "Different regions of the cochlear duct sense different frequencies of vibration.", eli5: "Different cochlea spots listen for different pitches." }
       ],
+      interactiveTabs: { 3: "corti-transduction" },
       cards: [["1", "Auricle"], ["2", "External acoustic meatus"], ["3", "Tympanic membrane"], ["4-6", "Malleus, incus, stapes"], ["7", "Oval window"], ["8-10", "Fluids and hair cells"], ["11-13", "CN VIII, thalamus, auditory cortex"]],
       cases: [["The cochlear branch is damaged.", "VIII", "Auditory signals travel on CN VIII."], ["The final interpretation area is affected.", "temporal", "Primary auditory cortex is temporal."], ["Different pitch regions are involved.", "frequency", "Cochlear duct regions sense different frequencies."]],
       quiz: [
@@ -301,18 +308,19 @@
   var style = document.createElement("style");
   style.textContent = `
     :root{--teal:#0f766e;--teal2:#ccfbf1;--ink:#0f172a;--muted:#64748b;--paper:#FAF9F5;--card:#fff;--soft:#f1f5f9;--shadow:4px 4px 0 #0f172a;--red:#dc2626;--green:#16a34a;--amber:#f59e0b}
-    *{box-sizing:border-box}body{margin:0;font-family:"Hanken Grotesk",sans-serif;color:var(--ink);background:radial-gradient(900px 500px at 80% -10%,rgba(15,118,110,.08),transparent),var(--paper);line-height:1.5}.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 24px;background:rgba(255,255,255,.92);border-bottom:2px solid var(--ink);backdrop-filter:blur(8px)}h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif}.brand h1{font-size:1.25rem;margin:0;color:var(--teal);font-weight:900;letter-spacing:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:.78rem}.topbar-right{display:flex;align-items:center;gap:12px}.switch{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:800;cursor:pointer}.switch input{display:none}.track{width:44px;height:24px;border-radius:12px;background:#cbd5e1;border:1.5px solid var(--ink);position:relative}.track:after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--ink);transition:.2s}.switch input:checked+.track{background:var(--teal2)}.switch input:checked+.track:after{transform:translateX(20px)}.btn-link,.tab-btn,.card-btn,.choice-btn{border:1.5px solid var(--ink);border-radius:8px;padding:9px 13px;background:#fff;box-shadow:2px 2px 0 var(--ink);font-family:inherit;font-weight:900;color:var(--ink);text-decoration:none;cursor:pointer}.layout{max-width:1400px;margin:0 auto;padding:20px 24px 40px;display:grid;grid-template-columns:340px 1fr;gap:20px}.panel{background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:var(--shadow);margin-bottom:20px}.panel h2{font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0;padding:14px 16px 0}.body{padding:16px}.info-box{background:var(--soft);border:1.5px solid var(--ink);border-radius:8px;padding:14px;font-size:.84rem}.info-box b{color:var(--teal)}.tab-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;border-bottom:2px solid var(--ink);padding-bottom:8px}.tab-btn.active,.card-btn.active{background:var(--teal2);color:var(--teal);box-shadow:none;transform:translate(2px,2px)}.stage{border:2px solid var(--ink);border-radius:10px;background:#fff;padding:18px;min-height:480px}.stage-title{text-align:center;color:var(--teal);font-size:1rem;font-weight:900;margin:0 0 12px}.tab-content{display:none}.tab-content.active{display:block}.image-frame{border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:#fff;margin-top:14px}.image-frame img{display:block;width:100%;height:auto}.caption{border-top:1.5px solid var(--ink);padding:10px 12px;color:var(--muted);font-size:.78rem}.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.concept-card{border:1.5px solid var(--ink);border-radius:8px;background:#fff;padding:12px;box-shadow:2px 2px 0 var(--ink)}.concept-card b{display:block;color:var(--teal);margin-bottom:5px}.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.flow-step{border:1.5px solid var(--ink);border-radius:8px;padding:12px;background:#fff;text-align:center;font-weight:900;min-height:70px;display:flex;align-items:center;justify-content:center}.choice-row{display:flex;gap:10px;flex-wrap:wrap}.feedback{display:none;margin-top:14px}.feedback.ok{display:block;background:#dcfce7;border-color:var(--green)}.feedback.no{display:block;background:#fee2e2;border-color:var(--red)}.ap-study-section{max-width:1400px;margin:8px auto 40px;padding:0 24px}.ap-study-card{background:#fff;border:2px solid var(--ink);border-radius:10px;box-shadow:var(--shadow);padding:22px 24px}.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.ap-study-head h2{font-size:1.15rem;color:var(--teal);margin:0}.ap-hub-link{margin-left:auto}.footer-note{max-width:1400px;margin:0 auto;padding:10px 24px 30px;color:var(--muted);font-size:.74rem}@media(max-width:900px){.layout{grid-template-columns:1fr}}`;
+    *{box-sizing:border-box}body{margin:0;font-family:"Hanken Grotesk",sans-serif;color:var(--ink);background:radial-gradient(900px 500px at 80% -10%,rgba(15,118,110,.08),transparent),var(--paper);line-height:1.5}.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 24px;background:rgba(255,255,255,.92);border-bottom:2px solid var(--ink);backdrop-filter:blur(8px)}h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif}.brand h1{font-size:1.25rem;margin:0;color:var(--teal);font-weight:900;letter-spacing:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:.78rem}.topbar-right{display:flex;align-items:center;gap:12px}.switch{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:800;cursor:pointer}.switch input{display:none}.track{width:44px;height:24px;border-radius:12px;background:#cbd5e1;border:1.5px solid var(--ink);position:relative}.track:after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--ink);transition:.2s}.switch input:checked+.track{background:var(--teal2)}.switch input:checked+.track:after{transform:translateX(20px)}.btn-link,.tab-btn,.card-btn,.choice-btn{border:1.5px solid var(--ink);border-radius:8px;padding:9px 13px;background:#fff;box-shadow:2px 2px 0 var(--ink);font-family:inherit;font-weight:900;color:var(--ink);text-decoration:none;cursor:pointer}.layout{max-width:1400px;margin:0 auto;padding:20px 24px 40px;display:grid;grid-template-columns:340px 1fr;gap:20px}.panel{background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:var(--shadow);margin-bottom:20px}.panel h2{font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0;padding:14px 16px 0}.body{padding:16px}.info-box{background:var(--soft);border:1.5px solid var(--ink);border-radius:8px;padding:14px;font-size:.84rem}.info-box b{color:var(--teal)}.tab-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;border-bottom:2px solid var(--ink);padding-bottom:8px}.tab-btn.active,.card-btn.active{background:var(--teal2);color:var(--teal);box-shadow:none;transform:translate(2px,2px)}.stage{border:2px solid var(--ink);border-radius:10px;background:#fff;padding:18px;min-height:480px}.stage-title{text-align:center;color:var(--teal);font-size:1rem;font-weight:900;margin:0 0 12px}.tab-content{display:none}.tab-content.active{display:block}.image-frame{border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:#fff;margin-top:14px}.image-frame img{display:block;width:100%;height:auto}.caption{border-top:1.5px solid var(--ink);padding:10px 12px;color:var(--muted);font-size:.78rem}.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.concept-card{border:1.5px solid var(--ink);border-radius:8px;background:#fff;padding:12px;box-shadow:2px 2px 0 var(--ink)}.concept-card b{display:block;color:var(--teal);margin-bottom:5px}.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.flow-step{border:1.5px solid var(--ink);border-radius:8px;padding:12px;background:#fff;text-align:center;font-weight:900;min-height:70px;display:flex;align-items:center;justify-content:center}.choice-row{display:flex;gap:10px;flex-wrap:wrap}.feedback{display:none;margin-top:14px}.feedback.ok{display:block;background:#dcfce7;border-color:var(--green)}.feedback.no{display:block;background:#fee2e2;border-color:var(--red)}.corti-widget{margin-top:14px;background:#0f172a;color:#f1f5f9;border:2px solid var(--ink);border-radius:10px;padding:16px}.corti-widget h4{margin:0 0 6px;color:#f1f5f9;font-size:1rem}.corti-widget p{margin:0 0 14px;color:#94a3b8;font-size:.84rem}.corti-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}.corti-control label{display:block;color:#38bdf8;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.corti-control input{width:100%}.corti-readout{display:flex;justify-content:space-between;color:#94a3b8;font-size:.72rem}.corti-canvas-wrap{height:360px;border:1.5px solid #334155;border-radius:8px;overflow:hidden;background:#0f172a}.corti-canvas{width:100%;height:100%;display:block}.corti-legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:12px;font-size:.82rem}.corti-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px}.corti-dot.fluid{background:#38bdf8;box-shadow:0 0 8px #38bdf8}.corti-dot.nerve{background:#f59e0b;box-shadow:0 0 8px #f59e0b}.ap-study-section{max-width:1400px;margin:8px auto 40px;padding:0 24px}.ap-study-card{background:#fff;border:2px solid var(--ink);border-radius:10px;box-shadow:var(--shadow);padding:22px 24px}.ap-study-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.ap-study-head h2{font-size:1.15rem;color:var(--teal);margin:0}.ap-hub-link{margin-left:auto}.footer-note{max-width:1400px;margin:0 auto;padding:10px 24px 30px;color:var(--muted);font-size:.74rem}@media(max-width:900px){.layout{grid-template-columns:1fr}.corti-controls{grid-template-columns:1fr}}`;
   document.head.appendChild(style);
 
   document.title = app.title + " | Chapter 12 Study Guide";
   document.body.innerHTML = `
     <header class="topbar"><div class="brand"><h1>${app.title}</h1><p>${app.subtitle} · Ch 12</p></div><div class="topbar-right"><label class="switch"><input type="checkbox" id="eli5Toggle"><span class="track"></span><span id="modeLabel">Professional</span></label><a class="btn-link" href="index.html">Hub</a></div></header>
-    <div class="layout"><aside><section class="panel"><h2>Learning Guide</h2><div class="body"><p style="font-size:.8rem;color:var(--muted);margin:0 0 10px">${app.intro}</p><div class="info-box" id="infoBox"></div></div></section><section class="panel"><h2>Core Concepts</h2><div class="body"><div class="card-grid" id="cardGrid"></div></div></section></aside><main><div class="tab-bar" id="tabBar"></div><section class="panel"><h2>Interactive Notes</h2><div class="body"><div class="stage"><h3 class="stage-title" id="tabTitle"></h3><div class="info-box" id="tabBody"></div><div id="flowHost"></div><div id="imageHost"></div></div></div></section><section class="panel"><h2>Quick Case Check</h2><div class="body"><div class="stage" style="min-height:220px"><h3 class="stage-title" id="caseTitle"></h3><p id="caseText"></p><div class="choice-row"><button class="choice-btn" onclick="CH12.answerCase('a')">Choice A</button><button class="choice-btn" onclick="CH12.answerCase('b')">Choice B</button><button class="choice-btn" onclick="CH12.answerCase('c')">Choice C</button><button class="choice-btn" onclick="CH12.nextCase()">Next Case</button></div><div class="info-box feedback" id="caseFeedback"></div></div></div></section></main></div>
+    <div class="layout"><aside><section class="panel"><h2>Learning Guide</h2><div class="body"><p style="font-size:.8rem;color:var(--muted);margin:0 0 10px">${app.intro}</p><div class="info-box" id="infoBox"></div></div></section><section class="panel"><h2>Core Concepts</h2><div class="body"><div class="card-grid" id="cardGrid"></div></div></section></aside><main><div class="tab-bar" id="tabBar"></div><section class="panel"><h2>Interactive Notes</h2><div class="body"><div class="stage"><h3 class="stage-title" id="tabTitle"></h3><div class="info-box" id="tabBody"></div><div id="flowHost"></div><div id="imageHost"></div><div id="interactiveHost"></div></div></div></section><section class="panel"><h2>Quick Case Check</h2><div class="body"><div class="stage" style="min-height:220px"><h3 class="stage-title" id="caseTitle"></h3><p id="caseText"></p><div class="choice-row"><button class="choice-btn" onclick="CH12.answerCase('a')">Choice A</button><button class="choice-btn" onclick="CH12.answerCase('b')">Choice B</button><button class="choice-btn" onclick="CH12.answerCase('c')">Choice C</button><button class="choice-btn" onclick="CH12.nextCase()">Next Case</button></div><div class="info-box feedback" id="caseFeedback"></div></div></div></section></main></div>
     <section class="ap-study-section"><div class="ap-study-card"><div class="ap-study-head"><h2>Test Yourself - ${app.title}</h2><div id="apHud"></div><a class="btn-link ap-hub-link" href="index.html">Hub</a></div><p style="color:var(--muted);font-size:.86rem">Scored review based on BIOL 2401 Chapter 12 notes.</p><div id="apQuiz"></div></div></section><div class="footer-note">* Interactive study aid for BIOL 2401 Chapter 12. Verify against lecture notes and textbook figures.</div>`;
 
   var eli5 = false;
   var tab = 0;
   var caseIndex = 0;
+  var cortiAnimation = null;
 
   function showTab(i) {
     tab = i;
@@ -328,6 +336,120 @@
       flow.innerHTML = '<div class="flow" style="margin-top:14px">' + app.cards.slice(0, 5).map(function (c) { return '<div class="flow-step">' + c[0] + '</div>'; }).join("") + "</div>";
     }
     renderImage();
+    renderInteractive();
+  }
+
+  function renderInteractive() {
+    var host = document.getElementById("interactiveHost");
+    if (cortiAnimation) {
+      cancelAnimationFrame(cortiAnimation);
+      cortiAnimation = null;
+    }
+    host.innerHTML = "";
+    if (!app.interactiveTabs || app.interactiveTabs[tab] !== "corti-transduction") return;
+    host.innerHTML = `
+      <div class="corti-widget">
+        <h4>Organ of Corti: Vibration to Nerve Signal</h4>
+        <p>Adjust sound frequency and amplitude to observe basilar membrane tonotopy, hair-cell bending, and neural transduction.</p>
+        <div class="corti-controls">
+          <div class="corti-control"><label for="cortiFrequency">Sound Frequency (Hz)</label><input type="range" id="cortiFrequency" min="200" max="20000" value="2000"><div class="corti-readout"><span>Apex (low)</span><b id="cortiFreqVal">2000 Hz</b><span>Base (high)</span></div></div>
+          <div class="corti-control"><label for="cortiAmplitude">Amplitude (Volume)</label><input type="range" id="cortiAmplitude" min="0" max="100" value="50"><div class="corti-readout"><span>Quiet</span><b id="cortiAmpVal">50%</b><span>Loud</span></div></div>
+        </div>
+        <div class="corti-canvas-wrap"><canvas class="corti-canvas" id="cortiCanvas"></canvas></div>
+        <div class="corti-legend"><span><i class="corti-dot fluid"></i>Fluid wave (perilymph)</span><span><i class="corti-dot nerve"></i>Neural action potential</span></div>
+      </div>`;
+    initCortiSimulation();
+  }
+
+  function initCortiSimulation() {
+    var canvas = document.getElementById("cortiCanvas");
+    var freqSlider = document.getElementById("cortiFrequency");
+    var ampSlider = document.getElementById("cortiAmplitude");
+    var freqVal = document.getElementById("cortiFreqVal");
+    var ampVal = document.getElementById("cortiAmpVal");
+    if (!canvas || !freqSlider || !ampSlider) return;
+    var ctx = canvas.getContext("2d");
+    var time = 0;
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    resizeCanvas();
+
+    function draw() {
+      if (!document.body.contains(canvas)) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var width = canvas.width;
+      var height = canvas.height;
+      var centerY = height / 2;
+      var freqRaw = parseFloat(freqSlider.value);
+      var amplitudeRaw = parseFloat(ampSlider.value);
+      freqVal.textContent = freqRaw + " Hz";
+      ampVal.textContent = amplitudeRaw + "%";
+      var normalizedFreq = (Math.log10(freqRaw) - Math.log10(200)) / (Math.log10(20000) - Math.log10(200));
+      var peakX = width * (1 - normalizedFreq);
+      var amp = (amplitudeRaw / 100) * 40;
+      time += 0.05 + (normalizedFreq * 0.1);
+
+      ctx.fillStyle = "rgba(148, 163, 184, 0.2)";
+      ctx.beginPath();
+      ctx.moveTo(0, centerY - 60);
+      ctx.lineTo(width, centerY - 50);
+      ctx.lineTo(width, centerY - 30);
+      ctx.lineTo(0, centerY - 30);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(0, centerY);
+      var points = [];
+      for (var x = 0; x <= width; x += 5) {
+        var distanceToPeak = Math.abs(x - peakX);
+        var envelope = Math.max(0, 1 - (distanceToPeak / (width * 0.3)));
+        var wave = Math.sin((x * 0.05) - time) * amp * envelope;
+        var y = centerY + wave;
+        points.push({ x: x, y: y, wave: wave, envelope: envelope });
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = "#38BDF8";
+      ctx.lineWidth = 4;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = "#38BDF8";
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      for (var i = 0; i < points.length; i += 8) {
+        var pt = points[i];
+        if (pt.envelope <= 0.1) continue;
+        ctx.fillStyle = "#64748B";
+        ctx.fillRect(pt.x - 3, pt.y - 20, 6, 20);
+        var bend = amp ? (pt.wave / amp) * 10 : 0;
+        ctx.beginPath();
+        ctx.moveTo(pt.x, pt.y - 20);
+        ctx.quadraticCurveTo(pt.x + bend, pt.y - 30, pt.x + bend, pt.y - 35);
+        ctx.strokeStyle = "#CBD5E1";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        if (pt.wave < -5 && amplitudeRaw > 10) {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y + 15 + Math.random() * 20, 3, 0, Math.PI * 2);
+          ctx.fillStyle = "#F59E0B";
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = "#F59E0B";
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.beginPath();
+          ctx.moveTo(pt.x, pt.y);
+          ctx.lineTo(pt.x, pt.y + 40);
+          ctx.strokeStyle = "rgba(245, 158, 11, 0.3)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+      cortiAnimation = requestAnimationFrame(draw);
+    }
+    window.addEventListener("resize", resizeCanvas, { passive: true });
+    draw();
   }
 
   function renderImage() {

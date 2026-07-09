@@ -26,7 +26,7 @@ The applications are built as lightweight static HTML pages running directly in 
 
 ---
 
-## 🗺️ Current Module Registry (37 Apps)
+## 🗺️ Current Module Registry (47 Apps)
 
 The mini-apps are organized sequentially, corresponding to the A&P I course curriculum. Here is the list of apps built so far:
 
@@ -88,6 +88,18 @@ The mini-apps are organized sequentially, corresponding to the A&P I course curr
 - **App 11.5:** [Reflexes Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/32.%20reflexes-lab.html) (`32. reflexes-lab.html`) *(Active)*
 - **App 11.6:** [Autonomic Nervous System Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/33.%20autonomic-nervous-system-lab.html) (`33. autonomic-nervous-system-lab.html`) *(Active)*
 - **App 11.7:** [Sensory & Motor Pathways Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/34.%20sensory-motor-pathways-lab.html) (`34. sensory-motor-pathways-lab.html`) *(Active)*
+
+### Chapter 12: Nervous System — Part III *(In Progress)*
+- **App 12.1:** [Sensory Receptors Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/35.%20sensory-receptors-lab.html) (`35. sensory-receptors-lab.html`) *(Active)*
+- **App 12.2:** [Tactile Receptors Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/36.%20tactile-receptors-lab.html) (`36. tactile-receptors-lab.html`) *(Active)*
+- **App 12.3:** [Visual Pathways Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/37.%20visual-pathways-lab.html) (`37. visual-pathways-lab.html`) *(Active)*
+- **App 12.4:** [Olfaction Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/38.%20olfaction-lab.html) (`38. olfaction-lab.html`) *(Active)*
+- **App 12.5:** [Gustation Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/39.%20gustation-lab.html) (`39. gustation-lab.html`) *(Active)*
+- **App 12.6:** [Ear Anatomy Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/40.%20ear-anatomy-lab.html) (`40. ear-anatomy-lab.html`) *(Active)*
+- **App 12.7:** [Auditory Pathways Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/41.%20auditory-pathways-lab.html) (`41. auditory-pathways-lab.html`) *(Active)*
+- **App 12.8:** [Equilibrium Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/42.%20equilibrium-lab.html) (`42. equilibrium-lab.html`) *(Active)*
+- **App 12.9:** [Sensory Homeostasis Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/43.%20sensory-homeostasis-lab.html) (`43. sensory-homeostasis-lab.html`) *(Active)*
+- **App 12.10:** [Life-Span Hearing & Vision Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/44.%20lifespan-hearing-vision-lab.html) (`44. lifespan-hearing-vision-lab.html`) *(Active)*
 
 ---
 

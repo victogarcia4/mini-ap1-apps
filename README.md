@@ -1,6 +1,6 @@
 # 🧬 Anatomy & Physiology Active Learning Mini-Apps
 
-An interactive, responsive suite of **37 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
+An interactive, responsive suite of **47 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
 
 📱 **Live Production URL:** [https://mini-ap1-apps.vercel.app](https://mini-ap1-apps.vercel.app)
 
@@ -65,6 +65,16 @@ The design adopts a vintage **Riso-zine notebook aesthetic** mimicking a physica
 | **Ch 11** | **11.5** | Reflexes Lab | [32. reflexes-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/32.%20reflexes-lab.html) | Reflex arc components, patellar stretch reflex, withdrawal reflex, and clinical reflex findings |
 | **Ch 11** | **11.6** | Autonomic Nervous System Lab | [33. autonomic-nervous-system-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/33.%20autonomic-nervous-system-lab.html) | Sympathetic vs. parasympathetic pathways, neurotransmitters, receptors, organ effects, and case pattern recognition |
 | **Ch 11** | **11.7** | Sensory & Motor Pathways Lab | [34. sensory-motor-pathways-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/34.%20sensory-motor-pathways-lab.html) | Ascending sensory tracts, descending motor tracts, crossover, somatotopy, and lesion-pattern clues |
+| **Ch 12** | **12.1** | Sensory Receptors Lab | [35. sensory-receptors-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/35.%20sensory-receptors-lab.html) | General vs. special senses, receptor classes, sensation, perception, projection, and adaptation |
+| **Ch 12** | **12.2** | Tactile Receptors Lab | [36. tactile-receptors-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/36.%20tactile-receptors-lab.html) | Touch, pressure, temperature, pain, referred pain, proprioception, muscle spindles, and Golgi tendon organs |
+| **Ch 12** | **12.3** | Visual Pathways Lab | [37. visual-pathways-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/37.%20visual-pathways-lab.html) | Photoreceptors, CN II, optic chiasma, optic tracts, thalamic relay, and occipital visual cortex |
+| **Ch 12** | **12.4** | Olfaction Lab | [38. olfaction-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/38.%20olfaction-lab.html) | Olfactory epithelium, dissolved odorants, cribriform plate, olfactory bulb, CN I, cortex, and adaptation |
+| **Ch 12** | **12.5** | Gustation Lab | [39. gustation-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/39.%20gustation-lab.html) | Taste buds, taste hairs and pores, five primary tastes, CN VII/IX/X, medulla, thalamus, and gustatory cortex |
+| **Ch 12** | **12.6** | Ear Anatomy Lab | [40. ear-anatomy-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/40.%20ear-anatomy-lab.html) | Outer, middle, and inner ear anatomy, ossicles, labyrinth fluids, cochlea, vestibule, semicircular canals, and Spiral Organ |
+| **Ch 12** | **12.7** | Auditory Pathways Lab | [41. auditory-pathways-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/41.%20auditory-pathways-lab.html) | Sound wave sequence, cochlear branch of CN VIII, thalamus, auditory cortex, and frequency mapping |
+| **Ch 12** | **12.8** | Equilibrium Lab | [42. equilibrium-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/42.%20equilibrium-lab.html) | Static and dynamic equilibrium, utricle, saccule, maculae, otoliths, semicircular canals, crista ampullaris, and vestibular pathway |
+| **Ch 12** | **12.9** | Sensory Homeostasis Lab | [43. sensory-homeostasis-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/43.%20sensory-homeostasis-lab.html) | Sensory feedback loops, afferent input, CNS integration, adaptation, pain protection, posture, and balance |
+| **Ch 12** | **12.10** | Life-Span Hearing & Vision Lab | [44. lifespan-hearing-vision-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/44.%20lifespan-hearing-vision-lab.html) | Age-related hearing loss, tinnitus, presbyopia, glaucoma, cataracts, retinal detachment, and macular degeneration |
 
 ---
 

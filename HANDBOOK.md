@@ -26,7 +26,7 @@ The applications are built as lightweight static HTML pages running directly in 
 
 ---
 
-## 🗺️ Current Module Registry (32 Apps)
+## 🗺️ Current Module Registry (33 Apps)
 
 The mini-apps are organized sequentially, corresponding to the A&P I course curriculum. Here is the list of apps built so far:
 
@@ -83,6 +83,7 @@ The mini-apps are organized sequentially, corresponding to the A&P I course curr
 ### Chapter 11: Nervous System — Part II *(In Progress)*
 - **App 11.1:** [The Brain: Structure & Function](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/28.%20brain-organization-lab.html) (`28. brain-organization-lab.html`) *(Active)*
 - **App 11.2:** [Cranial Nerves](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/29.%20cranial-nerves-lab.html) (`29. cranial-nerves-lab.html`) *(Active)*
+- **App 11.3:** [The Spinal Cord: Structure & Function](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/30.%20spinal-cord-organization-lab.html) (`30. spinal-cord-organization-lab.html`) *(Active)*
 
 ---
 

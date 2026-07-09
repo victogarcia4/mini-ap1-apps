@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Spinal Cord: Structure &amp; Function | Chapter 11 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-500: #14b8a6;
+  --teal-100: #ccfbf1;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(15, 118, 110, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --blue-600: #2563eb;
+  --purple-600: #7c3aed;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(13, 148, 136, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--teal-100);
+  color: var(--teal-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--teal-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--teal-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 500px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 560px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* Pick-button group (structure selectors) */
+.pick-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 6px; }
+.pick-btn { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 13px; background: #fff; font-family: inherit; font-weight: 700; font-size: 0.8rem; color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color); transition: 0.15s; text-align: center; }
+.pick-btn:hover { background: var(--slate-100); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.pick-btn.active { background: var(--teal-100); color: var(--teal-700); border-color: var(--teal-700); }
+.pick-btn .shape { font-size: 0.68rem; color: var(--slate-500); font-weight: 700; display: block; }
+.pick-btn.active .shape { color: var(--teal-600); }
+
+/* Recap / feature card grid (shared pattern) */
+.glia-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 16px; }
+.glia-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); border-top: 8px solid var(--teal-600); }
+.glia-card .gc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.glia-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0; font-size: 0.96rem; color: var(--teal-700); }
+.badge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px; border: 1.5px solid var(--border-color); background: var(--teal-100); color: var(--teal-700); }
+.glia-card p.fn { font-size: 0.82rem; color: var(--slate-700); margin: 0; line-height: 1.5; }
+.glia-card p.fn b { color: var(--slate-900); }
+.mnemonic-box { margin-top: 16px; border: 1.5px dashed var(--border-color); border-radius: 10px; padding: 12px 16px; background: #fffaf0; font-size: 0.82rem; color: var(--slate-700); line-height: 1.5; }
+.mnemonic-box b { color: var(--amber-500); }
+@media (max-width: 760px) { .glia-grid { grid-template-columns: 1fr; } }
+
+/* Two-card compare (functions) */
+.div-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 8px; }
+.div-card { border: 2px solid var(--border-color); border-radius: 10px; padding: 16px; background: #fff; }
+.div-card.reflex { border-left: 8px solid var(--amber-500); }
+.div-card.conduit { border-left: 8px solid var(--blue-600); }
+.div-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 8px; font-size: 1rem; }
+.div-card.reflex h4 { color: var(--amber-500); }
+.div-card.conduit h4 { color: var(--blue-600); }
+.div-card .verdict { font-weight: 800; font-size: 0.82rem; margin: 0 0 8px; color: var(--slate-600); }
+.div-card p { font-size: 0.82rem; color: var(--slate-700); margin: 0; line-height: 1.5; }
+@media (max-width: 700px) { .div-compare { grid-template-columns: 1fr; } }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>The Spinal Cord</h1>
+    <p>Longitudinal · Cross-Section · Roots · Functions · Ch 11</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Spinal Cord Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">The spinal cord is a ~17-inch nerve column running from the brain down the vertebral canal. It is part of the CNS and provides two-way communication with the body. Explore its length, its cross-section, and its roots.</p>
+        <div class="info-box" id="infoBox">
+          <b>Two jobs:</b> the spinal cord is a <b>reflex center</b> and a <b>conduit</b> carrying impulses to and from the brain. It runs from the <b>foramen magnum</b> to the <b>conus medullaris</b> (≈ L1–L2) and has 31 segments.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('long', this)">Longitudinal</button>
+      <button class="tab-btn" onclick="switchTab('cross', this)">Cross-Section</button>
+      <button class="tab-btn" onclick="switchTab('roots', this)">Roots &amp; Spinal Nerve</button>
+      <button class="tab-btn" onclick="switchTab('functions', this)">Functions</button>
+    </div>
+
+    <!-- Tab 1: Longitudinal -->
+    <div id="long" class="tab-content active">
+      <section class="panel">
+        <h2>Longitudinal Structure — Top to Bottom</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Landmarks Along the Cord — Click Each</h3>
+            <div class="pick-btns" id="longBtns">
+              <button class="pick-btn active" data-group="long" data-key="foramen">Foramen Magnum<span class="shape">start (top)</span></button>
+              <button class="pick-btn" data-group="long" data-key="enlargements">Enlargements<span class="shape">cervical &amp; lumbar</span></button>
+              <button class="pick-btn" data-group="long" data-key="conus">Conus Medullaris<span class="shape">end ≈ L1–L2</span></button>
+              <button class="pick-btn" data-group="long" data-key="cauda">Cauda Equina<span class="shape">"horse's tail"</span></button>
+              <button class="pick-btn" data-group="long" data-key="filum">Filum Terminale<span class="shape">anchor</span></button>
+              <button class="pick-btn" data-group="long" data-key="segments">31 Segments<span class="shape">31 nerve pairs</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="longTitle">Foramen Magnum (Start)</div>
+              <div class="step-desc" id="longDesc">The large opening in the base of the skull where the spinal cord begins, continuous with the medulla oblongata of the brain stem.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Vertebral Column &amp; Spinal Cord</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-vertebral-column-aspinal-cord-structure.png" alt="Posterior/longitudinal view of the spinal cord within the vertebral column showing the cord beginning at the foramen magnum, the cervical and lumbar enlargements, the tapered conus medullaris ending near the L1–L2 vertebrae, the cauda equina of descending lumbar and sacral nerve roots, and the filum terminale anchoring the cord" loading="lazy">
+              </div>
+              <p class="video-ref-caption">The cord runs from the foramen magnum to the conus medullaris (≈ L1–L2); below that, the cauda equina nerve roots continue down to their exits.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Cross-Section -->
+    <div id="cross" class="tab-content">
+      <section class="panel">
+        <h2>Cross-Section — The Butterfly</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Gray Matter, White Matter &amp; the Canal — Click Each</h3>
+            <div class="pick-btns" id="crossBtns">
+              <button class="pick-btn active" data-group="cross" data-key="gray">Gray Matter<span class="shape">"butterfly"</span></button>
+              <button class="pick-btn" data-group="cross" data-key="horns">Horns<span class="shape">dorsal/lateral/ventral</span></button>
+              <button class="pick-btn" data-group="cross" data-key="white">White Matter<span class="shape">funiculi</span></button>
+              <button class="pick-btn" data-group="cross" data-key="canal">Central Canal<span class="shape">CSF</span></button>
+              <button class="pick-btn" data-group="cross" data-key="commissure">Gray Commissure<span class="shape">the bridge</span></button>
+              <button class="pick-btn" data-group="cross" data-key="grooves">Fissure &amp; Sulcus<span class="shape">front/back grooves</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="crossTitle">Gray Matter (the "Butterfly")</div>
+              <div class="step-desc" id="crossDesc">The central, butterfly-shaped region made of interneuron cell bodies. It is surrounded by white matter.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Spinal Cord Cross-Section</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-cross-section-spinal-cord.png" alt="Cross-section of the spinal cord showing the central butterfly-shaped gray matter with posterior (dorsal), lateral, and anterior (ventral) horns, the central canal and gray commissure in the middle, the surrounding white matter divided into posterior, lateral, and anterior funiculi, and the dorsal root with its dorsal root ganglion joining the ventral root to form a spinal nerve" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Central gray matter (cell bodies, shaped like a butterfly) is wrapped by white matter (myelinated tracts). The central canal and gray commissure sit at the middle.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Roots & Spinal Nerve -->
+    <div id="roots" class="tab-content">
+      <section class="panel">
+        <h2>Roots &amp; the Birth of a Spinal Nerve</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">How Sensory In &amp; Motor Out Become One Nerve — Click Each</h3>
+            <div class="pick-btns" id="rootsBtns">
+              <button class="pick-btn active" data-group="roots" data-key="dorsal">Dorsal Root<span class="shape">sensory in</span></button>
+              <button class="pick-btn" data-group="roots" data-key="drg">Dorsal Root Ganglion<span class="shape">sensory cell bodies</span></button>
+              <button class="pick-btn" data-group="roots" data-key="ventral">Ventral Root<span class="shape">motor out</span></button>
+              <button class="pick-btn" data-group="roots" data-key="spinalnerve">Spinal Nerve<span class="shape">roots fuse</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="rootsTitle">Dorsal (Posterior) Root</div>
+              <div class="step-desc" id="rootsDesc">Carries sensory (afferent) impulses INTO the spinal cord, entering at the posterior horn.</div>
+            </div>
+
+            <div class="mnemonic-box">
+              <b>Remember:</b> <b>D</b>orsal = <b>D</b>ata in (sensory, afferent); <b>V</b>entral = <b>V</b>oluntary/motor out (efferent). The <b>dorsal root ganglion</b> holds the <b>sensory</b> cell bodies. When the two roots fuse, you get a <b>mixed</b> spinal nerve that exits through an intervertebral foramen.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Functions -->
+    <div id="functions" class="tab-content">
+      <section class="panel">
+        <h2>Two Functions of the Spinal Cord</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Reflex Center &amp; Communication Highway</h3>
+            <div class="div-compare">
+              <div class="div-card reflex">
+                <h4>1 · Reflex Center</h4>
+                <p class="verdict">Fast, automatic responses</p>
+                <p>The gray matter of the cord can process a stimulus and trigger a response without waiting for the brain — a spinal reflex. This produces rapid, involuntary reactions that protect the body. <b>(Explored in App 11.5 — Reflexes.)</b></p>
+              </div>
+              <div class="div-card conduit">
+                <h4>2 · Conduit to/from the Brain</h4>
+                <p class="verdict">Two-way communication highway</p>
+                <p>The white matter tracts carry <b>sensory</b> impulses <b>up</b> to the brain (ascending tracts) and <b>motor</b> impulses <b>down</b> from the brain to effectors (descending tracts). <b>(Explored in App 11.6 — Sensory &amp; Motor Pathways.)</b></p>
+              </div>
+            </div>
+            <div class="step-display">
+              <div class="step-desc" id="funcNote">The spinal cord is both a <b>decision-maker</b> (reflexes) and a <b>messenger</b> (tracts) — a compact CNS structure linking the brain to the entire body below the head.</div>
+            </div>
+
+            <div class="mnemonic-box">
+              <b>Big picture:</b> Gray matter (cell bodies) = local processing &amp; reflexes; white matter (myelinated tracts) = long-distance communication. Every spinal nerve is <b>mixed</b>, so the cord handles both incoming sensations and outgoing commands at every level.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — The Spinal Cord</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master the longitudinal landmarks, the butterfly cross-section (gray vs. white matter, horns, canal), the dorsal/ventral roots and the dorsal root ganglion, and the two functions of the cord.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model the structure and function of the spinal cord (CH11 §11.5A–B). Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "long";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+const GROUP_OF_TAB = { long: "long", cross: "cross", roots: "roots", functions: null };
+
+const INFO = {
+  long: {
+    foramen: { title: "Foramen Magnum (Start)",
+      prof: "The large opening in the base of the skull where the spinal cord begins, continuous with the medulla oblongata of the brain stem.",
+      eli5: "The big hole at the bottom of the skull where the spinal cord starts, right below the brain stem." },
+    enlargements: { title: "Cervical & Lumbar Enlargements",
+      prof: "Two thickened regions of the cord where the nerves supplying the upper limbs (cervical enlargement) and lower limbs (lumbar enlargement) arise.",
+      eli5: "Two thicker spots on the cord — one feeds the arms, the other feeds the legs, so they need extra nerves." },
+    conus: { title: "Conus Medullaris (End)",
+      prof: "The tapered inferior tip of the spinal cord. In adults it ends near the intervertebral disc between the first and second lumbar vertebrae (L1–L2).",
+      eli5: "The pointy bottom end of the spinal cord — it stops around your lower back (L1–L2), not all the way down." },
+    cauda: { title: "Cauda Equina",
+      prof: "Latin for 'horse's tail.' Because the cord ends at L1–L2, the lower lumbar and sacral spinal nerves must travel downward through the vertebral canal before exiting, forming a tail-like bundle.",
+      eli5: "A bundle of nerves at the bottom that looks like a horse's tail — since the cord ends early, these nerves keep going down to reach their exits." },
+    filum: { title: "Filum Terminale",
+      prof: "A thin strand of pia mater extending from the conus medullaris that anchors the spinal cord inferiorly (to the coccyx).",
+      eli5: "A thin thread at the very end that ties the spinal cord down so it doesn't move around." },
+    segments: { title: "31 Segments",
+      prof: "The spinal cord (about 17 inches long) is divided into 31 segments, each giving rise to a pair of spinal nerves — so there are 31 pairs of spinal nerves.",
+      eli5: "The cord is split into 31 slices, and each slice sends out one pair of spinal nerves." }
+  },
+  cross: {
+    gray: { title: "Gray Matter (the \"Butterfly\")",
+      prof: "The central, butterfly-shaped region made of interneuron cell bodies. It is surrounded by white matter and is where reflexes are integrated.",
+      eli5: "The butterfly-shaped middle of the cord, made of nerve cell bodies — where quick reflex 'decisions' happen." },
+    horns: { title: "Dorsal, Lateral & Ventral Horns",
+      prof: "The projections ('wings') of the gray matter: the posterior (dorsal) horns, the lateral horns, and the anterior (ventral) horns.",
+      eli5: "The 'wings' of the butterfly — the back (dorsal), side (lateral), and front (ventral) horns of gray matter." },
+    white: { title: "White Matter Funiculi (Columns)",
+      prof: "Myelinated axons surrounding the gray matter, organized into posterior (dorsal), lateral, and anterior (ventral) funiculi (white columns) — the location of the ascending and descending nerve tracts.",
+      eli5: "The pale outer part made of insulated axons, grouped into columns that act as the cord's 'highways' up and down." },
+    canal: { title: "Central Canal",
+      prof: "A small channel running through the center of the gray matter, lined by ependymal cells and filled with cerebrospinal fluid (CSF).",
+      eli5: "A tiny tube down the center of the cord filled with cerebrospinal fluid." },
+    commissure: { title: "Gray Commissure",
+      prof: "The bridge of gray matter that connects the left and right sides of the 'butterfly,' surrounding the central canal.",
+      eli5: "The bridge of gray matter joining the two wings of the butterfly across the middle." },
+    grooves: { title: "Anterior Fissure & Posterior Sulcus",
+      prof: "The anterior median fissure (a deep groove on the front) and the posterior median sulcus (a shallow groove on the back) partially divide the cord into left and right halves.",
+      eli5: "A deep groove on the front and a shallow groove on the back that split the cord into left and right halves." }
+  },
+  roots: {
+    dorsal: { title: "Dorsal (Posterior) Root",
+      prof: "Carries sensory (afferent) impulses INTO the spinal cord, entering at the posterior horn.",
+      eli5: "The 'in' door at the back — it brings sensory signals into the cord." },
+    drg: { title: "Dorsal Root Ganglion (DRG)",
+      prof: "A bundle of cell bodies located on the dorsal root, just outside the CNS. It contains the cell bodies of the sensory (afferent) neurons that bring impulses into the cord. (A ganglion is a cluster of cell bodies in the PNS.)",
+      eli5: "A little bump on the back root that holds the cell bodies of the sensory neurons carrying signals in." },
+    ventral: { title: "Ventral (Anterior) Root",
+      prof: "Carries motor (efferent) impulses OUT of the spinal cord, leaving from the anterior horn.",
+      eli5: "The 'out' door at the front — it carries motor commands out of the cord." },
+    spinalnerve: { title: "The Spinal Nerve",
+      prof: "Where the dorsal and ventral roots fuse, the spinal nerve begins. It then passes out through an intervertebral foramen. Because it carries both roots, every spinal nerve is a mixed nerve.",
+      eli5: "When the back (sensory) and front (motor) roots join, they form a spinal nerve that exits between the vertebrae — carrying both kinds of signals." }
+  }
+};
+
+const current = { long: "foramen", cross: "gray", roots: "dorsal" };
+
+const SIDEBAR = {
+  long: "<b>Longitudinal:</b> the cord runs from the foramen magnum to the conus medullaris (≈ L1–L2), with cervical &amp; lumbar enlargements, a cauda equina below the end, and 31 segments.",
+  cross: "<b>Cross-section:</b> central butterfly-shaped gray matter (cell bodies) surrounded by white matter (myelinated tracts), with a CSF-filled central canal at its core.",
+  roots: "<b>Roots:</b> the dorsal root brings sensory impulses in (its ganglion holds the sensory cell bodies); the ventral root carries motor impulses out. They fuse into a mixed spinal nerve.",
+  functions: "<b>Functions:</b> the spinal cord is a reflex center (gray matter) and a two-way conduit for impulses to and from the brain (white-matter tracts)."
+};
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  const g = GROUP_OF_TAB[currentTab];
+  if (g) renderGroup(g);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  infoBox.innerHTML = SIDEBAR[tabId] || "";
+  updateAllTexts();
+};
+
+document.querySelectorAll(".pick-btn[data-group]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const g = btn.dataset.group;
+    document.querySelectorAll('.pick-btn[data-group="' + g + '"]').forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    current[g] = btn.dataset.key;
+    renderGroup(g);
+  });
+});
+
+function renderGroup(g) {
+  const info = INFO[g] && INFO[g][current[g]];
+  if (!info) return;
+  document.getElementById(g + "Title").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById(g + "Desc").textContent = text;
+  if (GROUP_OF_TAB[currentTab] === g) {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"spinal-cord-organization", title:"The Spinal Cord", unit:"Ch 11 · Nervous System II" });
+  APTools.mountHUD("#apHud","spinal-cord-organization");
+  var BANK=[
+    { id:"sc1", bloom:"Remember", outcome:"Cord Start & End",
+      q:"The spinal cord begins at the ___ and ends (tapers) at the ___.",
+      choices:["foramen magnum; conus medullaris (≈ L1–L2)","conus medullaris; foramen magnum","first lumbar vertebra; the coccyx","brain stem; the sacrum"],
+      answer:0, why:"The cord starts at the foramen magnum and tapers to the conus medullaris near the L1–L2 intervertebral disc." },
+    { id:"sc2", bloom:"Remember", outcome:"31 Segments",
+      q:"The spinal cord is divided into how many segments, each giving rise to a pair of spinal nerves?",
+      choices:["31","12","8","43"],
+      answer:0, why:"The cord has 31 segments and therefore gives rise to 31 pairs of spinal nerves." },
+    { id:"sc3", bloom:"Understand", outcome:"Enlargements",
+      q:"The cervical and lumbar enlargements of the spinal cord exist because they:",
+      choices:["Contain the extra neurons that supply the limbs","Store cerebrospinal fluid","Are where the cord attaches to the brain","Protect the cord against infection"],
+      answer:0, why:"The enlargements are thicker because they contain the additional neurons that innervate the upper limbs (cervical) and lower limbs (lumbar)." },
+    { id:"sc4", bloom:"Understand", outcome:"Cauda Equina",
+      q:"The cauda equina ('horse's tail') is:",
+      choices:["The bundle of lumbar and sacral nerve roots that descend below the end of the cord","The tapered tip of the spinal cord itself","A layer of the meninges","The central canal of the cord"],
+      answer:0, why:"Because the cord ends at L1–L2, the lower lumbar and sacral roots travel down as a bundle (cauda equina) before exiting." },
+    { id:"sc5", bloom:"Remember", outcome:"Conus Medullaris",
+      q:"The tapered inferior end of the spinal cord is called the:",
+      choices:["Conus medullaris","Cauda equina","Filum terminale","Foramen magnum"],
+      answer:0, why:"The conus medullaris is the cone-shaped inferior tip of the cord (near L1–L2)." },
+    { id:"sc6", bloom:"Understand", outcome:"Gray Matter",
+      q:"In a cross-section, the butterfly-shaped gray matter of the spinal cord consists mainly of:",
+      choices:["Neuron (interneuron) cell bodies","Myelinated axons","Cerebrospinal fluid","Bone"],
+      answer:0, why:"The gray matter (the 'butterfly') is made of interneuron cell bodies; the surrounding white matter is myelinated axons." },
+    { id:"sc7", bloom:"Understand", outcome:"White Matter Tracts",
+      q:"The white matter of the spinal cord (its funiculi/columns) consists of ___ and functions as ___.",
+      choices:["myelinated axons; ascending and descending nerve tracts","cell bodies; reflex centers","cerebrospinal fluid; a cushion","cartilage; structural support"],
+      answer:0, why:"White matter is myelinated axons organized into funiculi (columns) that carry the ascending (sensory) and descending (motor) tracts." },
+    { id:"sc8", bloom:"Remember", outcome:"Central Canal",
+      q:"The central canal that runs through the spinal cord is lined by ___ and filled with ___.",
+      choices:["ependymal cells; cerebrospinal fluid","Schwann cells; blood","osteocytes; lymph","astrocytes; air"],
+      answer:0, why:"The central canal is lined by ependymal cells and filled with cerebrospinal fluid (CSF)." },
+    { id:"sc9", bloom:"Understand", outcome:"Dorsal Root",
+      q:"The dorsal (posterior) root of a spinal nerve carries:",
+      choices:["Sensory (afferent) impulses into the cord","Motor (efferent) impulses out of the cord","Only cerebrospinal fluid","Both blood and nerve impulses"],
+      answer:0, why:"The dorsal root carries sensory (afferent) impulses INTO the spinal cord." },
+    { id:"sc10", bloom:"Understand", outcome:"Dorsal Root Ganglion",
+      q:"The dorsal root ganglion (DRG) contains the cell bodies of:",
+      choices:["Sensory (afferent) neurons","Motor (efferent) neurons","Ependymal cells","Astrocytes"],
+      answer:0, why:"The DRG holds the cell bodies of the sensory (afferent) neurons that bring impulses into the cord." },
+    { id:"sc11", bloom:"Understand", outcome:"Ventral Root",
+      q:"The ventral (anterior) root carries:",
+      choices:["Motor (efferent) impulses out of the cord","Sensory (afferent) impulses into the cord","Cerebrospinal fluid","Taste sensation"],
+      answer:0, why:"The ventral root carries motor (efferent) impulses OUT of the spinal cord to effectors." },
+    { id:"sc12", bloom:"Analyze", outcome:"Spinal Nerve Formation",
+      q:"A spinal nerve is formed when:",
+      choices:["The dorsal and ventral roots fuse, then pass through an intervertebral foramen","The cord splits into gray and white matter","Two cranial nerves join together","The central canal branches outward"],
+      answer:0, why:"The fusion of the dorsal (sensory) and ventral (motor) roots forms a spinal nerve, which exits through an intervertebral foramen." },
+    { id:"sc13", bloom:"Understand", outcome:"All Spinal Nerves Mixed",
+      q:"Because each spinal nerve contains both a dorsal and a ventral root, all spinal nerves are:",
+      choices:["Mixed (both sensory and motor)","Sensory only","Motor only","Autonomic only"],
+      answer:0, why:"Combining a sensory dorsal root and a motor ventral root makes every spinal nerve a mixed nerve." },
+    { id:"sc14", bloom:"Understand", outcome:"Two Functions",
+      q:"The two main functions of the spinal cord are:",
+      choices:["Serving as a reflex center and as a conduit for impulses to/from the brain","Producing hormones and filtering blood","Making cerebrospinal fluid and storing memories","Moving the eyes and controlling taste"],
+      answer:0, why:"The spinal cord provides spinal reflexes and acts as a conduit (via tracts) for impulses traveling to and from the brain." },
+    { id:"sc15", bloom:"Remember", outcome:"Definition of a Ganglion",
+      q:"A ganglion is best defined as:",
+      choices:["A collection of neuron cell bodies located outside the CNS","A bundle of axons inside the brain","A type of neuroglial cell","A fluid-filled cavity in the CNS"],
+      answer:0, why:"A ganglion is a cluster of neuron cell bodies located outside the CNS (in the PNS) — for example, the dorsal root ganglion." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"spinal-cord-organization", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

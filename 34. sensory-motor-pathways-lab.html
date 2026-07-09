@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sensory & Motor Pathways Lab | Chapter 11 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&family=Spline+Sans+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-100: #ccfbf1;
+  --blue-700: #1d4ed8;
+  --blue-100: #dbeafe;
+  --red-700: #b91c1c;
+  --red-100: #fee2e2;
+  --amber-500: #f59e0b;
+  --green-600: #16a34a;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --paper-bg: #FAF9F5;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --shadow: 4px 4px 0 #0f172a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(900px 500px at 88% -10%, rgba(29,78,216,0.07), transparent),
+    radial-gradient(700px 500px at 2% 94%, rgba(15,118,110,0.08), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: 0;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.switch { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--slate-700); cursor: pointer; font-weight: 800; user-select: none; }
+.switch input { display: none; }
+.track { width: 44px; height: 24px; border-radius: 12px; background: #cbd5e1; position: relative; transition: 0.2s; border: 1.5px solid var(--border-color); }
+.track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--border-color); transition: 0.2s; }
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+.btn-link, button { font-family: inherit; }
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 800;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+.rule-list { display: grid; gap: 9px; margin-top: 12px; }
+.rule {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 2px 2px 0 var(--border-color);
+  font-size: 0.78rem;
+  color: var(--slate-700);
+}
+.rule b { display: block; color: var(--teal-700); font-family: "Bricolage Grotesque", sans-serif; font-size: 0.88rem; }
+.tab-bar { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap; }
+.tab-btn, .tract-btn, .choice-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 900;
+  font-size: 0.84rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover, .tract-btn:hover, .choice-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); background: var(--slate-100); }
+.tab-btn.active, .tract-btn.active, .choice-btn.active { background: var(--teal-100); color: var(--teal-700); box-shadow: none; transform: translate(2px, 2px); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 18px;
+  min-height: 480px;
+}
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--teal-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.path-card {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+.path-card .head {
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-color);
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-weight: 900;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.path-card.asc .head { background: var(--blue-100); color: var(--blue-700); }
+.path-card.desc .head { background: var(--red-100); color: var(--red-700); }
+.path-card .content { padding: 14px; font-size: 0.84rem; color: var(--slate-700); }
+.diagram {
+  margin-top: 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--slate-100);
+}
+.diagram img { width: 100%; display: block; height: auto; }
+.diagram-caption { padding: 10px 12px; font-size: 0.78rem; color: var(--slate-600); border-top: 1.5px solid var(--border-color); background: #fff; }
+.tract-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 14px;
+}
+.tract-list { display: flex; flex-direction: column; gap: 8px; }
+.tract-board {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+}
+.tract-title {
+  margin: 0 0 8px;
+  font-family: "Bricolage Grotesque", sans-serif;
+  color: var(--teal-700);
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.badge {
+  border: 1.5px solid var(--border-color);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--slate-700);
+  background: var(--slate-100);
+}
+.tract-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.fact {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 116px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.fact b { display: block; color: var(--teal-700); margin-bottom: 5px; font-size: 0.8rem; }
+.fact span { color: var(--slate-700); font-size: 0.84rem; }
+.sim-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+.cord-stage {
+  min-height: 420px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, rgba(219,234,254,0.62), #fff 48%, rgba(254,226,226,0.62));
+  position: relative;
+  overflow: hidden;
+}
+.brain, .effector {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px 14px;
+  font-weight: 900;
+  font-family: "Bricolage Grotesque", sans-serif;
+  z-index: 3;
+}
+.brain { top: 16px; color: var(--blue-700); }
+.effector { bottom: 16px; color: var(--red-700); }
+.cord {
+  position: absolute;
+  top: 76px;
+  bottom: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  border: 2px solid var(--border-color);
+  border-radius: 999px;
+  background: #fff;
+}
+.posterior, .anterior {
+  position: absolute;
+  left: 50%;
+  width: 34px;
+  transform: translateX(-50%);
+  border: 1.5px solid var(--border-color);
+  background: var(--slate-100);
+}
+.posterior { top: 14px; bottom: 50%; border-radius: 999px 999px 8px 8px; }
+.anterior { top: 50%; bottom: 14px; border-radius: 8px 8px 999px 999px; }
+.pulse {
+  position: absolute;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--amber-500);
+  transform: translate(-50%, 0);
+  z-index: 4;
+  animation: ascend 2.2s infinite ease-in-out;
+}
+.pulse.desc { animation-name: descend; }
+@keyframes ascend {
+  0% { top: 342px; }
+  50% { top: 86px; }
+  100% { top: 342px; }
+}
+@keyframes descend {
+  0% { top: 86px; }
+  50% { top: 342px; }
+  100% { top: 86px; }
+}
+.sim-info {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+}
+.sim-info h3 { margin: 0 0 8px; font-family: "Bricolage Grotesque", sans-serif; color: var(--teal-700); }
+.sim-info p { margin: 0 0 12px; color: var(--slate-700); }
+.case-card {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+}
+.case-card h3 { margin: 0 0 8px; font-family: "Bricolage Grotesque", sans-serif; color: var(--teal-700); }
+.case-card p { margin: 0 0 14px; color: var(--slate-700); }
+.choice-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.feedback { display: none; margin-top: 14px; }
+.feedback.ok { display: block; background: #dcfce7; border-color: var(--green-600); }
+.feedback.no { display: block; background: #fee2e2; border-color: var(--red-700); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: var(--shadow); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 900; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 800; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+@media (max-width: 920px) {
+  .layout, .tract-layout, .sim-grid, .overview-grid, .tract-facts { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Sensory &amp; Motor Pathways Lab</h1>
+    <p>Ascending and Descending Spinal Cord Tracts · Ch 11</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle"><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <section class="panel">
+      <h2>Pathway Learning Guide</h2>
+      <div class="body">
+        <p style="font-size:0.8rem;color:var(--slate-500);margin:0 0 10px;">White matter tracts are the spinal cord's long-distance communication lines between body and brain.</p>
+        <div class="info-box" id="infoBox"><b>Start here:</b> Compare ascending sensory tracts and descending motor tracts, then drill the major names, locations, and functions.</div>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Need-To-Know Rules</h2>
+      <div class="body">
+        <div class="rule-list" id="ruleList"></div>
+      </div>
+    </section>
+  </aside>
+
+  <main>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('overview', this)">1 · Overview</button>
+      <button class="tab-btn" onclick="switchTab('tracts', this)">2 · Tract Cards</button>
+      <button class="tab-btn" onclick="switchTab('sim', this)">3 · Direction Lab</button>
+      <button class="tab-btn" onclick="switchTab('cases', this)">4 · Lesion Calls</button>
+    </div>
+
+    <section id="overview" class="tab-content active">
+      <div class="panel">
+        <h2>Two-Way Communication</h2>
+        <div class="body">
+          <div class="stage">
+            <h3 class="stage-title">Body-to-Brain and Brain-to-Body Traffic</h3>
+            <div class="overview-grid">
+              <article class="path-card asc">
+                <div class="head"><span>Ascending Tracts</span><span>Sensory / Afferent</span></div>
+                <div class="content" id="ascText">
+                  Ascending tracts conduct sensory impulses from body parts up toward the brain. In general, they are associated with posterior and lateral white matter columns and carry information such as touch, pressure, pain, temperature, and proprioceptive movement sense.
+                </div>
+              </article>
+              <article class="path-card desc">
+                <div class="head"><span>Descending Tracts</span><span>Motor / Efferent</span></div>
+                <div class="content" id="descText">
+                  Descending tracts conduct motor impulses from the brain down toward effectors. In general, they are associated with anterior and lateral white matter columns and influence skeletal muscle control, muscle tone, sweat glands, and posture.
+                </div>
+              </article>
+            </div>
+            <div class="diagram">
+              <img src="assets/ch11-major-sensory-motor-pathways.png" alt="Major sensory and motor pathways diagram">
+              <div class="diagram-caption">Reference image for major spinal cord pathways. Blue-style thinking: sensory information ascends. Red-style thinking: motor commands descend.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tracts" class="tab-content">
+      <div class="panel">
+        <h2>Major Tract Cards</h2>
+        <div class="body">
+          <div class="stage">
+            <div class="tract-layout">
+              <div class="tract-list" id="tractList"></div>
+              <div class="tract-board">
+                <h3 class="tract-title" id="tractTitle">Fasciculus gracilis &amp; cuneatus</h3>
+                <div class="badge-row">
+                  <span class="badge" id="tractDirection">Ascending</span>
+                  <span class="badge" id="tractColumn">Posterior column</span>
+                </div>
+                <div class="tract-facts">
+                  <div class="fact"><b>Information Carried</b><span id="tractInfo">Touch, pressure, and movement.</span></div>
+                  <div class="fact"><b>Student Cue</b><span id="tractCue">Posterior columns bring precise body information upward.</span></div>
+                  <div class="fact"><b>Professional Note</b><span id="tractNote">Most pathways are paired, many cross over, and many use 2-3 successive neurons.</span></div>
+                  <div class="fact"><b>Direction Check</b><span id="tractCheck">Sensory information travels toward the brain.</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sim" class="tab-content">
+      <div class="panel">
+        <h2>Direction Lab</h2>
+        <div class="body">
+          <div class="stage">
+            <div class="sim-grid">
+              <div class="cord-stage">
+                <div class="brain">Brain</div>
+                <div class="cord"><div class="posterior"></div><div class="anterior"></div></div>
+                <div class="pulse" id="pulseDot"></div>
+                <div class="effector">Body / Effector</div>
+              </div>
+              <div class="sim-info">
+                <h3 id="simTitle">Ascending sensory signal</h3>
+                <p id="simText">A touch, pressure, pain, temperature, or movement signal enters the spinal cord and travels upward toward the brain for interpretation.</p>
+                <div class="choice-row">
+                  <button class="choice-btn active" id="simAsc" onclick="setSim('asc')">Ascending</button>
+                  <button class="choice-btn" id="simDesc" onclick="setSim('desc')">Descending</button>
+                </div>
+                <div class="info-box" id="simPearl"><b>Memory cue:</b> Afferent arrives at the CNS; ascending carries it up.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases" class="tab-content">
+      <div class="panel">
+        <h2>Lesion Calls</h2>
+        <div class="body">
+          <div class="stage">
+            <div class="case-card">
+              <h3 id="caseTitle">Case 1</h3>
+              <p id="caseText">A patient loses pain and temperature transmission from a body region after damage to a lateral white matter pathway.</p>
+              <div class="choice-row">
+                <button class="choice-btn" onclick="answerCase('spinothalamic')">Spinothalamic</button>
+                <button class="choice-btn" onclick="answerCase('corticospinal')">Corticospinal</button>
+                <button class="choice-btn" onclick="answerCase('posterior')">Posterior Columns</button>
+                <button class="choice-btn" onclick="nextCase()">Next Case</button>
+              </div>
+              <div class="info-box feedback" id="caseFeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself - Sensory &amp; Motor Pathways</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">Hub</a>
+    </div>
+    <p class="ap-study-sub">Prove your mastery of ascending vs. descending tracts, white matter column locations, major tract names, and the information each pathway carries.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive study aid for BIOL 2401 Chapter 11 ascending and descending spinal cord tracts. Verify against lecture notes and textbook figures.
+</div>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+"use strict";
+
+const MODULE_ID = "sensory-motor-pathways";
+let eli5Mode = false;
+let currentTab = "overview";
+let activeTract = 0;
+let activeCase = 0;
+
+const TEXT = {
+  overview: {
+    prof: "<b>Two-way system:</b> White matter tracts provide communication to and from the brain. Ascending tracts carry sensory afferent impulses; descending tracts carry motor efferent impulses.",
+    eli5: "<b>Two-way system:</b> The spinal cord has up-lanes and down-lanes. Up-lanes tell the brain what the body feels. Down-lanes tell the body what to do."
+  },
+  tracts: {
+    prof: "<b>Tract cards:</b> Match each pathway with its direction, white matter column location, and information carried.",
+    eli5: "<b>Tract cards:</b> Pick a pathway and ask: does it go up or down, where does it sit, and what message does it carry?"
+  },
+  sim: {
+    prof: "<b>Direction lab:</b> Ascending signals move toward the brain. Descending signals move from the brain toward effectors.",
+    eli5: "<b>Direction lab:</b> Up means body report to brain. Down means brain command to body."
+  },
+  cases: {
+    prof: "<b>Lesion calls:</b> Use the lost function to identify the most likely tract family.",
+    eli5: "<b>Lesion calls:</b> If you know what stopped working, you can guess which pathway was hit."
+  }
+};
+
+const RULES = [
+  { title: "Most Cross Over", prof: "Many tracts decussate, so one side of the CNS may process or control the opposite side of the body.", eli5: "Many pathways switch sides." },
+  { title: "2-3 Neurons", prof: "Most major pathways use a chain of two or three successive neurons.", eli5: "Most messages pass through a relay team." },
+  { title: "Somatotopy", prof: "Fibers are organized by body region; upper and lower body fibers occupy predictable positions.", eli5: "The body has a map inside the tract." },
+  { title: "Paired Pathways", prof: "All major pathways are paired on the right and left sides.", eli5: "There is a right-side and left-side version." }
+];
+
+const TRACTS = [
+  {
+    name: "Fasciculus gracilis & cuneatus",
+    direction: "Ascending",
+    column: "Posterior column",
+    info: "Touch, pressure, and movement.",
+    cue: "Posterior columns bring precise body information upward.",
+    note: "These posterior column tracts are sensory afferent pathways."
+  },
+  {
+    name: "Spinothalamic tracts",
+    direction: "Ascending",
+    column: "Lateral and anterior columns",
+    info: "Lateral tract carries pain and temperature; anterior tract carries touch and pressure.",
+    cue: "Spinothalamic means spinal cord to thalamus: sensory signals climb.",
+    note: "The tract name points toward the brain relay station: the thalamus."
+  },
+  {
+    name: "Spinocerebellar tracts",
+    direction: "Ascending",
+    column: "Anterior and posterior superficial lateral columns",
+    info: "Sensation of movement of lower limbs.",
+    cue: "Cerebellar pathways help movement coordination by reporting limb position.",
+    note: "These pathways carry proprioceptive movement information."
+  },
+  {
+    name: "Corticospinal tracts",
+    direction: "Descending",
+    column: "Anterior and lateral columns",
+    info: "Control of skeletal muscles.",
+    cue: "Cortex to spinal cord means voluntary motor command travels down.",
+    note: "These are major motor efferent pathways for skeletal muscle control."
+  },
+  {
+    name: "Reticulospinal tracts",
+    direction: "Descending",
+    column: "Anterior and lateral columns",
+    info: "Control of muscle tone and sweat glands.",
+    cue: "Reticular formation influence descends to posture, tone, and autonomic-like output.",
+    note: "These pathways help regulate baseline motor tone and some gland activity."
+  },
+  {
+    name: "Rubrospinal tracts",
+    direction: "Descending",
+    column: "Lateral deep column",
+    info: "Control of posture.",
+    cue: "Rubrospinal pathways descend to help adjust posture.",
+    note: "This tract is motor-oriented and located in the lateral deep column."
+  }
+];
+
+const CASES = [
+  {
+    title: "Case 1: Pain and Temperature",
+    text: "A patient loses pain and temperature transmission from a body region after damage to a lateral white matter pathway.",
+    answer: "spinothalamic",
+    prof: "Correct: the lateral spinothalamic tract carries pain and temperature.",
+    eli5: "Yes. Pain and heat/cold messages ride the spinothalamic pathway."
+  },
+  {
+    title: "Case 2: Voluntary Skeletal Muscle",
+    text: "A patient has trouble sending voluntary motor commands from the cerebral cortex to skeletal muscles.",
+    answer: "corticospinal",
+    prof: "Correct: corticospinal tracts carry descending control of skeletal muscles.",
+    eli5: "Yes. Cortex-to-spine motor commands use corticospinal tracts."
+  },
+  {
+    title: "Case 3: Touch, Pressure, Movement",
+    text: "A posterior column lesion disrupts touch, pressure, and movement information.",
+    answer: "posterior",
+    prof: "Correct: fasciculus gracilis and cuneatus are posterior column sensory tracts.",
+    eli5: "Yes. Posterior columns carry those precise body reports upward."
+  },
+  {
+    title: "Case 4: Lower Limb Movement Sense",
+    text: "A tract carrying lower limb movement sensation toward the cerebellum is disrupted.",
+    answer: "spinocerebellar",
+    prof: "Correct: spinocerebellar tracts carry sensation of lower limb movement.",
+    eli5: "Yes. Spinocerebellar means movement reports heading to the cerebellum."
+  }
+];
+
+function byId(id) { return document.getElementById(id); }
+
+function updateModeText() {
+  byId("modeLabel").textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  byId("infoBox").innerHTML = eli5Mode ? TEXT[currentTab].eli5 : TEXT[currentTab].prof;
+  byId("ascText").textContent = eli5Mode
+    ? "Ascending tracts are up-lanes. They carry body reports like touch, pressure, pain, temperature, and movement sense toward the brain."
+    : "Ascending tracts conduct sensory impulses from body parts up toward the brain. In general, they are associated with posterior and lateral white matter columns and carry information such as touch, pressure, pain, temperature, and proprioceptive movement sense.";
+  byId("descText").textContent = eli5Mode
+    ? "Descending tracts are down-lanes. They carry brain commands to muscles and other effectors."
+    : "Descending tracts conduct motor impulses from the brain down toward effectors. In general, they are associated with anterior and lateral white matter columns and influence skeletal muscle control, muscle tone, sweat glands, and posture.";
+  renderRules();
+  renderTract();
+  renderCase();
+}
+
+function renderRules() {
+  const host = byId("ruleList");
+  host.innerHTML = "";
+  RULES.forEach(rule => {
+    const div = document.createElement("div");
+    div.className = "rule";
+    div.innerHTML = `<b>${rule.title}</b>${eli5Mode ? rule.eli5 : rule.prof}`;
+    host.appendChild(div);
+  });
+}
+
+window.switchTab = function(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  btn.classList.add("active");
+  byId(tab).classList.add("active");
+  updateModeText();
+};
+
+function renderTractList() {
+  const list = byId("tractList");
+  list.innerHTML = "";
+  TRACTS.forEach((tract, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "tract-btn" + (idx === activeTract ? " active" : "");
+    btn.textContent = tract.name;
+    btn.onclick = () => {
+      activeTract = idx;
+      renderTract();
+    };
+    list.appendChild(btn);
+  });
+}
+
+function renderTract() {
+  const tract = TRACTS[activeTract];
+  byId("tractTitle").textContent = tract.name;
+  byId("tractDirection").textContent = tract.direction;
+  byId("tractColumn").textContent = tract.column;
+  byId("tractInfo").textContent = tract.info;
+  byId("tractCue").textContent = tract.cue;
+  byId("tractNote").textContent = eli5Mode ? "Most pathways are paired and many cross sides before reaching the final target." : tract.note;
+  byId("tractCheck").textContent = tract.direction === "Ascending" ? "Sensory information travels toward the brain." : "Motor information travels away from the brain toward effectors.";
+  renderTractList();
+}
+
+window.setSim = function(mode) {
+  byId("simAsc").classList.toggle("active", mode === "asc");
+  byId("simDesc").classList.toggle("active", mode === "desc");
+  byId("pulseDot").classList.toggle("desc", mode === "desc");
+  byId("simTitle").textContent = mode === "asc" ? "Ascending sensory signal" : "Descending motor command";
+  byId("simText").textContent = mode === "asc"
+    ? (eli5Mode ? "A body message travels up to the brain." : "A touch, pressure, pain, temperature, or movement signal enters the spinal cord and travels upward toward the brain for interpretation.")
+    : (eli5Mode ? "A brain command travels down to the body." : "A motor command leaves the brain and travels downward through descending tracts toward effectors.");
+  byId("simPearl").innerHTML = mode === "asc"
+    ? "<b>Memory cue:</b> Afferent arrives at the CNS; ascending carries it up."
+    : "<b>Memory cue:</b> Efferent exits the CNS; descending carries commands down.";
+};
+
+function renderCase() {
+  const c = CASES[activeCase];
+  byId("caseTitle").textContent = c.title;
+  byId("caseText").textContent = c.text;
+  byId("caseFeedback").className = "info-box feedback";
+  byId("caseFeedback").innerHTML = "";
+}
+
+window.answerCase = function(answer) {
+  const c = CASES[activeCase];
+  const ok = answer === c.answer;
+  const fb = byId("caseFeedback");
+  fb.className = "info-box feedback " + (ok ? "ok" : "no");
+  fb.innerHTML = "<b>" + (ok ? "Correct." : "Try again.") + "</b> " + (eli5Mode ? c.eli5 : c.prof);
+  if (window.APTools) {
+    APTools.recordAnswer(MODULE_ID, ok, { xp: ok ? 20 : 5, questionId: "case-" + activeCase + "-" + answer });
+  }
+};
+
+window.nextCase = function() {
+  activeCase = (activeCase + 1) % CASES.length;
+  renderCase();
+};
+
+byId("eli5Toggle").addEventListener("change", () => {
+  eli5Mode = byId("eli5Toggle").checked;
+  updateModeText();
+  setSim(byId("simDesc").classList.contains("active") ? "desc" : "asc");
+});
+
+const BANK = [
+  { id: "smp1", bloom: "Remember", outcome: "Direction", q: "Ascending spinal cord tracts generally carry which type of information?", choices: ["Sensory afferent impulses toward the brain", "Motor efferent impulses away from the brain", "Only glandular impulses", "Only cranial nerve impulses"], answer: 0, why: "Ascending tracts carry sensory information from body regions toward the brain." },
+  { id: "smp2", bloom: "Remember", outcome: "Direction", q: "Descending spinal cord tracts generally carry:", choices: ["Motor efferent impulses from the brain toward effectors", "Sensory afferent impulses toward the brain", "Only pain and temperature", "Only touch and pressure"], answer: 0, why: "Descending tracts carry motor commands away from the brain." },
+  { id: "smp3", bloom: "Understand", outcome: "Columns", q: "Which tract family is located in the posterior column and carries touch, pressure, and movement?", choices: ["Fasciculus gracilis and fasciculus cuneatus", "Corticospinal tracts", "Rubrospinal tracts", "Reticulospinal tracts"], answer: 0, why: "The posterior columns include fasciculus gracilis and cuneatus." },
+  { id: "smp4", bloom: "Apply", outcome: "Spinothalamic", q: "Damage to the lateral spinothalamic tract would most directly affect:", choices: ["Pain and temperature", "Voluntary skeletal muscle control", "Posture only", "Hearing"], answer: 0, why: "The lateral spinothalamic tract carries pain and temperature." },
+  { id: "smp5", bloom: "Remember", outcome: "Corticospinal", q: "The corticospinal tracts carry information for:", choices: ["Control of skeletal muscles", "Touch and pressure only", "Lower limb movement sense to the cerebellum", "Smell"], answer: 0, why: "Corticospinal tracts are descending motor pathways for skeletal muscle control." },
+  { id: "smp6", bloom: "Understand", outcome: "General Traits", q: "Which is a general characteristic of many major nerve tracts?", choices: ["Most cross over", "None are paired", "They all use one neuron only", "They never show body-region organization"], answer: 0, why: "Many tracts cross over, are paired, use 2-3 neurons, and show somatotopy." },
+  { id: "smp7", bloom: "Apply", outcome: "Spinocerebellar", q: "A tract carrying sensation of movement of the lower limbs is most likely:", choices: ["Spinocerebellar", "Reticulospinal", "Rubrospinal", "Corticospinal"], answer: 0, why: "Spinocerebellar tracts carry lower limb movement sensation toward the cerebellum." },
+  { id: "smp8", bloom: "Remember", outcome: "Reticulospinal", q: "Reticulospinal tracts help control:", choices: ["Muscle tone and sweat glands", "Pain and temperature only", "Smell and taste", "Visual acuity"], answer: 0, why: "Reticulospinal tracts carry descending control related to muscle tone and sweat glands." },
+  { id: "smp9", bloom: "Remember", outcome: "Rubrospinal", q: "Rubrospinal tracts are associated with control of:", choices: ["Posture", "Hearing", "Touch and pressure", "Blood pH"], answer: 0, why: "Rubrospinal tracts are descending pathways involved in posture control." },
+  { id: "smp10", bloom: "Analyze", outcome: "Terminology", q: "Which pairing is correct?", choices: ["Afferent = sensory toward CNS; efferent = motor away from CNS", "Afferent = motor away from CNS; efferent = sensory toward CNS", "Ascending = always motor; descending = always sensory", "Posterior column = only motor commands"], answer: 0, why: "Afferent sensory signals arrive at the CNS; efferent motor signals exit toward effectors." }
+];
+
+APTools.init({ id: MODULE_ID, title: "Sensory & Motor Pathways Lab", unit: "Ch 11 · Nervous System Part II" });
+APTools.mountHUD("#apHud", MODULE_ID);
+APTools.mountQuiz({ container: "#apQuiz", moduleId: MODULE_ID, bank: BANK, length: 8 });
+
+renderRules();
+renderTractList();
+renderTract();
+renderCase();
+setSim("asc");
+updateModeText();
+</script>
+</body>
+</html>

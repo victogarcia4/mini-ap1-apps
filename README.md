@@ -1,6 +1,6 @@
 # 🧬 Anatomy & Physiology Active Learning Mini-Apps
 
-An interactive, responsive suite of **29 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
+An interactive, responsive suite of **37 active learning web applications** designed for **BIOL 2401 (Anatomy & Physiology I)** students at Lone Star College–North Harris. Created by **Dr. Victor Garcia M**, MSN, FNP-C, RN.
 
 📱 **Live Production URL:** [https://mini-ap1-apps.vercel.app](https://mini-ap1-apps.vercel.app)
 
@@ -57,6 +57,14 @@ The design adopts a vintage **Riso-zine notebook aesthetic** mimicking a physica
 | **Ch 10** | **10.2** | Protective Structures: Bone, Meninges & CSF | [24. protective-structures-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/24.%20protective-structures-lab.html) | Cranial & vertebral bone, the three meninges and their spaces, CSF formation/circulation/reabsorption and function |
 | **Ch 10** | **10.3** | Neuron Structure & Classification | [25. neuron-structure-classification-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/25.%20neuron-structure-classification-lab.html) | Parts of a neuron, myelin/neurilemma/nodes of Ranvier, white vs. gray matter, structural (bipolar/unipolar/multipolar) and functional (sensory/inter/motor) classes |
 | **Ch 10** | **10.4** | Neuroglial Cells | [26. neuroglia-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/26.%20neuroglia-lab.html) | Four CNS glia (astrocyte, oligodendrocyte, microglia, ependyma), two PNS glia (Schwann, satellite), their functions, and axon vs. cell-body injury |
+| **Ch 10** | **10.5** | The Nerve Impulse | [27. nerve-impulse-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/27.%20nerve-impulse-lab.html) | Resting membrane potential, graded potentials, action potentials, refractory periods, and continuous vs. saltatory conduction |
+| **Ch 11** | **11.1** | The Brain: Structure & Function | [28. brain-organization-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/28.%20brain-organization-lab.html) | Major brain parts, cerebral lobes, functional cortical areas, diencephalon, limbic system, brain stem, and cerebellum |
+| **Ch 11** | **11.2** | Cranial Nerves | [29. cranial-nerves-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/29.%20cranial-nerves-lab.html) | Twelve cranial nerves by number, name, function, sensory/motor/mixed class, and mnemonics |
+| **Ch 11** | **11.3** | Spinal Cord: Structure & Function | [30. spinal-cord-organization-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/30.%20spinal-cord-organization-lab.html) | Spinal cord landmarks, gray and white matter, horns, roots, ganglia, and cord functions |
+| **Ch 11** | **11.4** | Spinal Nerves | [31. spinal-nerves-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/31.%20spinal-nerves-lab.html) | Thirty-one pairs of spinal nerves, rami, plexuses, intercostal nerves, and dermatomes |
+| **Ch 11** | **11.5** | Reflexes Lab | [32. reflexes-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/32.%20reflexes-lab.html) | Reflex arc components, patellar stretch reflex, withdrawal reflex, and clinical reflex findings |
+| **Ch 11** | **11.6** | Autonomic Nervous System Lab | [33. autonomic-nervous-system-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/33.%20autonomic-nervous-system-lab.html) | Sympathetic vs. parasympathetic pathways, neurotransmitters, receptors, organ effects, and case pattern recognition |
+| **Ch 11** | **11.7** | Sensory & Motor Pathways Lab | [34. sensory-motor-pathways-lab.html](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/34.%20sensory-motor-pathways-lab.html) | Ascending sensory tracts, descending motor tracts, crossover, somatotopy, and lesion-pattern clues |
 
 ---
 

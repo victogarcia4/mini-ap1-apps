@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autonomic Nervous System Lab | Chapter 11 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&family=Spline+Sans+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-100: #ccfbf1;
+  --rose-700: #be123c;
+  --rose-100: #ffe4e6;
+  --indigo-700: #3730a3;
+  --indigo-100: #e0e7ff;
+  --amber-500: #f59e0b;
+  --green-600: #16a34a;
+  --red-600: #dc2626;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --paper-bg: #FAF9F5;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --shadow: 4px 4px 0 #0f172a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(900px 500px at 80% -10%, rgba(190,18,60,0.06), transparent),
+    radial-gradient(700px 500px at 5% 95%, rgba(15,118,110,0.07), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.switch { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--slate-700); cursor: pointer; font-weight: 800; user-select: none; }
+.switch input { display: none; }
+.track { width: 44px; height: 24px; border-radius: 12px; background: #cbd5e1; position: relative; transition: 0.2s; border: 1.5px solid var(--border-color); }
+.track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--border-color); transition: 0.2s; }
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+.btn-link, button {
+  font-family: inherit;
+}
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 800;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+.mini-stat {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.stat {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.stat strong { display: block; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.25rem; line-height: 1; }
+.stat span { display: block; margin-top: 4px; font-size: 0.7rem; color: var(--slate-500); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+.tab-bar { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap; }
+.tab-btn, .choice-btn, .organ-btn, .path-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 900;
+  font-size: 0.84rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover, .choice-btn:hover, .organ-btn:hover, .path-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); background: var(--slate-100); }
+.tab-btn.active, .choice-btn.active, .organ-btn.active, .path-btn.active { background: var(--teal-100); color: var(--teal-700); box-shadow: none; transform: translate(2px, 2px); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 18px;
+  min-height: 480px;
+}
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--teal-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.branch-card {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+.branch-card .head {
+  padding: 12px 14px;
+  border-bottom: 2px solid var(--border-color);
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-weight: 900;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.branch-card.sym .head { background: var(--rose-100); color: var(--rose-700); }
+.branch-card.para .head { background: var(--indigo-100); color: var(--indigo-700); }
+.branch-card .content { padding: 14px; font-size: 0.84rem; color: var(--slate-700); }
+.branch-card ul { margin: 10px 0 0; padding-left: 18px; }
+.branch-card li { margin: 6px 0; }
+.diagram {
+  margin-top: 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--slate-100);
+}
+.diagram img { width: 100%; display: block; height: auto; }
+.diagram-caption { padding: 10px 12px; font-size: 0.78rem; color: var(--slate-600); border-top: 1.5px solid var(--border-color); background: #fff; }
+.chain-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.path-controls, .organ-controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
+.chain {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr;
+  gap: 14px;
+  align-items: center;
+  min-height: 270px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 18px;
+  background: linear-gradient(90deg, rgba(255,228,230,0.42), rgba(255,255,255,0.85), rgba(224,231,255,0.42));
+}
+.node {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 14px;
+  min-height: 130px;
+  box-shadow: 3px 3px 0 var(--border-color);
+}
+.node h3 { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.95rem; margin: 0 0 8px; color: var(--teal-700); }
+.node p { margin: 0; font-size: 0.8rem; color: var(--slate-600); }
+.arrow {
+  position: relative;
+  height: 8px;
+  border-top: 4px solid var(--border-color);
+}
+.arrow::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: -10px;
+  border-left: 14px solid var(--border-color);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+.neuro-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.neuro-card {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.neuro-card b { display: block; font-size: 0.8rem; color: var(--teal-700); }
+.neuro-card span { display: block; margin-top: 4px; font-size: 0.74rem; color: var(--slate-600); }
+.organ-grid {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+.organ-list { display: flex; flex-direction: column; gap: 8px; }
+.effect-board {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+}
+.effect-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-weight: 900;
+  color: var(--teal-700);
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+}
+.effect-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.effect {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 150px;
+}
+.effect.sym { background: var(--rose-100); }
+.effect.para { background: var(--indigo-100); }
+.effect h4 { margin: 0 0 8px; font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; }
+.effect p { margin: 0; color: var(--slate-700); font-size: 0.84rem; }
+.case-card {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+}
+.case-card h3 { margin: 0 0 8px; font-family: "Bricolage Grotesque", sans-serif; color: var(--teal-700); }
+.case-card p { margin: 0 0 14px; color: var(--slate-700); }
+.choice-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.feedback { display: none; margin-top: 14px; }
+.feedback.ok { display: block; background: #dcfce7; border-color: var(--green-600); }
+.feedback.no { display: block; background: #fee2e2; border-color: var(--red-600); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: var(--shadow); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 900; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 800; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+@media (max-width: 920px) {
+  .layout, .organ-grid { grid-template-columns: 1fr; }
+  .mode-grid, .effect-columns, .neuro-row { grid-template-columns: 1fr; }
+  .chain { grid-template-columns: 1fr; }
+  .arrow { height: 34px; width: 8px; border-top: 0; border-left: 4px solid var(--border-color); justify-self: center; }
+  .arrow::after { right: auto; left: -10px; top: 24px; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 14px solid var(--border-color); border-bottom: 0; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Autonomic Nervous System Lab</h1>
+    <p>Sympathetic vs. Parasympathetic Control · Ch 11</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle"><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <section class="panel">
+      <h2>ANS Learning Guide</h2>
+      <div class="body">
+        <p style="font-size:0.8rem;color:var(--slate-500);margin:0 0 10px;">The autonomic nervous system controls smooth muscle, cardiac muscle, and glands through involuntary motor pathways.</p>
+        <div class="info-box" id="infoBox"><b>Start here:</b> Compare the two divisions, then trace the two-neuron chain and predict organ effects.</div>
+        <div class="mini-stat">
+          <div class="stat"><strong>2</strong><span>Motor neurons</span></div>
+          <div class="stat"><strong>3</strong><span>Effector types</span></div>
+          <div class="stat"><strong>ACh</strong><span>All preganglionic</span></div>
+          <div class="stat"><strong>NE</strong><span>Most sympathetic post</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Need-To-Know Rules</h2>
+      <div class="body">
+        <div class="info-box" id="ruleBox">
+          <b>Rule:</b> Somatic motor pathways use one neuron to skeletal muscle. Autonomic motor pathways usually use two neurons: preganglionic neuron, ganglion, then postganglionic neuron to the organ.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <main>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('compare', this)">1 · Compare</button>
+      <button class="tab-btn" onclick="switchTab('pathways', this)">2 · Pathways</button>
+      <button class="tab-btn" onclick="switchTab('organs', this)">3 · Organ Effects</button>
+      <button class="tab-btn" onclick="switchTab('cases', this)">4 · Case Calls</button>
+    </div>
+
+    <section id="compare" class="tab-content active">
+      <div class="panel">
+        <h2>Division Snapshot</h2>
+        <div class="body">
+          <div class="stage">
+            <h3 class="stage-title">Fight-or-Flight vs. Rest-and-Digest</h3>
+            <div class="mode-grid">
+              <article class="branch-card sym">
+                <div class="head"><span>Sympathetic Division</span><span>Thoracolumbar</span></div>
+                <div class="content" id="symText">
+                  Mobilizes the body for activity, stress, exercise, and emergencies. Preganglionic cell bodies originate in the thoracic and lumbar spinal cord. Most postganglionic fibers release norepinephrine.
+                  <ul>
+                    <li>Short preganglionic fibers, long postganglionic fibers</li>
+                    <li>Ganglia usually near the spinal cord</li>
+                    <li>Can produce widespread body responses</li>
+                  </ul>
+                </div>
+              </article>
+              <article class="branch-card para">
+                <div class="head"><span>Parasympathetic Division</span><span>Craniosacral</span></div>
+                <div class="content" id="paraText">
+                  Conserves energy and supports routine maintenance such as digestion, elimination, and recovery. Preganglionic neurons arise from the brainstem and sacral spinal cord. Postganglionic fibers release acetylcholine.
+                  <ul>
+                    <li>Long preganglionic fibers, short postganglionic fibers</li>
+                    <li>Ganglia are in or near target organs</li>
+                    <li>Usually produces localized organ responses</li>
+                  </ul>
+                </div>
+              </article>
+            </div>
+            <div class="diagram">
+              <img src="assets/ch11-sympathetic-v-parasymphatetic.png" alt="Sympathetic and parasympathetic nervous system comparison diagram">
+              <div class="diagram-caption">Reference image for the opposing autonomic effects on the pupil, heart, lungs, digestive tract, bladder, and reproductive organs.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pathways" class="tab-content">
+      <div class="panel">
+        <h2>Two-Neuron Chain</h2>
+        <div class="body">
+          <div class="stage">
+            <div class="path-controls">
+              <button class="path-btn active" id="path-sym" onclick="setPathway('sym')">Sympathetic</button>
+              <button class="path-btn" id="path-para" onclick="setPathway('para')">Parasympathetic</button>
+              <button class="path-btn" id="path-somatic" onclick="setPathway('somatic')">Somatic Contrast</button>
+            </div>
+            <div class="chain-wrap">
+              <div class="chain">
+                <div class="node">
+                  <h3 id="node1Title">Preganglionic Neuron</h3>
+                  <p id="node1Text">Cell body in thoracic/lumbar spinal cord. Axon exits the CNS and releases ACh at a nearby ganglion.</p>
+                </div>
+                <div class="arrow" aria-hidden="true"></div>
+                <div class="node">
+                  <h3 id="node2Title">Autonomic Ganglion</h3>
+                  <p id="node2Text">A synapse outside the CNS. Nicotinic receptors receive ACh from the preganglionic neuron.</p>
+                </div>
+                <div class="arrow" aria-hidden="true"></div>
+                <div class="node">
+                  <h3 id="node3Title">Postganglionic Neuron</h3>
+                  <p id="node3Text">Long axon reaches smooth muscle, cardiac muscle, or glands. Usually releases norepinephrine.</p>
+                </div>
+              </div>
+              <div class="neuro-row">
+                <div class="neuro-card"><b>Preganglionic NT</b><span id="nt1">Acetylcholine</span></div>
+                <div class="neuro-card"><b>Ganglion Receptor</b><span id="rec1">Nicotinic cholinergic</span></div>
+                <div class="neuro-card"><b>Postganglionic NT</b><span id="nt2">Usually norepinephrine</span></div>
+                <div class="neuro-card"><b>Target Receptor</b><span id="rec2">Adrenergic alpha/beta</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="organs" class="tab-content">
+      <div class="panel">
+        <h2>Predict The Organ Response</h2>
+        <div class="body">
+          <div class="stage">
+            <div class="organ-grid">
+              <div class="organ-list" id="organList"></div>
+              <div class="effect-board">
+                <h3 class="effect-title" id="organTitle">Heart</h3>
+                <div class="effect-columns">
+                  <div class="effect sym">
+                    <h4>Sympathetic</h4>
+                    <p id="symEffect">Increases heart rate and force of contraction to deliver more blood during stress or exercise.</p>
+                  </div>
+                  <div class="effect para">
+                    <h4>Parasympathetic</h4>
+                    <p id="paraEffect">Decreases heart rate during rest, mainly through the vagus nerve.</p>
+                  </div>
+                </div>
+                <div class="info-box" id="organPearl"><b>Memory cue:</b> Sympathetic pushes output; parasympathetic slows the pace.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases" class="tab-content">
+      <div class="panel">
+        <h2>Case Calls</h2>
+        <div class="body">
+          <div class="stage">
+            <div class="case-card">
+              <h3 id="caseTitle">Case 1</h3>
+              <p id="caseText">A student hears a crash behind them. Pupils dilate, heart rate rises, bronchioles widen, and digestion slows.</p>
+              <div class="choice-row">
+                <button class="choice-btn" onclick="answerCase('sym')">Sympathetic</button>
+                <button class="choice-btn" onclick="answerCase('para')">Parasympathetic</button>
+                <button class="choice-btn" onclick="nextCase()">Next Case</button>
+              </div>
+              <div class="info-box feedback" id="caseFeedback"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself - Autonomic Nervous System</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">Hub</a>
+    </div>
+    <p class="ap-study-sub">Prove your mastery of autonomic effectors, sympathetic vs. parasympathetic anatomy, neurotransmitters, receptors, and organ-level effects.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive study aid for BIOL 2401 Chapter 11 section 11.6. Always verify details against course lecture notes and textbook tables.
+</div>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+"use strict";
+
+const MODULE_ID = "autonomic-nervous-system";
+let eli5Mode = false;
+let currentTab = "compare";
+let activeOrgan = 0;
+let activeCase = 0;
+
+const TEXT = {
+  compare: {
+    prof: "<b>Compare divisions:</b> Sympathetic pathways prepare the body for activity and stress; parasympathetic pathways conserve energy and support maintenance functions.",
+    eli5: "<b>Compare divisions:</b> Sympathetic is the gas pedal for emergencies. Parasympathetic is the quiet reset mode for resting, digesting, and recovering."
+  },
+  pathways: {
+    prof: "<b>Two-neuron chain:</b> Autonomic motor output usually travels from a preganglionic neuron to an autonomic ganglion, then from a postganglionic neuron to visceral effectors.",
+    eli5: "<b>Two-neuron chain:</b> The body uses a relay: first nerve leaves the CNS, second nerve carries the final command to the organ."
+  },
+  organs: {
+    prof: "<b>Organ effects:</b> Most organs receive dual innervation. The same organ can be accelerated by one division and slowed or redirected by the other.",
+    eli5: "<b>Organ effects:</b> Many organs have two control buttons: one for action mode, one for recovery mode."
+  },
+  cases: {
+    prof: "<b>Clinical reasoning:</b> Identify the division by the pattern of organ changes, not by a single organ in isolation.",
+    eli5: "<b>Clinical reasoning:</b> Look at the whole pattern. Is the body gearing up or settling down?"
+  }
+};
+
+const RULES = {
+  prof: "<b>Rule:</b> Somatic motor pathways use one neuron to skeletal muscle. Autonomic motor pathways usually use two neurons: preganglionic neuron, ganglion, then postganglionic neuron to the organ.",
+  eli5: "<b>Rule:</b> Skeletal muscles get a direct wire. Organs get a relay team: CNS nerve, switch station, then organ nerve."
+};
+
+const ORGANS = [
+  {
+    name: "Heart",
+    sym: "Increases heart rate and force of contraction to deliver more blood during stress or exercise.",
+    para: "Decreases heart rate during rest, mainly through the vagus nerve.",
+    pearl: "Sympathetic pushes cardiac output; parasympathetic slows the pace."
+  },
+  {
+    name: "Lungs",
+    sym: "Dilates bronchioles so more air can move in and out during activity.",
+    para: "Constricts bronchioles toward a smaller resting airway diameter.",
+    pearl: "Action mode opens the airways."
+  },
+  {
+    name: "Pupil",
+    sym: "Dilates the pupil to increase light entry and visual awareness.",
+    para: "Constricts the pupil for normal close work and bright-light control.",
+    pearl: "Wide eyes fit alert mode; smaller pupils fit calm focus."
+  },
+  {
+    name: "Digestive Tract",
+    sym: "Inhibits motility and secretion, diverting energy away from digestion.",
+    para: "Stimulates motility and secretion for digestion and nutrient absorption.",
+    pearl: "Rest-and-digest is literal here."
+  },
+  {
+    name: "Bladder",
+    sym: "Relaxes the detrusor muscle and tightens the internal urethral sphincter, promoting urine storage.",
+    para: "Contracts the detrusor muscle and relaxes the internal urethral sphincter, promoting urination.",
+    pearl: "Sympathetic stores; parasympathetic releases."
+  },
+  {
+    name: "Blood Vessels",
+    sym: "Commonly causes vasoconstriction in skin and viscera, helping maintain blood pressure.",
+    para: "Has limited direct innervation of most blood vessels.",
+    pearl: "Vascular tone is mostly a sympathetic job."
+  }
+];
+
+const CASES = [
+  {
+    title: "Case 1: Sudden Crash",
+    text: "A student hears a crash behind them. Pupils dilate, heart rate rises, bronchioles widen, and digestion slows.",
+    answer: "sym",
+    prof: "Correct pattern: sympathetic. The body is preparing for immediate action.",
+    eli5: "That is action mode: bigger pupils, faster heart, open airways, slower digestion."
+  },
+  {
+    title: "Case 2: After Lunch",
+    text: "After eating, salivation increases, the stomach and intestines become more active, and heart rate settles.",
+    answer: "para",
+    prof: "Correct pattern: parasympathetic. The body is prioritizing digestion and recovery.",
+    eli5: "That is rest-and-digest mode: the gut gets busy and the heart calms down."
+  },
+  {
+    title: "Case 3: Holding Urine",
+    text: "During an exam, the bladder relaxes while the internal urethral sphincter remains contracted.",
+    answer: "sym",
+    prof: "Correct pattern: sympathetic. Urine storage is promoted by detrusor relaxation and sphincter contraction.",
+    eli5: "That is storage mode: relax the bladder wall, keep the exit closed."
+  },
+  {
+    title: "Case 4: Bathroom Break",
+    text: "The detrusor muscle contracts and the internal urethral sphincter relaxes.",
+    answer: "para",
+    prof: "Correct pattern: parasympathetic. These changes promote micturition.",
+    eli5: "That is release mode: squeeze the bladder, open the exit."
+  }
+];
+
+function byId(id) { return document.getElementById(id); }
+
+function updateModeText() {
+  byId("modeLabel").textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  byId("infoBox").innerHTML = eli5Mode ? TEXT[currentTab].eli5 : TEXT[currentTab].prof;
+  byId("ruleBox").innerHTML = eli5Mode ? RULES.eli5 : RULES.prof;
+  byId("symText").innerHTML = eli5Mode
+    ? "The body alarm system. It helps you run, fight, exercise, or handle stress.<ul><li>Starts from the middle spinal cord regions</li><li>Switch stations are usually near the spine</li><li>Often affects many organs at once</li></ul>"
+    : "Mobilizes the body for activity, stress, exercise, and emergencies. Preganglionic cell bodies originate in the thoracic and lumbar spinal cord. Most postganglionic fibers release norepinephrine.<ul><li>Short preganglionic fibers, long postganglionic fibers</li><li>Ganglia usually near the spinal cord</li><li>Can produce widespread body responses</li></ul>";
+  byId("paraText").innerHTML = eli5Mode
+    ? "The body reset system. It helps you digest food, save energy, and recover.<ul><li>Starts from the brainstem and low spinal cord</li><li>Switch stations sit close to the target organ</li><li>Usually makes focused local changes</li></ul>"
+    : "Conserves energy and supports routine maintenance such as digestion, elimination, and recovery. Preganglionic neurons arise from the brainstem and sacral spinal cord. Postganglionic fibers release acetylcholine.<ul><li>Long preganglionic fibers, short postganglionic fibers</li><li>Ganglia are in or near target organs</li><li>Usually produces localized organ responses</li></ul>";
+  renderOrgan();
+  renderCase();
+}
+
+window.switchTab = function(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  btn.classList.add("active");
+  byId(tab).classList.add("active");
+  updateModeText();
+};
+
+window.setPathway = function(type) {
+  document.querySelectorAll(".path-btn").forEach(b => b.classList.remove("active"));
+  byId("path-" + type).classList.add("active");
+  const content = {
+    sym: {
+      n1: "Preganglionic Neuron",
+      t1: eli5Mode ? "Short first nerve leaves the thoracic/lumbar spinal cord and uses ACh." : "Cell body in thoracic/lumbar spinal cord. Axon exits the CNS and releases ACh at a nearby ganglion.",
+      n2: "Sympathetic Ganglion",
+      t2: eli5Mode ? "A relay station usually near the spine receives the message." : "A paravertebral or prevertebral ganglion outside the CNS receives ACh on nicotinic receptors.",
+      n3: "Postganglionic Neuron",
+      t3: eli5Mode ? "Long second nerve reaches the organ and usually uses norepinephrine." : "Long axon reaches smooth muscle, cardiac muscle, or glands. Usually releases norepinephrine.",
+      nt1: "Acetylcholine", rec1: "Nicotinic cholinergic", nt2: "Usually norepinephrine", rec2: "Adrenergic alpha/beta"
+    },
+    para: {
+      n1: "Preganglionic Neuron",
+      t1: eli5Mode ? "Long first nerve starts in the brainstem or sacral spinal cord and uses ACh." : "Cell body in brainstem nuclei or sacral spinal cord. Long axon releases ACh near or within the target organ.",
+      n2: "Terminal Ganglion",
+      t2: eli5Mode ? "The relay station sits right by the organ, like a switch on the doorstep." : "A terminal or intramural ganglion near the target receives ACh on nicotinic receptors.",
+      n3: "Postganglionic Neuron",
+      t3: eli5Mode ? "Short second nerve reaches the organ and uses ACh again." : "Short axon reaches visceral effector tissue and releases ACh onto muscarinic receptors.",
+      nt1: "Acetylcholine", rec1: "Nicotinic cholinergic", nt2: "Acetylcholine", rec2: "Muscarinic cholinergic"
+    },
+    somatic: {
+      n1: "Somatic Motor Neuron",
+      t1: eli5Mode ? "One direct wire leaves the CNS and goes to skeletal muscle." : "A single lower motor neuron leaves the CNS and innervates skeletal muscle directly.",
+      n2: "No Autonomic Ganglion",
+      t2: eli5Mode ? "There is no relay station in the middle." : "Somatic motor output has no peripheral autonomic ganglion.",
+      n3: "Skeletal Muscle",
+      t3: eli5Mode ? "The muscle gets ACh and contracts." : "The neuromuscular junction receives ACh on nicotinic receptors, triggering skeletal muscle contraction.",
+      nt1: "Acetylcholine", rec1: "No ganglion", nt2: "Acetylcholine", rec2: "Nicotinic at NMJ"
+    }
+  }[type];
+  byId("node1Title").textContent = content.n1;
+  byId("node1Text").textContent = content.t1;
+  byId("node2Title").textContent = content.n2;
+  byId("node2Text").textContent = content.t2;
+  byId("node3Title").textContent = content.n3;
+  byId("node3Text").textContent = content.t3;
+  byId("nt1").textContent = content.nt1;
+  byId("rec1").textContent = content.rec1;
+  byId("nt2").textContent = content.nt2;
+  byId("rec2").textContent = content.rec2;
+};
+
+function renderOrganList() {
+  const list = byId("organList");
+  list.innerHTML = "";
+  ORGANS.forEach((organ, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "organ-btn" + (idx === activeOrgan ? " active" : "");
+    btn.textContent = organ.name;
+    btn.onclick = () => {
+      activeOrgan = idx;
+      renderOrgan();
+    };
+    list.appendChild(btn);
+  });
+}
+
+function renderOrgan() {
+  const organ = ORGANS[activeOrgan];
+  byId("organTitle").textContent = organ.name;
+  byId("symEffect").textContent = organ.sym;
+  byId("paraEffect").textContent = organ.para;
+  byId("organPearl").innerHTML = "<b>Memory cue:</b> " + organ.pearl;
+  renderOrganList();
+}
+
+function renderCase() {
+  const c = CASES[activeCase];
+  byId("caseTitle").textContent = c.title;
+  byId("caseText").textContent = c.text;
+  byId("caseFeedback").className = "info-box feedback";
+  byId("caseFeedback").innerHTML = "";
+}
+
+window.answerCase = function(answer) {
+  const c = CASES[activeCase];
+  const ok = answer === c.answer;
+  const fb = byId("caseFeedback");
+  fb.className = "info-box feedback " + (ok ? "ok" : "no");
+  fb.innerHTML = "<b>" + (ok ? "Correct." : "Try again.") + "</b> " + (eli5Mode ? c.eli5 : c.prof);
+  if (window.APTools) {
+    APTools.recordAnswer(MODULE_ID, ok, { xp: ok ? 20 : 5, questionId: "case-" + activeCase + "-" + answer });
+  }
+};
+
+window.nextCase = function() {
+  activeCase = (activeCase + 1) % CASES.length;
+  renderCase();
+};
+
+byId("eli5Toggle").addEventListener("change", () => {
+  eli5Mode = byId("eli5Toggle").checked;
+  updateModeText();
+  setPathway(document.querySelector(".path-btn.active").id.replace("path-", ""));
+});
+
+const BANK = [
+  { id: "ans1", bloom: "Remember", outcome: "Effectors", q: "Which tissues are controlled by the autonomic nervous system?", choices: ["Smooth muscle, cardiac muscle, and glands", "Only skeletal muscle", "Bone and cartilage", "Epidermis only"], answer: 0, why: "Autonomic output targets visceral effectors: smooth muscle, cardiac muscle, and glands." },
+  { id: "ans2", bloom: "Understand", outcome: "Divisions", q: "A patient has dilated pupils, increased heart rate, and bronchodilation. Which division is dominant?", choices: ["Sympathetic", "Parasympathetic", "Somatic sensory", "Enteric only"], answer: 0, why: "Those are classic sympathetic fight-or-flight effects." },
+  { id: "ans3", bloom: "Remember", outcome: "Origin", q: "The sympathetic division is also called:", choices: ["Thoracolumbar", "Craniosacral", "Cervicothoracic", "Sacrolumbar"], answer: 0, why: "Sympathetic preganglionic neurons arise from thoracic and lumbar spinal cord regions." },
+  { id: "ans4", bloom: "Remember", outcome: "Origin", q: "The parasympathetic division is also called:", choices: ["Craniosacral", "Thoracolumbar", "Somatosacral", "Corticospinal"], answer: 0, why: "Parasympathetic preganglionic neurons arise from the brainstem and sacral spinal cord." },
+  { id: "ans5", bloom: "Apply", outcome: "Pathways", q: "Compared with parasympathetic pathways, typical sympathetic pathways have:", choices: ["Short preganglionic and long postganglionic fibers", "Long preganglionic and short postganglionic fibers", "One neuron directly to skeletal muscle", "No ganglion"], answer: 0, why: "Sympathetic ganglia are usually near the spinal cord, so the first fiber is short and the second is long." },
+  { id: "ans6", bloom: "Understand", outcome: "Neurotransmitters", q: "What neurotransmitter is released by all autonomic preganglionic neurons?", choices: ["Acetylcholine", "Norepinephrine", "Dopamine", "Serotonin"], answer: 0, why: "Both sympathetic and parasympathetic preganglionic neurons release acetylcholine." },
+  { id: "ans7", bloom: "Understand", outcome: "Receptors", q: "Most sympathetic postganglionic neurons release norepinephrine onto which receptor family?", choices: ["Adrenergic receptors", "Muscarinic receptors", "Nicotinic receptors at the NMJ", "Photoreceptors"], answer: 0, why: "Norepinephrine acts on adrenergic alpha and beta receptors." },
+  { id: "ans8", bloom: "Apply", outcome: "Organs", q: "Which autonomic response promotes urination?", choices: ["Parasympathetic contraction of detrusor and relaxation of internal sphincter", "Sympathetic relaxation of detrusor and contraction of internal sphincter", "Sympathetic bronchodilation", "Somatic pupil dilation"], answer: 0, why: "Parasympathetic activity promotes micturition by contracting the bladder wall and relaxing the internal sphincter." },
+  { id: "ans9", bloom: "Analyze", outcome: "Comparison", q: "Which statement best contrasts somatic and autonomic motor pathways?", choices: ["Somatic uses one motor neuron; autonomic usually uses a two-neuron chain", "Somatic uses ganglia; autonomic never uses ganglia", "Somatic controls glands; autonomic controls skeletal muscle", "Both always release norepinephrine at the effector"], answer: 0, why: "Somatic pathways go directly to skeletal muscle; autonomic pathways relay through ganglia." },
+  { id: "ans10", bloom: "Apply", outcome: "Organs", q: "Which division increases digestive tract motility and secretion?", choices: ["Parasympathetic", "Sympathetic", "Somatic motor", "Special sensory"], answer: 0, why: "Parasympathetic activity supports rest-and-digest functions." }
+];
+
+APTools.init({ id: MODULE_ID, title: "Autonomic Nervous System Lab", unit: "Ch 11 · Nervous System Part II" });
+APTools.mountHUD("#apHud", MODULE_ID);
+APTools.mountQuiz({ container: "#apQuiz", moduleId: MODULE_ID, bank: BANK, length: 8 });
+
+renderOrganList();
+renderOrgan();
+renderCase();
+setPathway("sym");
+updateModeText();
+</script>
+</body>
+</html>

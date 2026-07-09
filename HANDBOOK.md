@@ -26,7 +26,7 @@ The applications are built as lightweight static HTML pages running directly in 
 
 ---
 
-## 🗺️ Current Module Registry (34 Apps)
+## 🗺️ Current Module Registry (37 Apps)
 
 The mini-apps are organized sequentially, corresponding to the A&P I course curriculum. Here is the list of apps built so far:
 
@@ -86,6 +86,8 @@ The mini-apps are organized sequentially, corresponding to the A&P I course curr
 - **App 11.3:** [The Spinal Cord: Structure & Function](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/30.%20spinal-cord-organization-lab.html) (`30. spinal-cord-organization-lab.html`) *(Active)*
 - **App 11.4:** [Spinal Nerves](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/31.%20spinal-nerves-lab.html) (`31. spinal-nerves-lab.html`) *(Active)*
 - **App 11.5:** [Reflexes Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/32.%20reflexes-lab.html) (`32. reflexes-lab.html`) *(Active)*
+- **App 11.6:** [Autonomic Nervous System Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/33.%20autonomic-nervous-system-lab.html) (`33. autonomic-nervous-system-lab.html`) *(Active)*
+- **App 11.7:** [Sensory & Motor Pathways Lab](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/34.%20sensory-motor-pathways-lab.html) (`34. sensory-motor-pathways-lab.html`) *(Active)*
 
 ---
 

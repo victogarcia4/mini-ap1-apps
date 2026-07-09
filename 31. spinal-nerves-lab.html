@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spinal Nerves | Chapter 11 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-500: #14b8a6;
+  --teal-100: #ccfbf1;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(15, 118, 110, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --blue-600: #2563eb;
+  --purple-600: #7c3aed;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(13, 148, 136, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--teal-100);
+  color: var(--teal-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--teal-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--teal-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 500px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 560px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* Pick-button group (region / rami / plexus selectors) */
+.pick-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 6px; }
+.pick-btn { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 13px; background: #fff; font-family: inherit; font-weight: 700; font-size: 0.8rem; color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color); transition: 0.15s; text-align: center; }
+.pick-btn:hover { background: var(--slate-100); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.pick-btn.active { background: var(--teal-100); color: var(--teal-700); border-color: var(--teal-700); }
+.pick-btn .shape { font-size: 0.68rem; color: var(--slate-500); font-weight: 700; display: block; }
+.pick-btn.active .shape { color: var(--teal-600); }
+
+/* Recap / count card grid (shared pattern) */
+.glia-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; }
+.glia-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 12px 10px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); border-top: 8px solid var(--teal-600); text-align: center; }
+.glia-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0 0 4px; font-size: 0.9rem; color: var(--teal-700); }
+.glia-card .big-num { font-family: "Bricolage Grotesque", sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--slate-900); line-height: 1; }
+.glia-card .cap { font-size: 0.68rem; color: var(--slate-500); font-weight: 700; margin-top: 2px; }
+.mnemonic-box { margin-top: 16px; border: 1.5px dashed var(--border-color); border-radius: 10px; padding: 12px 16px; background: #fffaf0; font-size: 0.82rem; color: var(--slate-700); line-height: 1.5; }
+.mnemonic-box b { color: var(--amber-500); }
+@media (max-width: 760px) { .glia-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Spinal Nerves</h1>
+    <p>31 Pairs · Rami · Plexuses · Dermatomes · Ch 11</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Spinal Nerve Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">31 pairs of spinal nerves arise from the cord and are named for its regions. Every one is a mixed nerve. Explore how they are grouped, how they branch, how they form plexuses, and how they map the skin.</p>
+        <div class="info-box" id="infoBox">
+          <b>31 pairs, all mixed.</b> 8 cervical + 12 thoracic + 5 lumbar + 5 sacral + 1 coccygeal. Each forms from a dorsal + ventral root, exits through an intervertebral foramen, then branches into rami — many of which weave into nerve plexuses.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('pairs', this)">31 Pairs</button>
+      <button class="tab-btn" onclick="switchTab('rami', this)">Rami &amp; Roots</button>
+      <button class="tab-btn" onclick="switchTab('plexus', this)">Plexuses</button>
+      <button class="tab-btn" onclick="switchTab('derm', this)">Dermatomes</button>
+    </div>
+
+    <!-- Tab 1: 31 Pairs -->
+    <div id="pairs" class="tab-content active">
+      <section class="panel">
+        <h2>The 31 Pairs — Grouped by Region</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Click a Spinal Cord Region</h3>
+            <div class="pick-btns" id="regionsBtns">
+              <button class="pick-btn active" data-group="regions" data-key="cervical">Cervical<span class="shape">C1–C8 · 8</span></button>
+              <button class="pick-btn" data-group="regions" data-key="thoracic">Thoracic<span class="shape">T1–T12 · 12</span></button>
+              <button class="pick-btn" data-group="regions" data-key="lumbar">Lumbar<span class="shape">L1–L5 · 5</span></button>
+              <button class="pick-btn" data-group="regions" data-key="sacral">Sacral<span class="shape">S1–S5 · 5</span></button>
+              <button class="pick-btn" data-group="regions" data-key="coccygeal">Coccygeal<span class="shape">Co · 1</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="regionsTitle">Cervical Nerves (C1–C8)</div>
+              <div class="step-desc" id="regionsDesc">The 8 pairs of cervical spinal nerves. (Note: 8 cervical nerves but only 7 cervical vertebrae.) They supply the neck and shoulders and, via the brachial plexus, the arms; C1–C4 form the cervical plexus.</div>
+            </div>
+
+            <div class="glia-grid">
+              <div class="glia-card"><h4>Cervical</h4><div class="big-num">8</div><div class="cap">C1–C8</div></div>
+              <div class="glia-card"><h4>Thoracic</h4><div class="big-num">12</div><div class="cap">T1–T12</div></div>
+              <div class="glia-card"><h4>Lumbar</h4><div class="big-num">5</div><div class="cap">L1–L5</div></div>
+              <div class="glia-card"><h4>Sacral</h4><div class="big-num">5</div><div class="cap">S1–S5</div></div>
+              <div class="glia-card"><h4>Coccygeal</h4><div class="big-num">1</div><div class="cap">Co</div></div>
+            </div>
+            <div class="mnemonic-box">
+              <b>Count check:</b> 8 + 12 + 5 + 5 + 1 = <b>31 pairs</b>. Every spinal nerve is <b>mixed</b> (it carries both a sensory dorsal root and a motor ventral root), and each is named for the cord region it arises from.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Rami & Roots -->
+    <div id="rami" class="tab-content">
+      <section class="panel">
+        <h2>From Roots to Rami (Branches)</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">How a Spinal Nerve Forms &amp; Branches — Click Each</h3>
+            <div class="pick-btns" id="ramiBtns">
+              <button class="pick-btn active" data-group="rami" data-key="formation">Formation<span class="shape">roots fuse</span></button>
+              <button class="pick-btn" data-group="rami" data-key="dorsalramus">Dorsal Ramus<span class="shape">to the back</span></button>
+              <button class="pick-btn" data-group="rami" data-key="ventralramus">Ventral Ramus<span class="shape">to limbs/front</span></button>
+              <button class="pick-btn" data-group="rami" data-key="rami">Rami Communicans<span class="shape">to ANS chain</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="ramiTitle">Formation of the Spinal Nerve</div>
+              <div class="step-desc" id="ramiDesc">A dorsal (sensory) root and a ventral (motor) root fuse to form a short, mixed spinal nerve, which then passes through the intervertebral foramen before branching.</div>
+            </div>
+            <div class="mnemonic-box">
+              <b>Don't confuse them:</b> <b>Roots</b> (dorsal + ventral) form the spinal nerve <i>before</i> it emerges. <b>Rami</b> (dorsal, ventral, communicans) are the branches <i>after</i> it emerges. The big <b>ventral rami</b> are the ones that weave into the nerve plexuses.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Plexuses -->
+    <div id="plexus" class="tab-content">
+      <section class="panel">
+        <h2>Nerve Plexuses — Networks of Ventral Rami</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">The Major Plexuses — Click Each</h3>
+            <div class="pick-btns" id="plexusBtns">
+              <button class="pick-btn active" data-group="plexus" data-key="cervical">Cervical Plexus<span class="shape">C1–C4 · diaphragm</span></button>
+              <button class="pick-btn" data-group="plexus" data-key="brachial">Brachial Plexus<span class="shape">C5–T1 · arm</span></button>
+              <button class="pick-btn" data-group="plexus" data-key="lumbosacral">Lumbosacral Plexus<span class="shape">L1–S4 · leg</span></button>
+              <button class="pick-btn" data-group="plexus" data-key="intercostal">Intercostal Nerves<span class="shape">T2–T11 · no plexus</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="plexusTitle">Cervical Plexus (C1–C4)</div>
+              <div class="step-desc" id="plexusDesc">Formed by the ventral rami of the first four cervical nerves. Supplies the neck and skin muscles and — via the phrenic nerve — the diaphragm for breathing.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Spinal Nerve Plexuses</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-plexuses.png" alt="Anterior view of the body's spinal nerves and major plexuses: the cervical plexus in the neck (C1–C4) giving the phrenic nerve to the diaphragm, the brachial plexus (C5–T1) giving the arm nerves, and the lumbar and sacral (lumbosacral) plexuses giving the femoral and sciatic nerves to the lower limb, with intercostal nerves running between the ribs" loading="lazy">
+              </div>
+              <p class="video-ref-caption">A plexus is a network of ventral rami. Because each output branch pools fibers from several spinal nerves, damage to one spinal segment cannot fully paralyze a limb muscle.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Dermatomes -->
+    <div id="derm" class="tab-content">
+      <section class="panel">
+        <h2>Dermatomes — Mapping the Skin</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">One Spinal Nerve, One Skin Region — Click to Explore</h3>
+            <div class="pick-btns" id="dermBtns">
+              <button class="pick-btn active" data-group="derm" data-key="what">What Is It?<span class="shape">definition</span></button>
+              <button class="pick-btn" data-group="derm" data-key="clinical">Why It Matters<span class="shape">clinical use</span></button>
+              <button class="pick-btn" data-group="derm" data-key="landmarks">Handy Landmarks<span class="shape">quick anchors</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="dermTitle">What Is a Dermatome?</div>
+              <div class="step-desc" id="dermDesc">A dermatome is the area of skin whose sensory input is carried by a single spinal nerve. Adjacent dermatomes overlap somewhat, and together they map the whole body surface.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Dermatome Map</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-dermatome-map.png" alt="Front and back views of the human body with dermatomes shaded and labeled by spinal nerve level, from the cervical dermatomes over the head, neck, shoulders and arms, through the thoracic dermatomes banding the trunk (T4 at the nipple line, T10 at the umbilicus), to the lumbar and sacral dermatomes over the legs and feet" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Each labeled band is the skin territory of one spinal nerve. Clinicians use this map to localize nerve or spinal-cord problems from where sensation is altered.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Spinal Nerves</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master the 31 pairs and their regional counts, the roots vs. rami, the three major plexuses and the intercostal nerves, and what a dermatome is.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model the spinal nerves, their branches, plexuses, and dermatomes (CH11 §11.6E). Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "pairs";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+const GROUP_OF_TAB = { pairs: "regions", rami: "rami", plexus: "plexus", derm: "derm" };
+
+const INFO = {
+  regions: {
+    cervical: { title: "Cervical Nerves (C1–C8)",
+      prof: "The 8 pairs of cervical spinal nerves. (Note: 8 cervical nerves but only 7 cervical vertebrae.) They supply the neck and shoulders and, via the brachial plexus, the arms; C1–C4 form the cervical plexus.",
+      eli5: "The 8 pairs of nerves from your neck region — they run your neck, shoulders, and arms." },
+    thoracic: { title: "Thoracic Nerves (T1–T12)",
+      prof: "The 12 pairs of thoracic spinal nerves. Most (T2–T12) run as intercostal nerves between the ribs and do not form a plexus.",
+      eli5: "The 12 pairs of nerves from your chest and upper-back region — most run between your ribs." },
+    lumbar: { title: "Lumbar Nerves (L1–L5)",
+      prof: "The 5 pairs of lumbar spinal nerves. They join the lumbosacral plexus and supply the lower abdomen, hips, and legs.",
+      eli5: "The 5 pairs of nerves from your lower back — they help run your hips and legs." },
+    sacral: { title: "Sacral Nerves (S1–S5)",
+      prof: "The 5 pairs of sacral spinal nerves. They join the lumbosacral plexus, supplying the pelvis and lower limbs (including the sciatic nerve).",
+      eli5: "The 5 pairs of nerves from your pelvis area — they help run your legs and pelvic organs." },
+    coccygeal: { title: "Coccygeal Nerve (Co)",
+      prof: "The single pair of coccygeal spinal nerves at the very bottom of the cord and vertebral column.",
+      eli5: "The 1 pair of nerves at the very bottom, near your tailbone." }
+  },
+  rami: {
+    formation: { title: "Formation of the Spinal Nerve",
+      prof: "A dorsal (sensory) root and a ventral (motor) root fuse to form a short, mixed spinal nerve, which then passes through the intervertebral foramen before branching.",
+      eli5: "The sensory back-root and the motor front-root join to make one mixed spinal nerve that squeezes out between the vertebrae." },
+    dorsalramus: { title: "Dorsal (Posterior) Ramus",
+      prof: "A posterior branch of the spinal nerve that supplies the skin and deep muscles of the back.",
+      eli5: "The branch that heads to your back to run its skin and muscles." },
+    ventralramus: { title: "Ventral (Anterior) Ramus",
+      prof: "The large anterior branch of the spinal nerve. These rami supply the limbs and the front and sides of the trunk, and they form the nerve plexuses.",
+      eli5: "The big front branch — it supplies your limbs and the front of your body, and these branches weave into the plexuses." },
+    rami: { title: "Rami Communicans",
+      prof: "Small branches that connect the spinal nerve to the paravertebral (autonomic) ganglia of the sympathetic chain, carrying autonomic (visceral) fibers.",
+      eli5: "Tiny connector branches that link the spinal nerve to the autonomic 'chain' running alongside the spine." }
+  },
+  plexus: {
+    cervical: { title: "Cervical Plexus (C1–C4)",
+      prof: "Formed by the ventral rami of the first four cervical nerves. Supplies the neck and skin muscles and — via the phrenic nerve — the diaphragm for breathing.",
+      eli5: "A nerve network in the neck (from C1–C4). Its phrenic nerve runs the diaphragm, so it controls breathing." },
+    brachial: { title: "Brachial Plexus (C5–T1)",
+      prof: "Formed by the ventral rami of C5–C8 and T1. Gives rise to the major nerves of the upper limb (musculocutaneous, axillary, radial, median, and ulnar).",
+      eli5: "The nerve network for the arm (from C5–T1). It gives off all the big arm nerves." },
+    lumbosacral: { title: "Lumbosacral Plexus (L1–S4)",
+      prof: "Formed by the ventral rami of the lumbar and sacral nerves. Supplies the anterior and medial thighs and the posterior lower limbs — including the femoral and sciatic nerves.",
+      eli5: "The nerve network for the leg. It gives off the femoral nerve and the big sciatic nerve down the back of the leg." },
+    intercostal: { title: "Intercostal Nerves (T2–T11)",
+      prof: "Thoracic nerves T2–T11 do NOT form a plexus. Instead they run in the intercostal spaces between the ribs, supplying the skin (sensory) and muscles (motor) of the thorax and abdomen.",
+      eli5: "The chest nerves between the ribs — these DON'T form a network; each just runs straight along its rib space." }
+  },
+  derm: {
+    what: { title: "What Is a Dermatome?",
+      prof: "A dermatome is the area of skin whose sensory input is carried by a single spinal nerve. Adjacent dermatomes overlap somewhat, and together they map the whole body surface.",
+      eli5: "A dermatome is a stripe of skin handled by one spinal nerve. Stacked together, they cover your whole body like a map." },
+    clinical: { title: "Why Dermatomes Matter",
+      prof: "Because each spinal nerve maps to a predictable skin region, a pattern of numbness, tingling, or pain (as in shingles or a pinched nerve) helps clinicians pinpoint which spinal nerve or cord level is affected.",
+      eli5: "If a specific skin stripe goes numb or painful, doctors can trace it back to exactly which spinal nerve is in trouble." },
+    landmarks: { title: "Handy Landmarks",
+      prof: "Useful reference points: the thumb side of the hand maps near C6, the nipple line to T4, the umbilicus (navel) to T10, and the knee/medial leg to L4.",
+      eli5: "Quick anchors on the map: thumb side of the hand ≈ C6, nipples ≈ T4, belly button ≈ T10, knee ≈ L4." }
+  }
+};
+
+const current = { regions: "cervical", rami: "formation", plexus: "cervical", derm: "what" };
+
+const SIDEBAR = {
+  pairs: "<b>31 pairs, all mixed:</b> 8 cervical + 12 thoracic + 5 lumbar + 5 sacral + 1 coccygeal. Each is named for the cord region it arises from.",
+  rami: "<b>Roots vs. rami:</b> dorsal + ventral <i>roots</i> form the spinal nerve; after it emerges it splits into <i>rami</i> (dorsal, ventral, communicans). The ventral rami form the plexuses.",
+  plexus: "<b>Plexuses:</b> networks of ventral rami — cervical (neck/diaphragm), brachial (arm), and lumbosacral (leg). Intercostal nerves (T2–T11) do not form a plexus.",
+  derm: "<b>Dermatomes:</b> each spinal nerve supplies a predictable patch of skin. The map lets clinicians localize nerve or cord problems."
+};
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  const g = GROUP_OF_TAB[currentTab];
+  if (g) renderGroup(g);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  infoBox.innerHTML = SIDEBAR[tabId] || "";
+  updateAllTexts();
+};
+
+document.querySelectorAll(".pick-btn[data-group]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const g = btn.dataset.group;
+    document.querySelectorAll('.pick-btn[data-group="' + g + '"]').forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    current[g] = btn.dataset.key;
+    renderGroup(g);
+  });
+});
+
+function renderGroup(g) {
+  const info = INFO[g] && INFO[g][current[g]];
+  if (!info) return;
+  document.getElementById(g + "Title").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById(g + "Desc").textContent = text;
+  if (GROUP_OF_TAB[currentTab] === g) {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"spinal-nerves", title:"Spinal Nerves", unit:"Ch 11 · Nervous System II" });
+  APTools.mountHUD("#apHud","spinal-nerves");
+  var BANK=[
+    { id:"sn1", bloom:"Remember", outcome:"Number of Spinal Nerves",
+      q:"How many pairs of spinal nerves are there?",
+      choices:["31","12","8","33"],
+      answer:0, why:"There are 31 pairs of spinal nerves, one pair for each of the 31 spinal cord segments." },
+    { id:"sn2", bloom:"Remember", outcome:"Regional Counts",
+      q:"The spinal nerves are grouped as:",
+      choices:["8 cervical, 12 thoracic, 5 lumbar, 5 sacral, 1 coccygeal","7 cervical, 12 thoracic, 5 lumbar, 5 sacral, 2 coccygeal","12 cervical, 8 thoracic, 5 lumbar, 5 sacral, 1 coccygeal","10 cervical, 10 thoracic, 6 lumbar, 4 sacral, 1 coccygeal"],
+      answer:0, why:"There are 8 cervical, 12 thoracic, 5 lumbar, 5 sacral, and 1 coccygeal pair = 31 pairs." },
+    { id:"sn3", bloom:"Understand", outcome:"All Mixed",
+      q:"All spinal nerves are classified as:",
+      choices:["Mixed nerves (both sensory and motor)","Sensory only","Motor only","Autonomic only"],
+      answer:0, why:"Because each contains a sensory dorsal root and a motor ventral root, all spinal nerves are mixed." },
+    { id:"sn4", bloom:"Understand", outcome:"Naming Rule",
+      q:"Spinal nerves are named for:",
+      choices:["The region of the spinal cord from which they arise","The muscles they supply","The bones they run beside in the limb","The scientists who described them"],
+      answer:0, why:"Spinal nerves are named (C, T, L, S, Co) for the cord region from which they arise." },
+    { id:"sn5", bloom:"Remember", outcome:"Exit Point",
+      q:"A spinal nerve exits the vertebral column through the:",
+      choices:["Intervertebral foramen","Foramen magnum","Central canal","Transverse foramen"],
+      answer:0, why:"After the roots fuse, the spinal nerve passes out through an intervertebral foramen." },
+    { id:"sn6", bloom:"Understand", outcome:"Rami vs. Roots",
+      q:"After a spinal nerve emerges, its two main branches are the:",
+      choices:["Dorsal ramus (posterior) and ventral ramus (anterior)","Dorsal root and ventral root","Cervical and brachial plexus","Sensory and motor cortex"],
+      answer:0, why:"After emerging, the spinal nerve branches into a dorsal ramus and a (larger) ventral ramus. Roots form the nerve; rami are its branches." },
+    { id:"sn7", bloom:"Understand", outcome:"Plexus Definition",
+      q:"A nerve plexus is:",
+      choices:["A branching network formed by the ventral rami of spinal nerves","A bundle of cell bodies located outside the CNS","A deep groove in the spinal cord","The connective-tissue sheath covering a nerve"],
+      answer:0, why:"A plexus is a network formed by the ventral rami of spinal nerves; its branches each carry fibers from several nerves." },
+    { id:"sn8", bloom:"Understand", outcome:"Cervical Plexus & Diaphragm",
+      q:"The cervical plexus gives rise to the phrenic nerve, which supplies the:",
+      choices:["Diaphragm (for breathing)","Muscles of the hand","Quadriceps of the thigh","Muscles of the face"],
+      answer:0, why:"The cervical plexus (C1–C4) gives off the phrenic nerve to the diaphragm, driving breathing." },
+    { id:"sn9", bloom:"Understand", outcome:"Brachial Plexus",
+      q:"Which plexus supplies the upper limb (arm)?",
+      choices:["Brachial plexus (C5–T1)","Cervical plexus (C1–C4)","Lumbosacral plexus","Coccygeal plexus"],
+      answer:0, why:"The brachial plexus (C5–C8 and T1) gives rise to the major nerves of the upper limb." },
+    { id:"sn10", bloom:"Understand", outcome:"Lumbosacral Plexus",
+      q:"The lumbosacral plexus supplies the ___ and gives rise to the ___.",
+      choices:["lower limbs; sciatic nerve","upper limbs; median nerve","neck; phrenic nerve","face; facial nerve"],
+      answer:0, why:"The lumbosacral plexus supplies the lower limbs and gives off the femoral and sciatic nerves." },
+    { id:"sn11", bloom:"Understand", outcome:"Intercostal Nerves",
+      q:"Thoracic nerves T2–T11 do NOT form a plexus; instead they run between the ribs as the:",
+      choices:["Intercostal nerves","Phrenic nerves","Sciatic nerves","Rami communicans"],
+      answer:0, why:"T2–T11 run in the intercostal spaces as intercostal nerves, supplying the skin and muscles there." },
+    { id:"sn12", bloom:"Analyze", outcome:"Why Plexuses Are Protective",
+      q:"Why does damage to a single spinal nerve rarely completely paralyze a limb muscle?",
+      choices:["Each plexus branch carries fibers from several spinal nerves, so a muscle gets input from more than one segment","Limb muscles have no nerve supply at all","Spinal nerves are purely sensory","The brain bypasses the spinal nerves entirely"],
+      answer:0, why:"In a plexus, fibers from several spinal nerves are pooled into each branch, so no single segment fully controls a limb muscle." },
+    { id:"sn13", bloom:"Understand", outcome:"Dermatome Definition",
+      q:"A dermatome is:",
+      choices:["The area of skin supplied by the sensory fibers of a single spinal nerve","A branch of a spinal nerve going to a muscle","A layer of the meninges","A cluster of neuron cell bodies"],
+      answer:0, why:"A dermatome is the region of skin whose sensation is carried by one spinal nerve." },
+    { id:"sn14", bloom:"Apply", outcome:"Dermatome Landmark",
+      q:"The dermatome at the umbilicus (navel) is a useful landmark for spinal nerve level:",
+      choices:["T10","C1","L5","S3"],
+      answer:0, why:"The T10 dermatome maps to the umbilicus — a handy clinical reference point." },
+    { id:"sn15", bloom:"Remember", outcome:"Rami Communicans",
+      q:"The small branches that connect a spinal nerve to the sympathetic (autonomic) chain ganglia are the:",
+      choices:["Rami communicans","Dorsal roots","Filum terminale","Funiculi"],
+      answer:0, why:"The rami communicans connect the spinal nerve to the paravertebral (sympathetic chain) ganglia." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"spinal-nerves", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

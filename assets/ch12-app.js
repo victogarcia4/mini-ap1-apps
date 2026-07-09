@@ -456,7 +456,7 @@
 
   function renderImage() {
     var host = document.getElementById("imageHost");
-    var selectedImage = app.tabImages ? app.tabImages[tab] : null;
+    var selectedImage = app.tabImages ? app.tabImages[tab] : undefined;
     if (selectedImage === null) { host.innerHTML = ""; return; }
     var images = selectedImage ? [selectedImage] : (app.image ? [{ src: app.image, alt: app.imageAlt }] : []);
     if (!selectedImage && app.secondaryImage) images.push({ src: app.secondaryImage, alt: "Secondary reference image" });

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Brain: Structure &amp; Function | Chapter 11 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-500: #14b8a6;
+  --teal-100: #ccfbf1;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(15, 118, 110, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --blue-600: #2563eb;
+  --purple-600: #7c3aed;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(13, 148, 136, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--teal-100);
+  color: var(--teal-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--teal-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--teal-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 560px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 580px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* Pick-button group (structure selectors) */
+.pick-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 6px; }
+.pick-btn { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 13px; background: #fff; font-family: inherit; font-weight: 700; font-size: 0.8rem; color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color); transition: 0.15s; text-align: center; }
+.pick-btn:hover { background: var(--slate-100); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.pick-btn.active { background: var(--teal-100); color: var(--teal-700); border-color: var(--teal-700); }
+.pick-btn .shape { font-size: 0.68rem; color: var(--slate-500); font-weight: 700; }
+.pick-btn.active .shape { color: var(--teal-600); }
+
+/* Recap / feature card grid (shared pattern) */
+.glia-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 16px; }
+.glia-grid.four { grid-template-columns: repeat(4, 1fr); }
+.glia-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); border-top: 8px solid var(--teal-600); }
+.glia-card .gc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.glia-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0; font-size: 0.96rem; color: var(--teal-700); }
+.badge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px; border: 1.5px solid var(--border-color); background: var(--teal-100); color: var(--teal-700); }
+.glia-card p.fn { font-size: 0.82rem; color: var(--slate-700); margin: 0; line-height: 1.45; }
+.glia-card p.fn b { color: var(--slate-900); }
+.mnemonic-box { margin-top: 16px; border: 1.5px dashed var(--border-color); border-radius: 10px; padding: 12px 16px; background: #fffaf0; font-size: 0.82rem; color: var(--slate-700); line-height: 1.5; }
+.mnemonic-box b { color: var(--amber-500); }
+@media (max-width: 760px) { .glia-grid, .glia-grid.four { grid-template-columns: 1fr; } }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>The Brain</h1>
+    <p>Cerebrum · Cortex · Diencephalon · Brain Stem · Cerebellum · Ch 11</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Brain Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">The brain is the largest, most complex part of the nervous system — about 100 billion neurons overseeing the whole body. Explore its four major parts and what each one does.</p>
+        <div class="info-box" id="infoBox">
+          <b>Four major parts:</b> the <b>cerebrum</b> (thinking, sensation, voluntary movement), the <b>diencephalon</b> (thalamus + hypothalamus at the core), the <b>brain stem</b> (automatic survival functions), and the <b>cerebellum</b> (coordination &amp; balance).
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('cerebrum', this)">Cerebrum &amp; Lobes</button>
+      <button class="tab-btn" onclick="switchTab('cortex', this)">Cortex Functional Areas</button>
+      <button class="tab-btn" onclick="switchTab('deep', this)">Deep Brain</button>
+      <button class="tab-btn" onclick="switchTab('stem', this)">Brain Stem &amp; Cerebellum</button>
+    </div>
+
+    <!-- Tab 1: Cerebrum & Lobes -->
+    <div id="cerebrum" class="tab-content active">
+      <section class="panel">
+        <h2>The Cerebrum &amp; Its Four Lobes</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Click a Lobe of the Cerebrum</h3>
+            <div class="pick-btns" id="lobesBtns">
+              <button class="pick-btn active" data-group="lobes" data-key="frontal">Frontal<br><span class="shape">movement · speech</span></button>
+              <button class="pick-btn" data-group="lobes" data-key="parietal">Parietal<br><span class="shape">body sensation</span></button>
+              <button class="pick-btn" data-group="lobes" data-key="temporal">Temporal<br><span class="shape">hearing · memory</span></button>
+              <button class="pick-btn" data-group="lobes" data-key="occipital">Occipital<br><span class="shape">vision</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="lobesTitle">Frontal Lobe</div>
+              <div class="step-desc" id="lobesDesc">The most anterior lobe. Home to the primary motor cortex (voluntary movement), Broca's area (motor speech), and centers for reasoning, judgment, and personality.</div>
+            </div>
+
+            <div class="glia-grid four">
+              <div class="glia-card"><div class="gc-head"><h4>Corpus Callosum</h4></div><p class="fn">A deep bridge of <b>white matter</b> connecting the left &amp; right hemispheres so they can communicate.</p></div>
+              <div class="glia-card"><div class="gc-head"><h4>Gyri &amp; Sulci</h4></div><p class="fn"><b>Gyri</b> are the raised ridges (convolutions); <b>sulci</b> are the shallow grooves. The central sulcus divides frontal &amp; parietal.</p></div>
+              <div class="glia-card"><div class="gc-head"><h4>Fissures</h4></div><p class="fn">Deep grooves: the <b>longitudinal fissure</b> separates the hemispheres; the <b>transverse fissure</b> separates cerebrum from cerebellum.</p></div>
+              <div class="glia-card"><div class="gc-head"><h4>Gray vs White</h4></div><p class="fn">The outer <b>cortex</b> is gray matter (neuron cell bodies); the inner bulk is <b>white matter</b> (myelinated axons).</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Cortex Functional Areas -->
+    <div id="cortex" class="tab-content">
+      <section class="panel">
+        <h2>Functional Areas of the Cerebral Cortex</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Sensory, Motor &amp; Association Areas — Click to Explore</h3>
+            <div class="pick-btns" id="cortexBtns">
+              <button class="pick-btn active" data-group="cortex" data-key="motor">Primary Motor<br><span class="shape">frontal</span></button>
+              <button class="pick-btn" data-group="cortex" data-key="somato">Somatosensory<br><span class="shape">parietal</span></button>
+              <button class="pick-btn" data-group="cortex" data-key="visual">Visual<br><span class="shape">occipital</span></button>
+              <button class="pick-btn" data-group="cortex" data-key="auditory">Auditory<br><span class="shape">temporal</span></button>
+              <button class="pick-btn" data-group="cortex" data-key="gustatory">Gustatory<br><span class="shape">parietal</span></button>
+              <button class="pick-btn" data-group="cortex" data-key="broca">Broca's Area<br><span class="shape">motor speech</span></button>
+              <button class="pick-btn" data-group="cortex" data-key="association">Association<br><span class="shape">all lobes</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="cortexTitle">Primary Motor Cortex</div>
+              <div class="step-desc" id="cortexDesc">Located in the precentral gyrus of the frontal lobe (just anterior to the central sulcus). Initiates all voluntary skeletal muscle movements.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Functional Areas of the Cortex</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-functional-areas-human-brain.png" alt="Lateral view of the left cerebral hemisphere with functional areas mapped onto the lobes: the primary motor cortex in the precentral gyrus and Broca's area in the frontal lobe; the primary somatosensory cortex in the postcentral gyrus of the parietal lobe; the visual cortex in the occipital lobe; the auditory cortex in the temporal lobe; and association areas across all four lobes" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Sensory areas (somatosensory, visual, auditory, gustatory) receive input; motor areas (primary motor, Broca's) send commands; association areas interpret and connect everything.</p>
+            </div>
+
+            <div class="mnemonic-box">
+              <b>Hemisphere dominance:</b> both hemispheres share basic sensory &amp; motor control through the corpus callosum, but one — usually the <b>left</b> — dominates language, math, and logic; the other handles spatial orientation, art, and music. <b>Memory:</b> learning is <i>acquiring</i> knowledge; memory is <i>keeping</i> it. Short- and long-term memory involve the <b>hippocampus</b> and <b>amygdala</b>.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Deep Brain -->
+    <div id="deep" class="tab-content">
+      <section class="panel">
+        <h2>Deep Brain — Diencephalon, Limbic System &amp; Basal Nuclei</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">The Core of the Brain — Click a Structure</h3>
+            <div class="pick-btns" id="deepBtns">
+              <button class="pick-btn active" data-group="deep" data-key="thalamus">Thalamus<br><span class="shape">sensory relay</span></button>
+              <button class="pick-btn" data-group="deep" data-key="hypothalamus">Hypothalamus<br><span class="shape">homeostasis</span></button>
+              <button class="pick-btn" data-group="deep" data-key="limbic">Limbic System<br><span class="shape">emotion</span></button>
+              <button class="pick-btn" data-group="deep" data-key="basal">Basal Nuclei<br><span class="shape">movement · dopamine</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="deepTitle">Thalamus</div>
+              <div class="step-desc" id="deepDesc">A gray-matter mass in the diencephalon. The central relay station for incoming sensory impulses (except smell) — it directs each signal to the correct area of the cerebral cortex.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Midsagittal View of the Brain</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-human-brain-midsaggital-view.png" alt="Midsagittal section of the human brain showing internal structures: the corpus callosum arching over the diencephalon, the thalamus and hypothalamus at the core, the pituitary gland, the midbrain, pons, and medulla oblongata of the brain stem, and the cerebellum with its arbor vitae posteriorly" loading="lazy">
+              </div>
+              <p class="video-ref-caption">A midsagittal cut reveals the deep structures: the thalamus and hypothalamus sit at the core (diencephalon), just below the corpus callosum.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 4: Brain Stem & Cerebellum -->
+    <div id="stem" class="tab-content">
+      <section class="panel">
+        <h2>Brain Stem &amp; Cerebellum</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Automatic Control &amp; Coordination — Click a Structure</h3>
+            <div class="pick-btns" id="stemBtns">
+              <button class="pick-btn active" data-group="stem" data-key="midbrain">Midbrain<br><span class="shape">reflexes</span></button>
+              <button class="pick-btn" data-group="stem" data-key="pons">Pons<br><span class="shape">bridge · breathing</span></button>
+              <button class="pick-btn" data-group="stem" data-key="medulla">Medulla<br><span class="shape">vital centers</span></button>
+              <button class="pick-btn" data-group="stem" data-key="cerebellum">Cerebellum<br><span class="shape">balance</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="stemTitle">Midbrain</div>
+              <div class="step-desc" id="stemDesc">The superior part of the brain stem, between the diencephalon and pons. Its corpora quadrigemina mediate visual and auditory reflexes; it also contains reticular formation.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — Brain Stem &amp; Cerebellum (Midsagittal)</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-human-brain-midsaggital-view.png" alt="Midsagittal section of the human brain highlighting the brain stem — midbrain, pons, and medulla oblongata descending toward the spinal cord — and the cerebellum posteriorly, with its branching white-matter arbor vitae" loading="lazy">
+              </div>
+              <p class="video-ref-caption">The brain stem (midbrain → pons → medulla) blends into the spinal cord; the cerebellum sits behind it, below the occipital lobe (separated by the transverse fissure).</p>
+            </div>
+
+            <div class="mnemonic-box">
+              <b>Big picture:</b> the <b>cerebrum</b> thinks, senses, and moves you; the <b>diencephalon</b> (thalamus relays, hypothalamus balances) sits at the core; the <b>brain stem</b> (midbrain · pons · medulla) runs automatic survival jobs; and the <b>cerebellum</b> coordinates movement and keeps you balanced.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — The Brain</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master the four major brain parts, the cerebral lobes and their functional cortical areas, the deep-brain structures (thalamus, hypothalamus, limbic system, basal nuclei), and the brain stem &amp; cerebellum.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model the structural and functional organization of the brain (CH11 §11.4). Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "cerebrum";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+/* Which pick-button group belongs to which tab */
+const GROUP_OF_TAB = { cerebrum: "lobes", cortex: "cortex", deep: "deep", stem: "stem" };
+
+const INFO = {
+  lobes: {
+    frontal: { title: "Frontal Lobe",
+      prof: "The most anterior lobe. Home to the primary motor cortex (voluntary movement), Broca's area (motor speech), and centers for reasoning, judgment, and personality.",
+      eli5: "The front of the brain — your 'boss' lobe. It plans and starts your movements, helps you talk, and shapes your personality and decisions." },
+    parietal: { title: "Parietal Lobe",
+      prof: "Superior to the temporal lobe. Contains the primary somatosensory cortex, which receives general sensations — touch, pressure, temperature, and pain — plus the gustatory (taste) area.",
+      eli5: "The lobe just behind the top of your head. It feels touch, pressure, temperature, and pain from your body, and it handles taste." },
+    temporal: { title: "Temporal Lobe",
+      prof: "Located inferiorly, beneath the lateral sulcus. Contains the auditory cortex (hearing), areas for smell, and is important for memory.",
+      eli5: "The lobe by your temples and ears. It hears sounds, helps with smell, and stores memories." },
+    occipital: { title: "Occipital Lobe",
+      prof: "The most posterior lobe. Contains the visual cortex, which receives and processes information from the photoreceptors of the retina.",
+      eli5: "The lobe at the very back of your head. It's your 'seeing' lobe — it makes sense of everything your eyes take in." }
+  },
+  cortex: {
+    motor: { title: "Primary Motor Cortex",
+      prof: "Located in the precentral gyrus of the frontal lobe (just anterior to the central sulcus). Initiates all voluntary skeletal muscle movements.",
+      eli5: "The strip at the back of the frontal lobe that sends out 'move!' commands to your muscles." },
+    somato: { title: "Primary Somatosensory Cortex",
+      prof: "Located in the postcentral gyrus of the parietal lobe. Receives general sensory input — touch, pressure, temperature, and pain — from the body.",
+      eli5: "The strip at the front of the parietal lobe that receives touch, pressure, temperature, and pain signals from all over your body." },
+    visual: { title: "Visual Cortex",
+      prof: "Located in the occipital lobe. Receives and interprets incoming information from the photoreceptors of the retina.",
+      eli5: "The vision area at the back of the brain that turns signals from your eyes into what you 'see'." },
+    auditory: { title: "Auditory Cortex",
+      prof: "Located in the temporal lobe. Receives incoming information from the hearing receptors of the inner ear.",
+      eli5: "The hearing area in the temporal lobe that makes sense of the sounds your ears pick up." },
+    gustatory: { title: "Gustatory Cortex",
+      prof: "Located in the parietal lobe just above the temporal lobe. Receives information from taste receptors in the taste buds of the tongue.",
+      eli5: "The taste area that reads signals from the taste buds on your tongue." },
+    broca: { title: "Broca's Area",
+      prof: "The motor speech area, usually in the left frontal lobe above the temporal lobe. Controls the muscle movements needed to produce speech.",
+      eli5: "The 'talking' area in the left frontal lobe that moves your mouth and voice to form words." },
+    association: { title: "Association Areas",
+      prof: "Regions across all four lobes that are not directly sensory or motor. They analyze and interpret sensory experiences and provide memory, reasoning, judgment, verbalizing, and emotion.",
+      eli5: "The 'thinking' zones spread across all lobes that connect everything — they let you interpret, remember, reason, and feel." }
+  },
+  deep: {
+    thalamus: { title: "Thalamus",
+      prof: "A gray-matter mass in the diencephalon. The central relay station for incoming sensory impulses (except smell) — it directs each signal to the correct area of the cerebral cortex.",
+      eli5: "The brain's 'switchboard.' Almost every sense (except smell) passes through it and gets routed to the right part of the cortex." },
+    hypothalamus: { title: "Hypothalamus",
+      prof: "The main visceral control center. It regulates homeostasis — heart rate and blood pressure, body temperature, water/electrolyte balance, hunger, digestion, sleep-wake cycles, and endocrine function.",
+      eli5: "The body's 'thermostat and manager.' It keeps your temperature, hunger, thirst, sleep, and hormones balanced." },
+    limbic: { title: "Limbic System",
+      prof: "A group of structures involved in emotional experience and expression — fear, anger, pleasure, and sorrow. It can modify behavior and is involved in the sense of smell.",
+      eli5: "The brain's 'emotion center.' It creates feelings like fear, anger, pleasure, and sadness, and it's tied to smell." },
+    basal: { title: "Basal Nuclei (Basal Ganglia)",
+      prof: "Masses of gray matter deep within the cerebral white matter. They relay outgoing motor impulses and release dopamine, which inhibits excess movement. Their degeneration causes Parkinson disease.",
+      eli5: "Deep gray-matter 'movement smoothers.' They fine-tune your motions using dopamine; losing them (Parkinson disease) makes movement shaky and hard to control." }
+  },
+  stem: {
+    midbrain: { title: "Midbrain",
+      prof: "The superior part of the brain stem, between the diencephalon and pons. Its corpora quadrigemina mediate visual and auditory reflexes; it also contains reticular formation.",
+      eli5: "The top of the brain stem. It runs quick reflexes to what you see and hear — like turning toward a sudden sound." },
+    pons: { title: "Pons",
+      prof: "The bulging middle of the brain stem. Acts as a bridge of conduction tracts and contains the pontine respiratory group, which helps regulate breathing rate.",
+      eli5: "The 'bridge' of the brain stem. It passes signals through and helps set your breathing rhythm." },
+    medulla: { title: "Medulla Oblongata",
+      prof: "The inferior brain stem, blending into the spinal cord. Houses vital autonomic centers: the cardiac center (heart rate/force), vasomotor center (blood pressure), and respiratory center (breathing), plus reflexes for vomiting, coughing, sneezing, and swallowing.",
+      eli5: "The bottom of the brain stem and your survival control box — it runs your heartbeat, blood pressure, and breathing automatically." },
+    cerebellum: { title: "Cerebellum",
+      prof: "The large, cauliflower-like structure behind the brain stem, below the occipital lobe. Its white matter forms the 'arbor vitae.' It subconsciously coordinates voluntary movement, skilled movements, posture, and balance (equilibrium).",
+      eli5: "The 'little brain' at the back. It's your coordination and balance coach — it makes movements smooth and keeps you steady." }
+  }
+};
+
+const current = { lobes: "frontal", cortex: "motor", deep: "thalamus", stem: "midbrain" };
+
+const SIDEBAR = {
+  cerebrum: "<b>Cerebrum:</b> the largest part of the brain, split into two hemispheres with four lobes each — frontal (movement/speech), parietal (sensation), temporal (hearing/memory), occipital (vision).",
+  cortex: "<b>Cortex functional areas:</b> sensory areas receive input, motor areas (primary motor, Broca's) send commands, and association areas interpret and connect everything.",
+  deep: "<b>Deep brain:</b> the thalamus relays sensations, the hypothalamus maintains homeostasis, the limbic system drives emotion, and the basal nuclei smooth movement with dopamine.",
+  stem: "<b>Brain stem &amp; cerebellum:</b> midbrain, pons, and medulla run automatic survival functions; the cerebellum coordinates movement and balance."
+};
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  renderGroup(GROUP_OF_TAB[currentTab]);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  infoBox.innerHTML = SIDEBAR[tabId] || "";
+  updateAllTexts();
+};
+
+document.querySelectorAll(".pick-btn[data-group]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const g = btn.dataset.group;
+    document.querySelectorAll('.pick-btn[data-group="' + g + '"]').forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    current[g] = btn.dataset.key;
+    renderGroup(g);
+  });
+});
+
+function renderGroup(g) {
+  const info = INFO[g][current[g]];
+  if (!info) return;
+  document.getElementById(g + "Title").textContent = info.title;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById(g + "Desc").textContent = text;
+  if (GROUP_OF_TAB[currentTab] === g) {
+    infoBox.innerHTML = "<b>" + info.title + ":</b> " + text;
+  }
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"brain-organization", title:"The Brain", unit:"Ch 11 · Nervous System II" });
+  APTools.mountHUD("#apHud","brain-organization");
+  var BANK=[
+    { id:"br1", bloom:"Remember", outcome:"Four Major Brain Parts",
+      q:"The brain is composed of four major parts. Which list is correct?",
+      choices:["Cerebrum, diencephalon, brain stem, and cerebellum","Cerebrum, spinal cord, meninges, and cerebellum","Frontal, parietal, temporal, and occipital lobes","Thalamus, hypothalamus, pons, and medulla"],
+      answer:0, why:"The four major parts of the brain are the cerebrum, diencephalon, brain stem, and cerebellum. (The lobes are subdivisions of the cerebrum only.)" },
+    { id:"br2", bloom:"Remember", outcome:"Corpus Callosum",
+      q:"The left and right cerebral hemispheres communicate through a deep bridge of nerve fibers called the:",
+      choices:["Corpus callosum","Central sulcus","Longitudinal fissure","Arbor vitae"],
+      answer:0, why:"The corpus callosum is a thick band of white matter that connects the two hemispheres, allowing them to share information." },
+    { id:"br3", bloom:"Understand", outcome:"Naming the Lobes",
+      q:"The four cerebral lobes are named for:",
+      choices:["The skull bones that cover them","The functions they perform","The scientists who discovered them","The order in which they develop"],
+      answer:0, why:"Each lobe (frontal, parietal, temporal, occipital) is named for the overlying skull bone." },
+    { id:"br4", bloom:"Understand", outcome:"Primary Motor Cortex",
+      q:"Voluntary skeletal muscle movements are initiated by the primary motor cortex, located in the:",
+      choices:["Precentral gyrus of the frontal lobe","Postcentral gyrus of the parietal lobe","Occipital lobe","Temporal lobe"],
+      answer:0, why:"The primary motor cortex lies in the precentral gyrus of the frontal lobe, just anterior to the central sulcus." },
+    { id:"br5", bloom:"Understand", outcome:"Somatosensory Cortex",
+      q:"The primary somatosensory cortex, which receives touch, pressure, temperature, and pain, is in the:",
+      choices:["Postcentral gyrus of the parietal lobe","Precentral gyrus of the frontal lobe","Occipital lobe","Cerebellum"],
+      answer:0, why:"General sensations are received in the postcentral gyrus of the parietal lobe (the primary somatosensory cortex)." },
+    { id:"br6", bloom:"Remember", outcome:"Visual Cortex",
+      q:"The visual cortex is located in which lobe?",
+      choices:["Occipital","Frontal","Temporal","Parietal"],
+      answer:0, why:"The visual cortex is in the occipital lobe, at the back of the brain, and processes input from the retina." },
+    { id:"br7", bloom:"Remember", outcome:"Auditory Cortex",
+      q:"The auditory cortex, which processes hearing, is located in the:",
+      choices:["Temporal lobe","Occipital lobe","Frontal lobe","Parietal lobe"],
+      answer:0, why:"The auditory cortex is in the temporal lobe and receives information from the hearing receptors of the ear." },
+    { id:"br8", bloom:"Understand", outcome:"Gray vs White Matter",
+      q:"The outer cerebral cortex is composed of gray matter, which consists mainly of:",
+      choices:["Neuron cell bodies","Myelinated axons","Cerebrospinal fluid","Blood vessels"],
+      answer:0, why:"Gray matter of the cortex is made of neuron (interneuron) cell bodies; the deeper white matter is myelinated axons." },
+    { id:"br9", bloom:"Understand", outcome:"Hemisphere Dominance",
+      q:"In most people, which hemisphere is dominant for language, mathematics, and logic?",
+      choices:["The left hemisphere","The right hemisphere","Neither — both are equal for language","The cerebellum"],
+      answer:0, why:"In most people the left hemisphere is dominant for language, math, and logic; the right handles spatial, artistic, and musical tasks." },
+    { id:"br10", bloom:"Understand", outcome:"Thalamus",
+      q:"The thalamus functions mainly as the:",
+      choices:["Central relay station for incoming sensory impulses (except smell)","Main control center for voluntary movement","Center for balance and coordination","Emotional center of the brain"],
+      answer:0, why:"The thalamus relays incoming sensory impulses (all except smell) to the appropriate area of the cerebral cortex." },
+    { id:"br11", bloom:"Understand", outcome:"Hypothalamus",
+      q:"Which structure is the main visceral control center, regulating temperature, hunger, thirst, and homeostasis?",
+      choices:["Hypothalamus","Cerebellum","Occipital lobe","Medulla oblongata"],
+      answer:0, why:"The hypothalamus is the main visceral control center, regulating temperature, hunger, thirst, sleep, and endocrine function." },
+    { id:"br12", bloom:"Analyze", outcome:"Basal Nuclei & Dopamine",
+      q:"The basal nuclei help control movement by releasing dopamine; their degeneration is associated with:",
+      choices:["Parkinson disease","A stroke","Meningitis","Hydrocephalus"],
+      answer:0, why:"The basal nuclei release dopamine to inhibit excess movement; their loss causes the tremors and rigidity of Parkinson disease." },
+    { id:"br13", bloom:"Understand", outcome:"Medulla Vital Centers",
+      q:"Vital centers controlling heart rate, blood pressure, and breathing are located in the:",
+      choices:["Medulla oblongata","Cerebellum","Frontal lobe","Thalamus"],
+      answer:0, why:"The medulla oblongata houses the cardiac, vasomotor, and respiratory centers that control these vital functions." },
+    { id:"br14", bloom:"Understand", outcome:"Cerebellum",
+      q:"Which part of the brain coordinates voluntary movements, posture, and balance (equilibrium)?",
+      choices:["Cerebellum","Cerebrum","Hypothalamus","Pons"],
+      answer:0, why:"The cerebellum subconsciously coordinates voluntary movement, skilled movements, posture, and balance." },
+    { id:"br15", bloom:"Remember", outcome:"Reticular Formation",
+      q:"The reticular formation of the brain stem is primarily responsible for:",
+      choices:["Controlling alertness and the sleep–wake state","Producing cerebrospinal fluid","Voluntary muscle movement","Processing vision"],
+      answer:0, why:"The reticular formation controls brain alertness and is least active during sleep." },
+    { id:"br16", bloom:"Understand", outcome:"Limbic System",
+      q:"The limbic system is best known for its role in:",
+      choices:["Emotions such as fear, anger, and pleasure","Voluntary movement","Vision","Producing myelin"],
+      answer:0, why:"The limbic system controls emotional experience and expression — fear, anger, pleasure, and sorrow — and is involved in smell." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"brain-organization", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

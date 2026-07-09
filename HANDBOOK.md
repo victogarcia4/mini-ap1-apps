@@ -26,7 +26,7 @@ The applications are built as lightweight static HTML pages running directly in 
 
 ---
 
-## 🗺️ Current Module Registry (29 Apps)
+## 🗺️ Current Module Registry (31 Apps)
 
 The mini-apps are organized sequentially, corresponding to the A&P I course curriculum. Here is the list of apps built so far:
 
@@ -78,6 +78,10 @@ The mini-apps are organized sequentially, corresponding to the A&P I course curr
 - **App 10.2:** [Protective Structures: Bone, Meninges & CSF](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/24.%20protective-structures-lab.html) (`24. protective-structures-lab.html`) *(Active)*
 - **App 10.3:** [Neuron Structure & Classification](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/25.%20neuron-structure-classification-lab.html) (`25. neuron-structure-classification-lab.html`) *(Active)*
 - **App 10.4:** [Neuroglial Cells](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/26.%20neuroglia-lab.html) (`26. neuroglia-lab.html`) *(Active)*
+- **App 10.5:** [The Nerve Impulse: Membrane & Action Potentials](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/27.%20nerve-impulse-lab.html) (`27. nerve-impulse-lab.html`) *(Active)*
+
+### Chapter 11: Nervous System — Part II *(In Progress)*
+- **App 11.1:** [The Brain: Structure & Function](file:///c:/Users/skint/Desktop/Mini%20apps%20active%20learning/28.%20brain-organization-lab.html) (`28. brain-organization-lab.html`) *(Active)*
 
 ---
 

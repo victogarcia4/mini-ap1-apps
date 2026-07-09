@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflexes Lab | Chapter 11 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&family=Spline+Sans+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-500: #14b8a6;
+  --teal-100: #ccfbf1;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(15, 118, 110, 0.04);
+  --red-600: #dc2626;
+  --red-500: #ef4444;
+  --red-100: #fee2e2;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --amber-100: #fef3c7;
+  --blue-600: #2563eb;
+  --blue-100: #dbeafe;
+  --purple-600: #7c3aed;
+  --shadow: 4px 4px 0 #0f172a;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(13, 148, 136, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--teal-100);
+  color: var(--teal-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Stage */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 480px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--teal-700); font-size: 0.88rem; text-transform: uppercase; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reflex Arc Components List (Tab 1) */
+.component-item {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.component-item:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+  background: var(--slate-100);
+}
+.component-item.active {
+  background: var(--teal-100);
+  border-color: var(--teal-700);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.comp-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--border-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.component-item.active .comp-badge {
+  background: var(--teal-700);
+}
+.comp-details h4 {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--slate-900);
+}
+.comp-details p {
+  margin: 2px 0 0;
+  font-size: 0.74rem;
+  color: var(--slate-600);
+  display: none;
+}
+.component-item.active .comp-details p {
+  display: block;
+}
+
+/* Tab 2 Simulator Workspace */
+.sim-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.sim-btn {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--border-color);
+  transition: 0.15s;
+}
+.sim-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--border-color);
+  background: var(--slate-100);
+}
+.sim-btn.active {
+  background: var(--teal-700);
+  color: #fff;
+  border-color: var(--teal-700);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+.trigger-action-btn {
+  margin-top: 10px;
+  width: 100%;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: var(--amber-500);
+  color: var(--slate-900);
+  box-shadow: var(--shadow);
+  transition: 0.1s;
+}
+.trigger-action-btn:hover {
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 5px 5px 0 var(--border-color);
+}
+.trigger-action-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--border-color);
+}
+
+/* Visualization Canvas */
+.canvas-area {
+  flex: 1;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Simple Leg Kick Graphics using CSS */
+.leg-container {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upper-leg {
+  position: absolute;
+  width: 100px;
+  height: 40px;
+  background: #fbcfe8;
+  border: 2px solid var(--border-color);
+  border-radius: 20px;
+  top: 100px;
+  left: 50px;
+  transform: rotate(-15deg);
+  z-index: 10;
+}
+.lower-leg-pivot {
+  position: absolute;
+  top: 98px;
+  left: 130px;
+  width: 20px;
+  height: 20px;
+  z-index: 12;
+}
+.lower-leg {
+  position: absolute;
+  width: 32px;
+  height: 110px;
+  background: #fbcfe8;
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  top: -10px;
+  left: -6px;
+  transform-origin: 16px 16px;
+  transition: transform 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+.lower-leg::after {
+  content: "";
+  width: 44px;
+  height: 24px;
+  background: #fbcfe8;
+  border: 2px solid var(--border-color);
+  border-radius: 0 12px 12px 0;
+  position: absolute;
+  bottom: -4px;
+  right: -24px;
+}
+.patellar-tendon-spot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--red-500);
+  border-radius: 50%;
+  top: 15px;
+  left: -12px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  animation: pulse 1.5s infinite;
+}
+.hammer {
+  position: absolute;
+  font-size: 32px;
+  top: 40px;
+  left: 60px;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+/* Flame & Hand graphics */
+.withdrawal-container {
+  position: relative;
+  width: 300px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.candle-base {
+  position: absolute;
+  bottom: 20px;
+  left: 200px;
+  width: 30px;
+  height: 80px;
+  background: #e2e8f0;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.candle-wick {
+  width: 2px;
+  height: 12px;
+  background: var(--border-color);
+  position: absolute;
+  top: -12px;
+}
+.candle-flame {
+  width: 16px;
+  height: 24px;
+  background: var(--amber-500);
+  border-radius: 50% 50% 20% 20%;
+  position: absolute;
+  top: -34px;
+  animation: flicker 0.15s infinite alternate;
+  box-shadow: 0 0 12px var(--amber-500);
+}
+.hand-arm {
+  position: absolute;
+  width: 140px;
+  height: 36px;
+  background: #fed7aa;
+  border: 2px solid var(--border-color);
+  border-radius: 18px 0 0 18px;
+  top: 100px;
+  left: 20px;
+  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: left center;
+}
+.hand-fingers {
+  position: absolute;
+  right: -24px;
+  top: -2px;
+  width: 24px;
+  height: 36px;
+  background: #fed7aa;
+  border: 2px solid var(--border-color);
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+.nociceptor-spot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--red-500);
+  border-radius: 50%;
+  top: 12px;
+  right: -6px;
+  border: 1px solid var(--border-color);
+  animation: pulse 1.5s infinite;
+}
+
+/* SVG Pathway drawings overlays */
+.pathway-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15;
+}
+.nerve-line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.35;
+}
+.sensory-path { stroke: var(--blue-600); }
+.motor-path { stroke: var(--red-600); }
+.inter-path { stroke: var(--green-600); }
+.impulse-dot {
+  fill: var(--amber-500);
+  stroke: var(--border-color);
+  stroke-width: 1.5;
+  r: 6;
+  opacity: 0;
+}
+
+/* Tab 3 Clinical Exam Styles */
+.patient-card {
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--border-color);
+  margin-bottom: 16px;
+}
+.patient-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px dashed var(--border-color);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+.patient-name {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--teal-700);
+}
+.patient-vitals {
+  font-family: "Spline Sans Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--slate-500);
+}
+.clinical-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media(max-width:640px) {
+  .clinical-grid { grid-template-columns: 1fr; }
+}
+.exam-station {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--slate-100);
+  padding: 16px;
+  position: relative;
+}
+.diagnosis-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.diag-option {
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #fff;
+  transition: 0.15s;
+  text-align: left;
+}
+.diag-option:hover {
+  background: var(--slate-100);
+}
+.diag-option.selected {
+  background: var(--teal-100);
+  border-color: var(--teal-700);
+}
+.diag-option.correct-choice {
+  background: var(--green-100);
+  border-color: var(--green-600);
+  color: var(--green-700);
+}
+.diag-option.wrong-choice {
+  background: var(--red-100);
+  border-color: var(--red-600);
+  color: var(--red-700);
+}
+
+.patient-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.patient-tab {
+  flex: 1;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.78rem;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--border-color);
+  text-align: center;
+}
+.patient-tab.active {
+  background: var(--teal-100);
+  color: var(--teal-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+/* General CSS Animations */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px var(--red-500); }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+@keyframes flicker {
+  0% { transform: scale(1) rotate(-1deg); }
+  100% { transform: scale(1.1) rotate(1deg) translateY(-2px); }
+}
+@keyframes impulse-move {
+  to { stroke-dashoffset: 0; }
+}
+
+.video-ref {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 2px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.video-ref-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin: 0 0 10px;
+  text-align: center;
+}
+.video-ref-frame {
+  width: 100%;
+  max-width: 480px;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  overflow: hidden;
+  background: #fff;
+}
+.video-ref-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.video-ref-caption {
+  max-width: 520px;
+  font-size: 0.78rem;
+  color: var(--slate-700);
+  line-height: 1.45;
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+/* Quiz & Footer Card Styles */
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Reflexes Lab</h1>
+    <p>Structure of a Reflex Arc &amp; Somatic Spinal Reflexes · Ch 11</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info & Controls -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Reflex Learning Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">Reflexes are rapid, automatic, involuntary responses to stimuli processed in the spinal cord without brain intervention. Master their pathways and clinical relevance.</p>
+        <div class="info-box" id="infoBox">
+          Select a tab to begin. Explore the 5 components of a reflex arc, run the simulation of monosynaptic and polysynaptic spinal reflexes, or test your diagnostic skills on virtual clinical patients.
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Sidebar Panels based on Tabs -->
+    <div id="aside-components" class="tab-aside active-aside">
+      <section class="panel">
+        <h2>Reflex Arc Components</h2>
+        <div class="body">
+          <p style="font-size: 0.78rem; color: var(--slate-500); margin: 0 0 12px;">Click each component to explore its anatomy and physiological role.</p>
+          <div id="components-list">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabBtn-arc" onclick="switchTab('arc', this)">1 · Reflex Arc Parts</button>
+      <button class="tab-btn" id="tabBtn-sim" onclick="switchTab('sim', this)">2 · Simulator</button>
+      <button class="tab-btn" id="tabBtn-exam" onclick="switchTab('exam', this)">3 · Clinical Exam</button>
+    </div>
+
+    <!-- Tab 1: Reflex Arc Parts -->
+    <div id="arc" class="tab-content active">
+      <section class="panel">
+        <h2>The 5 Parts of a Reflex Arc</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Visual Map: 5 Components of a Nerve Pathway</h3>
+            <div class="step-display">
+              <div class="step-number" id="arcTitle">1 · Sensory Receptor</div>
+              <div class="step-desc" id="arcDesc">Select a component from the left list to see details.</div>
+            </div>
+            
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reflex Loop Reference</h4>
+              <div class="video-ref-frame">
+                <img id="arcRefImg" src="assets/ch10-reflex-arc-loop.png" alt="Reflex Arc Loop Diagram">
+              </div>
+              <p class="video-ref-caption" id="arcRefCaption">A typical reflex arc consists of: (1) receptor, (2) sensory neuron, (3) interneuron (in polysynaptic paths), (4) motor neuron, and (5) effector muscle.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Simulator -->
+    <div id="sim" class="tab-content">
+      <section class="panel">
+        <h2>Reflex Impulse Simulator</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <div class="sim-controls">
+              <button class="sim-btn active" id="simMode-patellar" onclick="setSimMode('patellar')">Patellar Reflex (Monosynaptic)</button>
+              <button class="sim-btn" id="simMode-withdrawal" onclick="setSimMode('withdrawal')">Withdrawal Reflex (Polysynaptic)</button>
+            </div>
+            <div class="step-display">
+              <div class="step-number" id="simStatus">Knee Tap Reflex (Stretch Reflex)</div>
+              <div class="step-desc" id="simDesc">Tap the tendon spot or click "Trigger Reflex" below to hammer the patellar tendon and watch the nerve impulse travel up the sensory path, synapse in the spinal cord, and return to contract the quadriceps.</div>
+            </div>
+
+            <div class="canvas-area">
+              <!-- Leg Kick Stage -->
+              <div class="leg-container" id="legCanvas">
+                <div class="hammer" id="reflexHammer">🔨</div>
+                <div class="upper-leg"></div>
+                <div class="lower-leg-pivot">
+                  <div class="lower-leg" id="lowerLeg">
+                    <div class="patellar-tendon-spot" onclick="triggerReflexAnimation()"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Flame/Hand Stage -->
+              <div class="withdrawal-container" id="withdrawalCanvas" style="display:none;">
+                <div class="candle-base">
+                  <div class="candle-wick"></div>
+                  <div class="candle-flame"></div>
+                </div>
+                <div class="hand-arm" id="handArm">
+                  <div class="hand-fingers">
+                    <div class="nociceptor-spot" onclick="triggerReflexAnimation()"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SVG Impulse Tracks Overlay -->
+              <svg class="pathway-svg" id="pathwaySvg">
+                <!-- Patellar paths -->
+                <path class="nerve-line sensory-path" id="p-sensory" d="M 125,120 Q 180,60 220,130" />
+                <path class="nerve-line motor-path" id="p-motor" d="M 220,130 Q 190,160 140,115" />
+                
+                <!-- Withdrawal paths -->
+                <path class="nerve-line sensory-path" id="w-sensory" d="M 220,115 C 160,80 180,50 140,50" />
+                <path class="nerve-line inter-path" id="w-inter" d="M 140,50 Q 130,55 130,65" />
+                <path class="nerve-line motor-path" id="w-motor" d="M 130,65 C 100,70 120,110 80,115" />
+
+                <!-- Impulse yellow indicator -->
+                <circle class="impulse-dot" id="impulseDot" r="6" />
+              </svg>
+            </div>
+
+            <button class="trigger-action-btn" onclick="triggerReflexAnimation()">Trigger Reflex Command</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Clinical Exam -->
+    <div id="exam" class="tab-content">
+      <section class="panel">
+        <h2>Clinical Diagnostic Exam Station</h2>
+        <div class="body">
+          <div class="animation-stage" style="min-height: 520px;">
+            <div class="patient-selector">
+              <button class="patient-tab active" id="ptab-0" onclick="selectPatient(0)">Patient 1: Carlos R.</button>
+              <button class="patient-tab" id="ptab-1" onclick="selectPatient(1)">Patient 2: Maria L.</button>
+              <button class="patient-tab" id="ptab-2" onclick="selectPatient(2)">Patient 3: Samuel T.</button>
+            </div>
+
+            <div class="patient-card" id="patientInfo">
+              <!-- Rendered Dynamically -->
+            </div>
+
+            <div class="clinical-grid">
+              <div class="exam-station">
+                <span style="font-size: 0.72rem; color: var(--slate-500); font-weight: 700; margin-bottom: 8px;">KNEE REFLEX TESTING STATION</span>
+                <div class="leg-container" style="transform: scale(0.85); height: 200px; width: 200px; margin: 0;">
+                  <div class="upper-leg" style="top: 80px; left: 30px;"></div>
+                  <div class="lower-leg-pivot" style="top: 78px; left: 110px;">
+                    <div class="lower-leg" id="patientLeg">
+                      <div class="patellar-tendon-spot" style="background: var(--amber-500);" onclick="tapPatientKnee()"></div>
+                    </div>
+                  </div>
+                </div>
+                <button class="sim-btn" style="width: 120px; font-size: 0.78rem; padding: 6px 12px; margin-top: 10px;" onclick="tapPatientKnee()">🔨 Tap Knee</button>
+              </div>
+
+              <div class="diagnosis-station">
+                <span style="font-size: 0.72rem; color: var(--slate-500); font-weight: 700;">CHOOSE DIAGNOSIS</span>
+                <div class="diagnosis-options" id="diagOptions">
+                  <!-- Rendered dynamically -->
+                </div>
+                <div class="info-box" id="examFeedback" style="display:none; margin-top: 12px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Reflexes</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Prove your mastery of the five components of the reflex arc, monosynaptic vs. polysynaptic circuits, proprioception mechanisms, and clinical diagnosis indicators.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model patellar stretch and flexor withdrawal reflexes (CH11 §11.5C). Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script src="assets/aptools.js?v=1"></script>
+<script src="assets/reflexes-data.js?v=1"></script>
+<script src="assets/reflexes-app.js?v=1"></script>
+</body>
+</html>

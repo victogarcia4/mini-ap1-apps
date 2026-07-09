@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cranial Nerves | Chapter 11 Study Guide</title>
+<link rel="stylesheet" href="assets/aptools.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..900&family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal-700: #0f766e;
+  --teal-600: #0d9488;
+  --teal-500: #14b8a6;
+  --teal-100: #ccfbf1;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-100: #f1f5f9;
+  --card-bg: #ffffff;
+  --border-color: #0f172a;
+  --paper-bg: #FAF9F5;
+  --paper-grain: rgba(15, 118, 110, 0.04);
+  --red-600: #dc2626;
+  --green-600: #16a34a;
+  --amber-500: #f59e0b;
+  --blue-600: #2563eb;
+  --purple-600: #7c3aed;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Hanken Grotesk", sans-serif;
+  color: var(--slate-900);
+  background-color: var(--paper-bg);
+  background-image:
+    radial-gradient(800px 400px at 70% -5%, var(--paper-grain), transparent),
+    radial-gradient(600px 400px at 10% 90%, rgba(13, 148, 136, 0.04), transparent);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+header.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--teal-700);
+}
+.brand p { font-size: 0.78rem; color: var(--slate-500); margin: 2px 0 0; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+}
+.switch input { display: none; }
+.track {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: #cbd5e1;
+  position: relative;
+  transition: 0.2s;
+  border: 1.5px solid var(--border-color);
+}
+.track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border-color);
+  transition: 0.2s;
+}
+.switch input:checked + .track { background: var(--teal-100); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+
+.btn-link {
+  text-decoration: none;
+  color: var(--slate-700);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.btn-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.btn-link:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border-color); }
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--border-color);
+  margin-bottom: 20px;
+}
+.panel h2 {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slate-500);
+  padding: 14px 16px 0;
+  margin: 0;
+}
+.panel .body { padding: 16px; }
+
+.info-box {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+.info-box b { color: var(--teal-700); }
+
+/* Navigation Tab Bar */
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  background: #fff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+  transition: 0.15s;
+  box-shadow: 2px 2px 0 var(--border-color);
+}
+.tab-btn:hover { background: var(--slate-100); }
+.tab-btn.active {
+  background: var(--teal-100);
+  color: var(--teal-700);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Interactive Animation Canvas */
+.animation-stage {
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--teal-700);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* Step Display */
+.step-display {
+  background: var(--slate-100);
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.step-number { font-weight: 800; color: var(--teal-700); font-size: 0.88rem; }
+.step-desc { font-size: 0.84rem; color: var(--slate-700); margin: 4px 0 0; line-height: 1.4; }
+
+/* Reference image block (shared pattern) */
+.video-ref { margin-top: 22px; padding-top: 18px; border-top: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; }
+.video-ref-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 0.92rem; font-weight: 800; color: var(--teal-700); margin: 0 0 10px; text-align: center; }
+.video-ref-frame { width: 100%; max-width: 560px; border: 2px solid var(--border-color); border-radius: 10px; box-shadow: 4px 4px 0 var(--border-color); overflow: hidden; background: #fff; line-height: 0; }
+.video-ref-frame img { width: 100%; height: auto; display: block; }
+.video-ref-caption { max-width: 580px; font-size: 0.8rem; color: var(--slate-700); line-height: 1.45; margin: 10px 0 0; text-align: center; }
+
+/* Pick-button group (nerve selectors) */
+.pick-btns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 6px; }
+.pick-btn { border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 12px; background: #fff; font-family: inherit; font-weight: 700; font-size: 0.8rem; color: var(--slate-700); cursor: pointer; box-shadow: 2px 2px 0 var(--border-color); transition: 0.15s; text-align: center; }
+.pick-btn:hover { background: var(--slate-100); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.pick-btn.active { background: var(--teal-100); color: var(--teal-700); border-color: var(--teal-700); }
+.pick-btn .rn { font-family: "Bricolage Grotesque", sans-serif; font-weight: 900; font-size: 0.9rem; display: block; }
+.pick-btn .nm { font-size: 0.66rem; color: var(--slate-500); font-weight: 700; }
+.pick-btn.active .nm { color: var(--teal-600); }
+
+/* Type tag inside step display */
+.type-tag { display: inline-block; font-size: 0.66rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 9px; border-radius: 999px; border: 1.5px solid var(--border-color); margin-left: 6px; vertical-align: middle; }
+.type-tag.sensory { background: #dbeafe; color: var(--blue-600); }
+.type-tag.motor { background: #fee2e2; color: var(--red-600); }
+.type-tag.mixed { background: #ede9fe; color: var(--purple-600); }
+
+/* Classification / recap card grid (shared pattern) */
+.glia-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+.glia-card { border: 1.5px solid var(--border-color); border-radius: 10px; padding: 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); border-top: 8px solid var(--teal-600); }
+.glia-card.sensory { border-top-color: var(--blue-600); }
+.glia-card.motor { border-top-color: var(--red-600); }
+.glia-card.mixed { border-top-color: var(--purple-600); }
+.glia-card .gc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.glia-card h4 { font-family: "Bricolage Grotesque", sans-serif; margin: 0; font-size: 0.96rem; color: var(--teal-700); }
+.glia-card.sensory h4 { color: var(--blue-600); }
+.glia-card.motor h4 { color: var(--red-600); }
+.glia-card.mixed h4 { color: var(--purple-600); }
+.badge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px; border: 1.5px solid var(--border-color); background: var(--teal-100); color: var(--teal-700); }
+.glia-card p.fn { font-size: 0.82rem; color: var(--slate-700); margin: 0; line-height: 1.5; }
+.glia-card p.fn b { color: var(--slate-900); }
+.mnemonic-box { margin-top: 16px; border: 1.5px dashed var(--border-color); border-radius: 10px; padding: 12px 16px; background: #fffaf0; font-size: 0.82rem; color: var(--slate-700); line-height: 1.5; }
+.mnemonic-box b { color: var(--amber-500); }
+@media (max-width: 760px) { .glia-grid { grid-template-columns: 1fr; } }
+
+/* Mnemonic mapping table (Tab 3) */
+.mn-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+.mn-row { display: flex; align-items: baseline; gap: 8px; border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 12px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); font-size: 0.82rem; }
+.mn-row .mn-word { font-family: "Bricolage Grotesque", sans-serif; font-weight: 900; color: var(--teal-700); min-width: 62px; }
+.mn-row .mn-nerve { color: var(--slate-700); }
+.mn-row .mn-nerve b { color: var(--slate-900); }
+@media (max-width: 640px) { .mn-list { grid-template-columns: 1fr; } }
+
+/* Footer */
+.footer-note { max-width: 1400px; margin: 0 auto; padding: 10px 24px 30px; font-size: 0.74rem; color: var(--slate-500); }
+.ap-study-section { max-width: 1400px; margin: 8px auto 40px; padding: 0 24px; }
+.ap-study-card { background: #fff; border: 2px solid var(--border-color); border-radius: 12px; box-shadow: 4px 4px 0 var(--border-color); padding: 22px 24px; }
+.ap-study-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.ap-study-head h2 { margin: 0; font-family: "Bricolage Grotesque", sans-serif; font-size: 1.15rem; color: var(--teal-700); font-weight: 800; }
+.ap-hub-link { margin-left: auto; text-decoration: none; font-weight: 700; font-size: 0.85rem; color: var(--slate-700); border: 1.5px solid var(--border-color); border-radius: 8px; padding: 8px 14px; background: #fff; box-shadow: 2px 2px 0 var(--border-color); }
+.ap-hub-link:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border-color); }
+.ap-study-sub { font-size: 0.86rem; color: var(--slate-500); margin: 0 0 16px; line-height: 1.5; }
+
+@media (max-width: 880px) {
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>Cranial Nerves</h1>
+    <p>12 Pairs · Names · Functions · Sensory/Motor/Mixed · Ch 11</p>
+  </div>
+  <div class="topbar-right">
+    <label class="switch"><input type="checkbox" id="eli5Toggle" /><span class="track"></span><span id="modeLabel">Professional</span></label>
+    <a class="btn-link" href="index.html">⌂ Hub</a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left Column Info Panel -->
+  <aside class="sidebar">
+    <section class="panel">
+      <h2>Cranial Nerve Guide</h2>
+      <div class="body">
+        <p style="font-size: 0.8rem; color: var(--slate-500); margin: 0 0 10px;">The 12 pairs of cranial nerves arise from the brain (part of the PNS). Two pairs come from the forebrain; the other ten from the brain stem. Explore each nerve, then master their names and classification.</p>
+        <div class="info-box" id="infoBox">
+          <b>12 pairs, numbered I–XII.</b> Each is <b>sensory</b>, <b>motor</b>, or <b>mixed</b> — 3 are purely sensory, 5 are purely motor, and 4 are mixed. Click a nerve to see its name, function, and type.
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Right Column Main App Area -->
+  <main class="main-content">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('nerves', this)">The 12 Nerves</button>
+      <button class="tab-btn" onclick="switchTab('classify', this)">Sensory / Motor / Mixed</button>
+      <button class="tab-btn" onclick="switchTab('mnemonic', this)">Mnemonics &amp; Recall</button>
+    </div>
+
+    <!-- Tab 1: The 12 Nerves -->
+    <div id="nerves" class="tab-content active">
+      <section class="panel">
+        <h2>The 12 Cranial Nerves (I–XII)</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Click a Cranial Nerve</h3>
+            <div class="pick-btns" id="nervesBtns">
+              <button class="pick-btn active" data-group="nerves" data-key="I"><span class="rn">I</span><span class="nm">Olfactory</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="II"><span class="rn">II</span><span class="nm">Optic</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="III"><span class="rn">III</span><span class="nm">Oculomotor</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="IV"><span class="rn">IV</span><span class="nm">Trochlear</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="V"><span class="rn">V</span><span class="nm">Trigeminal</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="VI"><span class="rn">VI</span><span class="nm">Abducens</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="VII"><span class="rn">VII</span><span class="nm">Facial</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="VIII"><span class="rn">VIII</span><span class="nm">Vestibulocochlear</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="IX"><span class="rn">IX</span><span class="nm">Glossopharyngeal</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="X"><span class="rn">X</span><span class="nm">Vagus</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="XI"><span class="rn">XI</span><span class="nm">Accessory</span></button>
+              <button class="pick-btn" data-group="nerves" data-key="XII"><span class="rn">XII</span><span class="nm">Hypoglossal</span></button>
+            </div>
+            <div class="step-display">
+              <div class="step-number"><span id="nervesTitle">I · Olfactory Nerve</span><span class="type-tag sensory" id="nervesType">Sensory</span></div>
+              <div class="step-desc" id="nervesDesc">Carries the sense of smell from receptors in the nose to the brain. Sensory only; arises from the forebrain.</div>
+            </div>
+
+            <div class="video-ref">
+              <h4 class="video-ref-title">Reference — The 12 Cranial Nerves</h4>
+              <div class="video-ref-frame">
+                <img src="assets/ch11-cranial-nerves.png" alt="Inferior (ventral) view of the human brain showing the twelve pairs of cranial nerves emerging in order: olfactory (I) and optic (II) with the optic chiasm anteriorly, oculomotor (III), trochlear (IV), trigeminal (V), and abducens (VI) around the midbrain and pons, facial (VII) and vestibulocochlear (VIII) at the pons-medulla junction, and glossopharyngeal (IX), vagus (X), accessory (XI), and hypoglossal (XII) from the medulla" loading="lazy">
+              </div>
+              <p class="video-ref-caption">Cranial nerves emerge in numbered order from front to back along the base of the brain and brain stem. Nerves I–II arise from the forebrain; III–XII from the brain stem.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Sensory / Motor / Mixed -->
+    <div id="classify" class="tab-content">
+      <section class="panel">
+        <h2>Classifying the Cranial Nerves</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">3 Sensory · 5 Motor · 4 Mixed</h3>
+            <div class="glia-grid">
+              <div class="glia-card sensory">
+                <div class="gc-head"><h4>Sensory Only</h4><span class="badge">3</span></div>
+                <p class="fn"><b>I</b> Olfactory (smell) · <b>II</b> Optic (vision) · <b>VIII</b> Vestibulocochlear (hearing &amp; balance). These carry information <b>into</b> the brain only.</p>
+              </div>
+              <div class="glia-card motor">
+                <div class="gc-head"><h4>Motor Only</h4><span class="badge">5</span></div>
+                <p class="fn"><b>III</b> Oculomotor · <b>IV</b> Trochlear · <b>VI</b> Abducens (all move the eye) · <b>XI</b> Accessory (neck) · <b>XII</b> Hypoglossal (tongue). These carry commands <b>out</b> to muscles.</p>
+              </div>
+              <div class="glia-card mixed">
+                <div class="gc-head"><h4>Mixed</h4><span class="badge">4</span></div>
+                <p class="fn"><b>V</b> Trigeminal · <b>VII</b> Facial · <b>IX</b> Glossopharyngeal · <b>X</b> Vagus. These carry <b>both</b> sensory and motor fibers.</p>
+              </div>
+            </div>
+            <div class="mnemonic-box">
+              <b>Type mnemonic —</b> "<b>S</b>ome <b>S</b>ay <b>M</b>arry <b>M</b>oney <b>B</b>ut <b>M</b>y <b>B</b>rother <b>S</b>ays <b>B</b>ig <b>B</b>rains <b>M</b>atter <b>M</b>ore." Reading I → XII, each first letter gives the type: <b>S</b> = Sensory, <b>M</b> = Motor, <b>B</b> = Both (mixed). So I-S, II-S, III-M, IV-M, V-B, VI-M, VII-B, VIII-S, IX-B, X-B, XI-M, XII-M.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 3: Mnemonics & Recall -->
+    <div id="mnemonic" class="tab-content">
+      <section class="panel">
+        <h2>Remembering the Names in Order</h2>
+        <div class="body">
+          <div class="animation-stage">
+            <h3 class="stage-title">Name Mnemonic — "Oh, Oh, Oh, To Touch And Feel Very Good Velvet, AH!"</h3>
+            <div class="mn-list">
+              <div class="mn-row"><span class="mn-word">Oh</span><span class="mn-nerve"><b>I</b> — Olfactory</span></div>
+              <div class="mn-row"><span class="mn-word">Oh</span><span class="mn-nerve"><b>II</b> — Optic</span></div>
+              <div class="mn-row"><span class="mn-word">Oh</span><span class="mn-nerve"><b>III</b> — Oculomotor</span></div>
+              <div class="mn-row"><span class="mn-word">To</span><span class="mn-nerve"><b>IV</b> — Trochlear</span></div>
+              <div class="mn-row"><span class="mn-word">Touch</span><span class="mn-nerve"><b>V</b> — Trigeminal</span></div>
+              <div class="mn-row"><span class="mn-word">And</span><span class="mn-nerve"><b>VI</b> — Abducens</span></div>
+              <div class="mn-row"><span class="mn-word">Feel</span><span class="mn-nerve"><b>VII</b> — Facial</span></div>
+              <div class="mn-row"><span class="mn-word">Very</span><span class="mn-nerve"><b>VIII</b> — Vestibulocochlear</span></div>
+              <div class="mn-row"><span class="mn-word">Good</span><span class="mn-nerve"><b>IX</b> — Glossopharyngeal</span></div>
+              <div class="mn-row"><span class="mn-word">Velvet</span><span class="mn-nerve"><b>X</b> — Vagus</span></div>
+              <div class="mn-row"><span class="mn-word">Ah</span><span class="mn-nerve"><b>XI</b> — Accessory</span></div>
+              <div class="mn-row"><span class="mn-word">(H)</span><span class="mn-nerve"><b>XII</b> — Hypoglossal</span></div>
+            </div>
+            <div class="mnemonic-box">
+              <b>Quick recall:</b> There are <b>12 pairs</b>. The three purely <b>sensory</b> nerves are the "special-sense" ones (smell, sight, hearing/balance). Five purely <b>motor</b> nerves mostly move things (eye ×3, neck, tongue). The four <b>mixed</b> nerves (V, VII, IX, X) each do sensing <i>and</i> moving — remember the <b>Vagus (X)</b> as the far-reaching one that runs your internal organs.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Scored Spaced-Repetition Quiz -->
+<section class="ap-study-section">
+  <div class="ap-study-card">
+    <div class="ap-study-head">
+      <h2>Test Yourself — Cranial Nerves</h2>
+      <div id="apHud"></div>
+      <a class="ap-hub-link" href="index.html">⌂ Hub</a>
+    </div>
+    <p class="ap-study-sub">Master the 12 cranial nerves by number and name, their major functions, and whether each is sensory, motor, or mixed.</p>
+    <div id="apQuiz"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  * Interactive diagrams model the 12 pairs of cranial nerves and their functions (CH11 §11.6D). Designed for BIOL 2401 (A&amp;P I) study prep.
+</div>
+
+<script>
+"use strict";
+
+let eli5Mode = false;
+let currentTab = "nerves";
+const infoBox = document.getElementById("infoBox");
+const eli5Toggle = document.getElementById("eli5Toggle");
+const modeLabel = document.getElementById("modeLabel");
+
+const GROUP_OF_TAB = { nerves: "nerves", classify: null, mnemonic: null };
+
+const NERVES = {
+  I:   { title: "I · Olfactory Nerve", type: "sensory",
+    prof: "Carries the sense of smell from receptors in the nose to the brain. Sensory only; arises from the forebrain.",
+    eli5: "Your 'smell' nerve — it carries scents from your nose to your brain." },
+  II:  { title: "II · Optic Nerve", type: "sensory",
+    prof: "Carries visual information from the retina of the eye to the brain. Sensory only; arises from the forebrain.",
+    eli5: "Your 'sight' nerve — it sends what your eyes see to the brain." },
+  III: { title: "III · Oculomotor Nerve", type: "motor",
+    prof: "Innervates most of the muscles that move the eyeball, plus the eyelid and pupil. Motor only.",
+    eli5: "Moves your eyeball, eyelid, and pupil — one of the 'eye-moving' nerves." },
+  IV:  { title: "IV · Trochlear Nerve", type: "motor",
+    prof: "Innervates the superior oblique muscle, which moves (rolls) the eye. Motor only.",
+    eli5: "Another 'eye-moving' nerve — it rolls the eye." },
+  V:   { title: "V · Trigeminal Nerve", type: "mixed",
+    prof: "The largest cranial nerve. Carries sensation from the face and provides motor control to the chewing (mastication) muscles. Mixed.",
+    eli5: "The big 'face' nerve — it feels your face and works your chewing muscles." },
+  VI:  { title: "VI · Abducens Nerve", type: "motor",
+    prof: "Innervates the lateral rectus muscle, which abducts (turns outward) the eye. Motor only.",
+    eli5: "One more 'eye-moving' nerve — it turns the eye outward." },
+  VII: { title: "VII · Facial Nerve", type: "mixed",
+    prof: "Provides motor control to the muscles of facial expression and carries taste sensation. Mixed.",
+    eli5: "The 'facial expression' nerve — smiles and frowns — and it carries some taste." },
+  VIII:{ title: "VIII · Vestibulocochlear Nerve", type: "sensory",
+    prof: "Carries hearing and equilibrium (balance) information from the inner ear. Sensory only.",
+    eli5: "Your 'hearing and balance' nerve from the inner ear." },
+  IX:  { title: "IX · Glossopharyngeal Nerve", type: "mixed",
+    prof: "Moves muscles of the tongue and pharynx (swallowing) and carries taste sensation. Mixed.",
+    eli5: "Works the tongue and throat for swallowing, and carries some taste." },
+  X:   { title: "X · Vagus Nerve", type: "mixed",
+    prof: "Innervates visceral smooth muscle (heart, lungs, digestive organs) and carries sensations from them. Mixed — the longest cranial nerve, reaching into the thorax and abdomen.",
+    eli5: "The 'wandering' nerve — it reaches down to your heart, lungs, and gut to run them automatically." },
+  XI:  { title: "XI · Accessory Nerve", type: "motor",
+    prof: "Innervates neck muscles (sternocleidomastoid and trapezius). Motor only.",
+    eli5: "Moves your neck and shoulder muscles." },
+  XII: { title: "XII · Hypoglossal Nerve", type: "motor",
+    prof: "Innervates the muscles of the tongue for speech and swallowing. Motor only.",
+    eli5: "Moves your tongue — for speaking and swallowing." }
+};
+
+const TYPE_LABEL = { sensory: "Sensory", motor: "Motor", mixed: "Mixed" };
+const current = { nerves: "I" };
+
+const SIDEBAR = {
+  nerves: "<b>12 pairs, I–XII.</b> Click a nerve for its name, function, and type. Nerves I–II arise from the forebrain; III–XII from the brain stem.",
+  classify: "<b>Classification:</b> 3 nerves are purely sensory (I, II, VIII), 5 are purely motor (III, IV, VI, XI, XII), and 4 are mixed (V, VII, IX, X).",
+  mnemonic: "<b>Name mnemonic:</b> \"Oh, Oh, Oh, To Touch And Feel Very Good Velvet, AH!\" gives the first letter of each nerve I → XII in order."
+};
+
+eli5Toggle.addEventListener("change", () => {
+  eli5Mode = eli5Toggle.checked;
+  modeLabel.textContent = eli5Mode ? "ELI5 (Simple)" : "Professional";
+  updateAllTexts();
+});
+
+function updateAllTexts() {
+  const g = GROUP_OF_TAB[currentTab];
+  if (g) renderGroup(g);
+}
+
+window.switchTab = function (tabId, el) {
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
+  currentTab = tabId;
+  infoBox.innerHTML = SIDEBAR[tabId] || "";
+  updateAllTexts();
+};
+
+document.querySelectorAll(".pick-btn[data-group]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const g = btn.dataset.group;
+    document.querySelectorAll('.pick-btn[data-group="' + g + '"]').forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    current[g] = btn.dataset.key;
+    renderGroup(g);
+  });
+});
+
+function renderGroup(g) {
+  if (g !== "nerves") return;
+  const info = NERVES[current.nerves];
+  if (!info) return;
+  document.getElementById("nervesTitle").textContent = info.title;
+  const tag = document.getElementById("nervesType");
+  tag.textContent = TYPE_LABEL[info.type];
+  tag.className = "type-tag " + info.type;
+  const text = eli5Mode ? info.eli5 : info.prof;
+  document.getElementById("nervesDesc").textContent = text;
+  if (currentTab === "nerves") {
+    infoBox.innerHTML = "<b>" + info.title + " (" + TYPE_LABEL[info.type] + "):</b> " + text;
+  }
+}
+</script>
+
+<script src="assets/aptools.js?v=1"></script>
+<script>
+(function(){
+  APTools.init({ id:"cranial-nerves", title:"Cranial Nerves", unit:"Ch 11 · Nervous System II" });
+  APTools.mountHUD("#apHud","cranial-nerves");
+  var BANK=[
+    { id:"cn1", bloom:"Remember", outcome:"Number of Cranial Nerves",
+      q:"How many pairs of cranial nerves are there?",
+      choices:["12","10","31","8"],
+      answer:0, why:"There are 12 pairs of cranial nerves, designated by Roman numerals I–XII." },
+    { id:"cn2", bloom:"Remember", outcome:"CN I Olfactory",
+      q:"Cranial nerve I (olfactory) carries which sense?",
+      choices:["Smell","Vision","Hearing","Taste only"],
+      answer:0, why:"The olfactory nerve (CN I) carries the sense of smell; it is sensory only." },
+    { id:"cn3", bloom:"Remember", outcome:"CN II Optic",
+      q:"The optic nerve (CN II) is responsible for:",
+      choices:["Vision","Smell","Eye movement","Facial expression"],
+      answer:0, why:"The optic nerve (CN II) carries visual information from the retina; it is sensory only." },
+    { id:"cn4", bloom:"Understand", outcome:"Eye-Movement Nerves",
+      q:"Which three cranial nerves primarily move the eyeball?",
+      choices:["Oculomotor (III), Trochlear (IV), and Abducens (VI)","Olfactory (I), Optic (II), and Facial (VII)","Vagus (X), Accessory (XI), and Hypoglossal (XII)","Trigeminal (V), Facial (VII), and Vagus (X)"],
+      answer:0, why:"CN III, IV, and VI are all motor nerves that move the eyeball." },
+    { id:"cn5", bloom:"Understand", outcome:"CN V Trigeminal",
+      q:"The largest cranial nerve — sensory from the face and motor to the chewing muscles — is the:",
+      choices:["Trigeminal (V)","Facial (VII)","Vagus (X)","Trochlear (IV)"],
+      answer:0, why:"The trigeminal nerve (CN V) is the largest cranial nerve; it is mixed, carrying facial sensation and controlling mastication." },
+    { id:"cn6", bloom:"Understand", outcome:"CN VII Facial",
+      q:"The facial nerve (CN VII) controls the muscles of facial expression and also carries:",
+      choices:["Taste","Vision","Hearing","Smell"],
+      answer:0, why:"CN VII is mixed: motor to the muscles of facial expression and sensory for taste." },
+    { id:"cn7", bloom:"Remember", outcome:"CN VIII Vestibulocochlear",
+      q:"Hearing and equilibrium (balance) are carried by which cranial nerve?",
+      choices:["Vestibulocochlear (VIII)","Optic (II)","Vagus (X)","Trigeminal (V)"],
+      answer:0, why:"The vestibulocochlear nerve (CN VIII) carries hearing and equilibrium from the inner ear; it is sensory only." },
+    { id:"cn8", bloom:"Understand", outcome:"CN X Vagus",
+      q:"Which cranial nerve innervates visceral organs in the thorax and abdomen (heart, lungs, digestive tract)?",
+      choices:["Vagus (X)","Hypoglossal (XII)","Abducens (VI)","Olfactory (I)"],
+      answer:0, why:"The vagus nerve (CN X) is the longest cranial nerve; it innervates visceral smooth muscle and carries sensations from those organs." },
+    { id:"cn9", bloom:"Remember", outcome:"CN XII Hypoglossal",
+      q:"The hypoglossal nerve (CN XII) moves the:",
+      choices:["Tongue","Eye","Neck","Diaphragm"],
+      answer:0, why:"The hypoglossal nerve (CN XII) is motor to the muscles of the tongue." },
+    { id:"cn10", bloom:"Understand", outcome:"Classification Counts",
+      q:"Of the 12 cranial nerves, how many are purely sensory, purely motor, and mixed?",
+      choices:["3 sensory, 5 motor, 4 mixed","6 sensory, 6 motor, 0 mixed","4 sensory, 4 motor, 4 mixed","0 sensory, 0 motor, 12 mixed"],
+      answer:0, why:"Three cranial nerves are purely sensory (I, II, VIII), five are purely motor (III, IV, VI, XI, XII), and four are mixed (V, VII, IX, X)." },
+    { id:"cn11", bloom:"Analyze", outcome:"Purely Sensory Set",
+      q:"Which set lists cranial nerves that are purely SENSORY?",
+      choices:["Olfactory (I), Optic (II), Vestibulocochlear (VIII)","Oculomotor (III), Trochlear (IV), Abducens (VI)","Trigeminal (V), Facial (VII), Vagus (X)","Accessory (XI), Hypoglossal (XII), Vagus (X)"],
+      answer:0, why:"The three purely sensory cranial nerves are I (smell), II (vision), and VIII (hearing/balance)." },
+    { id:"cn12", bloom:"Understand", outcome:"Identify a Mixed Nerve",
+      q:"Which of these cranial nerves is a MIXED nerve (both sensory and motor)?",
+      choices:["Trigeminal (V)","Optic (II)","Trochlear (IV)","Hypoglossal (XII)"],
+      answer:0, why:"The trigeminal nerve (V) is mixed. The four mixed nerves are V, VII, IX, and X." },
+    { id:"cn13", bloom:"Remember", outcome:"CN XI Accessory",
+      q:"The accessory nerve (CN XI) innervates muscles of the:",
+      choices:["Neck","Tongue","Eye","Face"],
+      answer:0, why:"The accessory nerve (CN XI) is motor to neck muscles (sternocleidomastoid and trapezius)." },
+    { id:"cn14", bloom:"Apply", outcome:"Origin of Cranial Nerves",
+      q:"Cranial nerves I and II arise from the forebrain, while the other ten arise mainly from the:",
+      choices:["Brain stem","Spinal cord","Cerebellum","Thalamus"],
+      answer:0, why:"Two pairs (I, II) arise from the forebrain; the remaining ten pairs arise from the brain stem." }
+  ];
+  APTools.mountQuiz({ container:"#apQuiz", moduleId:"cranial-nerves", bank:BANK, length:10 });
+})();
+</script>
+</body>
+</html>

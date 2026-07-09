@@ -258,7 +258,12 @@
       subtitle: "Age-related sensory changes",
       image: "assets/ch12-healthy-eye-cataract-glaucoma.png",
       imageAlt: "Healthy eye, cataract, and glaucoma comparison",
-      secondaryImage: "assets/ch12-ear-hearing.png",
+      tabImages: [
+        null,
+        { src: "assets/ch12-hearing-reflex-ossicles.png", alt: "Human ear anatomy with ossicles, cochlea, basilar membrane, and hair cells" },
+        { src: "assets/ch12-healthy-eye-cataract-glaucoma.png", alt: "Healthy eye, cataract, and glaucoma comparison" },
+        { src: "assets/ch12-healthy-eye-cataract-glaucoma.png", alt: "Healthy eye, cataract, and glaucoma comparison" }
+      ],
       intro: "Diminished senses are often among the first noticeable signs of aging, especially hearing and vision changes.",
       tabs: [
         { title: "Big Picture", body: "With age, smell and taste may diminish, hearing can decline from cumulative damage, and visual problems become more common.", eli5: "Aging can make the body's sensors less sharp, especially ears and eyes." },
@@ -316,13 +321,18 @@
     if (i === 0 && app.cards.length) {
       flow.innerHTML = '<div class="flow" style="margin-top:14px">' + app.cards.slice(0, 5).map(function (c) { return '<div class="flow-step">' + c[0] + '</div>'; }).join("") + "</div>";
     }
+    renderImage();
   }
 
   function renderImage() {
     var host = document.getElementById("imageHost");
-    if (!app.image) { host.innerHTML = ""; return; }
-    host.innerHTML = '<div class="image-frame"><img src="' + app.image + '" alt="' + app.imageAlt + '"><div class="caption">' + app.imageAlt + '</div></div>' +
-      (app.secondaryImage ? '<div class="image-frame"><img src="' + app.secondaryImage + '" alt="Secondary reference image"><div class="caption">Secondary reference image</div></div>' : "");
+    var selectedImage = app.tabImages ? app.tabImages[tab] : null;
+    if (selectedImage === null) { host.innerHTML = ""; return; }
+    var images = selectedImage ? [selectedImage] : (app.image ? [{ src: app.image, alt: app.imageAlt }] : []);
+    if (!selectedImage && app.secondaryImage) images.push({ src: app.secondaryImage, alt: "Secondary reference image" });
+    host.innerHTML = images.map(function (img) {
+      return '<div class="image-frame"><img src="' + img.src + '" alt="' + img.alt + '"><div class="caption">' + img.alt + '</div></div>';
+    }).join("");
   }
 
   function renderCards() {
@@ -368,7 +378,6 @@
 
   renderTabs();
   renderCards();
-  renderImage();
   renderCase();
   showTab(0);
 
